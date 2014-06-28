@@ -232,15 +232,27 @@ public:
 
   /**
    * @apanda
-   * \param DDC sequence number
+   * \param DDC virtual node number
    */
   void SetVnode (uint32_t);
 
   /**
    * @apanda
-   * \returns DDC sequence number
+   * \returns DDC virtual node number
    */
   uint32_t GetVnode (void) const;
+
+  /**
+   * @aor
+   * \param DDC control bit
+   */
+  void SetControl (uint32_t);
+
+  /**
+   * @apanda
+   * \returns DDC control bit
+   */
+  uint32_t IsControl (void) const;
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
@@ -269,8 +281,9 @@ private:
   uint16_t m_checksum;
   bool m_goodChecksum;
   uint16_t m_headerSize;
-  uint32_t m_seq :1;
+  uint32_t m_seq : 1;
   uint32_t m_vnode : 1;
+  uint32_t m_is_control : 1;
 };
 
 } // namespace ns3

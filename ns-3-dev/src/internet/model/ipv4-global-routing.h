@@ -92,16 +92,29 @@ public:
 
   // These methods inherited from base class
   virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
+  virtual Ptr<Ipv4Route> ControlplaneRouteOutput (Ptr<Packet> p, Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
+  virtual Ptr<Ipv4Route> DataplaneRouteOutput (Ptr<Packet> p, Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
 
-  virtual bool RouteInput  (Ptr<const Packet> p, Ipv4Header &header, Ptr<const NetDevice> idev,
+  virtual bool RouteInput (Ptr<const Packet> p, Ipv4Header &header, Ptr<const NetDevice> idev,
                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                             LocalDeliverCallback lcb, ErrorCallback ecb);
+  virtual bool ControlplaneRouteInput (Ptr<const Packet> p, Ipv4Header &header, Ptr<const NetDevice> idev,
+                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                            LocalDeliverCallback lcb, ErrorCallback ecb);
+  virtual bool DataplaneRouteInput (Ptr<const Packet> p, Ipv4Header &header, Ptr<const NetDevice> idev,
+                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                            LocalDeliverCallback lcb, ErrorCallback ecb);
+
+  virtual Ptr<Ipv4Route> LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif = 0);
+
   virtual void NotifyInterfaceUp (uint32_t interface);
   virtual void NotifyInterfaceDown (uint32_t interface);
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
+
+
 
 /**
  * \brief Add a host route to the global routing table.

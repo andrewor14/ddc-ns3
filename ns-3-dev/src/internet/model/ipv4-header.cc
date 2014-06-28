@@ -335,6 +335,7 @@ Ipv4Header::Print (std::ostream &os) const
      << "length: " << (m_payloadSize + 5 * 4)
      << "DDC seq: " << (uint32_t)m_seq 
      << "DDC vnode: " << (uint32_t)m_vnode 
+     << "DDC control: " << (uint32_t)m_is_control
      << " " 
      << m_source << " > " << m_destination
   ;
@@ -373,6 +374,7 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
   i.WriteU8 (m_protocol);
   i.WriteU8 ((uint8_t)m_seq); 
   i.WriteU8 ((uint8_t)m_vnode);
+  i.WriteU8 ((uint8_t)m_is_control);
   i.WriteHtonU32 (m_source.Get ());
   i.WriteHtonU32 (m_destination.Get ());
 
@@ -417,6 +419,7 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   m_protocol = i.ReadU8 ();
   m_seq = i.ReadU8() & 0x1;
   m_vnode = i.ReadU8() & 0x1;
+  m_is_control = i.ReadU8() & 0x1;
   m_checksum = 0;
   /* i.Next (2); // checksum */
   m_source.Set (i.ReadNtohU32 ());
@@ -441,7 +444,7 @@ Ipv4Header::SetSeq (uint32_t seq)
   m_seq = (seq & 0x1);
 }
 
-//@apanda
+// @apanda
 uint32_t
 Ipv4Header::GetSeq () const
 {
@@ -455,10 +458,25 @@ Ipv4Header::SetVnode (uint32_t vnode)
   m_vnode = (vnode & 0x1);
 }
 
-//@apanda
+// @apanda
 uint32_t
 Ipv4Header::GetVnode () const
 {
   return (m_vnode & 0x1);
 }
+
+// @aor
+void
+Ipv4Header::SetControl (uint32_t control)
+{
+  m_is_control = (control & 0x1);
+}
+
+// @aor
+uint32_t
+Ipv4Header::IsControl () const
+{
+  return (m_is_control & 0x1);
+}
+
 } // namespace ns3
