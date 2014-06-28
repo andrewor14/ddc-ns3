@@ -47,41 +47,48 @@ void InitializeTopology()
     connectivityGraph[i] = new std::list<uint32_t>;
   }
   connectivityGraph[0]->push_back(1);
+  connectivityGraph[0]->push_back(5);
   connectivityGraph[0]->push_back(6);
   connectivityGraph[0]->push_back(7);
-  connectivityGraph[0]->push_back(5);
+
   connectivityGraph[1]->push_back(6);
   connectivityGraph[1]->push_back(7);
   connectivityGraph[1]->push_back(8);
+
+  connectivityGraph[2]->push_back(3);
+  connectivityGraph[2]->push_back(5);
   connectivityGraph[2]->push_back(7);
   connectivityGraph[2]->push_back(8);
   connectivityGraph[2]->push_back(9);
-  connectivityGraph[2]->push_back(3);
-  connectivityGraph[2]->push_back(5);
+
   connectivityGraph[3]->push_back(8);
   connectivityGraph[3]->push_back(9);
   connectivityGraph[3]->push_back(10);
+
+  connectivityGraph[4]->push_back(5);
   connectivityGraph[4]->push_back(9);
   connectivityGraph[4]->push_back(10);
   connectivityGraph[4]->push_back(11);
-  connectivityGraph[4]->push_back(5);
-  connectivityGraph[4]->push_back(5);
+
   connectivityGraph[7]->push_back(8);
   connectivityGraph[8]->push_back(11);
   connectivityGraph[9]->push_back(10);
   connectivityGraph[10]->push_back(11);
-
 }
 
 /**
  * Callback invoked when a server receives a packet.
  */
-void ServerRxPacket(Ptr<const Packet> packet, Ipv4Header &header) { }
+void ServerRxPacket(Ptr<const Packet> packet, Ipv4Header &header) {
+  NS_LOG_INFO("Server received packet");
+}
 
 /**
  * Callback invoked when a client receives a packet.
  */
-void ClientRxPacket(Ptr<const Packet> packet, Ipv4Header &header) { }
+void ClientRxPacket(Ptr<const Packet> packet, Ipv4Header &header) {
+  NS_LOG_INFO("Client received packet");
+}
 
 /**
  * Run the simulation.
