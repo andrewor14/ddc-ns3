@@ -29,13 +29,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("Andrew-DDC-test");
 
 // Number of nodes in this network
-const int32_t numNodes = 4;
-// Number of server nodes in this network
-const int32_t numServerNodes = 1;
+const int32_t numNodes = 12;
 // Graph representation of the network
 std::list<uint32_t>* connectivityGraph [numNodes];
-// Server nodes
-uint32_t serverNodes [numNodes] = {0};
 // Server port
 const uint32_t serverPort = 7070;
 // Simulation end time
@@ -51,9 +47,30 @@ void InitializeTopology()
     connectivityGraph[i] = new std::list<uint32_t>;
   }
   connectivityGraph[0]->push_back(1);
-  connectivityGraph[0]->push_back(2);
-  connectivityGraph[0]->push_back(3);
+  connectivityGraph[0]->push_back(6);
+  connectivityGraph[0]->push_back(7);
+  connectivityGraph[0]->push_back(5);
+  connectivityGraph[1]->push_back(6);
+  connectivityGraph[1]->push_back(7);
+  connectivityGraph[1]->push_back(8);
+  connectivityGraph[2]->push_back(7);
+  connectivityGraph[2]->push_back(8);
+  connectivityGraph[2]->push_back(9);
   connectivityGraph[2]->push_back(3);
+  connectivityGraph[2]->push_back(5);
+  connectivityGraph[3]->push_back(8);
+  connectivityGraph[3]->push_back(9);
+  connectivityGraph[3]->push_back(10);
+  connectivityGraph[4]->push_back(9);
+  connectivityGraph[4]->push_back(10);
+  connectivityGraph[4]->push_back(11);
+  connectivityGraph[4]->push_back(5);
+  connectivityGraph[4]->push_back(5);
+  connectivityGraph[7]->push_back(8);
+  connectivityGraph[8]->push_back(11);
+  connectivityGraph[9]->push_back(10);
+  connectivityGraph[10]->push_back(11);
+
 }
 
 /**
@@ -113,40 +130,29 @@ int main (int argc, char *argv[])
   }
   Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-  // Set up servers
-  UdpEchoServerHelper echoServer(serverPort);
-  for (int s = 0; s < numServerNodes; s++) {
-    NS_LOG_INFO("Setting up server on node " << s);
-    uint32_t serverId = serverNodes[s];
-    ApplicationContainer serverApps = echoServer.Install(nodes.Get(serverId));
-    serverApps.Start(Seconds(1.0));
-    serverApps.Stop(simulationEnd);
-    UdpEchoServer* server = (UdpEchoServer*) GetPointer(serverApps.Get(0));
+  // Set up server and clients
+  // For now, server is always the first node (with index 0)
+  UdpEchoServerHelper echoServer (serverPort);
+  ApplicationContainer serverApps = echoServer.Install (nodes);
+  serverApps.Start (Seconds (1.0));
+  serverApps.Stop (simulationEnd);
+  for (int i = 0; i < numNodes; i++) {
+    UdpEchoServer* server = (UdpEchoServer*) GetPointer(serverApps.Get(i));
     server->AddReceivePacketEvent(MakeCallback(&ServerRxPacket));
-  }
-
-  // Set up clients (all other nodes)
-  for (int s = 0; s < numServerNodes; s++) {
-    uint32_t serverId = serverNodes[s];
-    Address serverAddress = nodes.Get(serverId)->GetObject<Ipv4>()->GetAddress(0, 0).GetLocal();
-    UdpEchoClientHelper echoClient(serverAddress, serverPort);
-    echoClient.SetAttribute("MaxPackets", UintegerValue(1));
-    echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
-    echoClient.SetAttribute("PacketSize", UintegerValue(1024));
-    for (int i = 0; i < numNodes; i++) {
-      uint32_t* end = std::find(serverNodes, serverNodes + numServerNodes, i);
-      if (end == serverNodes + numServerNodes) {
-        // Not a server node
-        NS_LOG_INFO("Setting up client on node " << i);
-        ApplicationContainer clientApps = echoClient.Install(nodes.Get(i));
-        clientApps.Start(Seconds(2.0));
-        clientApps.Stop(simulationEnd);
-        UdpEchoClient* client = (UdpEchoClient*) GetPointer(clientApps.Get(0));
-        client->AddReceivePacketEvent(MakeCallback(&ClientRxPacket));
-      }
+    Address serverAddress = nodes.Get(0)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal();
+    UdpEchoClientHelper echoClient (serverAddress, serverPort);
+    echoClient.SetAttribute ("MaxPackets", UintegerValue (0));
+    echoClient.SetAttribute ("Interval", TimeValue (Seconds (3.0)));
+    echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
+    ApplicationContainer clientApps = echoClient.Install (nodes.Get (i));
+    clientApps.Stop (simulationEnd);
+    UdpEchoClient* client = (UdpEchoClient*) GetPointer(clientApps.Get(0));
+    client->AddReceivePacketEvent(MakeCallback(&ClientRxPacket));
+    if (i == 4) {
+      Simulator::Schedule(Seconds(5.0), &UdpEchoClient::Send, client);
     }
   }
-  
+
   // Actually start the simulation
   NS_LOG_INFO("-- Simulation starting --");
   Simulator::Run();
