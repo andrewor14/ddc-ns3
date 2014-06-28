@@ -110,8 +110,9 @@ main (int argc, char *argv[])
   cmd.AddValue("packets", "Number of packets to echo", packets);
   cmd.AddValue("error", "Simulate error", simulateError);
   cmd.Parse(argc, argv);
-  //LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  //LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("Ipv4GlobalRouting", LOG_LEVEL_INFO);
 
   for (int i = 0; i < NODES; i++) {
       connectivityGraph[i] = new std::list<uint32_t>;
@@ -171,7 +172,7 @@ main (int argc, char *argv[])
     }
   }
 
-  pointToPoint.EnablePcapAll("DDCTest");
+  //pointToPoint.EnablePcapAll("DDCTest");
   InternetStackHelper stack;
   stack.Install (nodes);
   Ipv4AddressHelper address;
@@ -210,15 +211,18 @@ main (int argc, char *argv[])
     ApplicationContainer clientApps = echoClient.Install (nodes.Get (i));
     //clientApps.Start (Seconds (0.0));
     clientApps.Stop (simulationEnd);
-    clients[i] = (UdpEchoClient*)(PeekPointer(clientApps.Get(0)));
+    UdpEchoClient* client = (UdpEchoClient*)(PeekPointer(clientApps.Get(0)));
+    if ( i == 11 ) {
+      Simulator::Schedule(Seconds(5.0), &UdpEchoClient::Send, client);
+    }
     //clients[i]->ChangeDestination(nodes.Get(j)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal(), 9);
-    Simulator::Schedule(Seconds(1.0), &SendToClient, clients[i]);
+    //Simulator::Schedule(Seconds(1.0), &SendToClient, clients[i]);
   }
-  clients[11]->SetAttribute("RemoteAddress",
-    AddressValue(nodes.Get(0)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal()));
-  Simulator::ScheduleNow(&UdpEchoClient::StartApplication, clients[11]);
-  clients[11]->AddReceivePacketEvent(MakeCallback(&RxPacket));
-  Simulator::Schedule(Seconds(5.0), &UdpEchoClient::Send, clients[11]);
+  //clients[11]->SetAttribute("RemoteAddress",
+  //  AddressValue(nodes.Get(0)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal()));
+  //Simulator::ScheduleNow(&UdpEchoClient::StartApplication, clients[11]);
+  //clients[11]->AddReceivePacketEvent(MakeCallback(&RxPacket));
+  //Simulator::Schedule(Seconds(5.0), &UdpEchoClient::Send, clients[11]);
   Simulator::Schedule(Seconds(1.0), &ScheduleLinkFailure);
 
   Ptr<OutputStreamWrapper> out = asciiHelper.CreateFileStream("route.table");

@@ -72,6 +72,8 @@ void ClientRxPacket(Ptr<const Packet> packet, Ipv4Header &header) { }
 int main (int argc, char *argv[])
 {
   LogComponentEnable("Andrew-DDC-test", LOG_LEVEL_INFO);
+  LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
   InitializeTopology();
 
@@ -81,6 +83,8 @@ int main (int argc, char *argv[])
 
   // Connect the nodes
   PointToPointHelper p2p;
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
   std::vector<NetDeviceContainer> nodeDevices(numNodes);  
   std::vector<NetDeviceContainer> linkDevices;
   std::vector<PointToPointChannel*> channels;
@@ -96,6 +100,7 @@ int main (int argc, char *argv[])
       channels.push_back((PointToPointChannel*)channel);
     }
   }
+  //p2p.EnablePcapAll("Andrew-DDC");
 
   // Set up each network device
   InternetStackHelper stack;
