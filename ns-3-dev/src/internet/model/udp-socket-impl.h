@@ -112,9 +112,9 @@ private:
   void ForwardUp6 (Ptr<Packet> p, Ipv6Address saddr, Ipv6Address daddr, uint16_t port);
   void Destroy (void);
   void Destroy6 (void);
-  int DoSend (Ptr<Packet> p);
-  int DoSendTo (Ptr<Packet> p, const Address &daddr);
-  int DoSendTo (Ptr<Packet> p, Ipv4Address daddr, uint16_t dport);
+  int DoSend (Ptr<Packet> p, uint32_t flags);
+  int DoSendTo (Ptr<Packet> p, const Address &daddr, uint32_t flags);
+  int DoSendTo (Ptr<Packet> p, Ipv4Address daddr, uint16_t dport, uint32_t flags);
   int DoSendTo (Ptr<Packet> p, Ipv6Address daddr, uint16_t dport);
   void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
                     uint8_t icmpType, uint8_t icmpCode,

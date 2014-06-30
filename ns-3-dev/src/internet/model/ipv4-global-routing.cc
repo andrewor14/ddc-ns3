@@ -670,7 +670,7 @@ Ipv4GlobalRouting::RouteOutput (
     Ptr<NetDevice> oif,
     Socket::SocketErrno &sockerr)
 {
-  std::cout << "(*) RouteOutput. "
+  std::cout << "* [RouteOutput] "
             << "src=" << header.GetSource () << ", "
             << "dest=" << header.GetDestination () << ", "
             << "oif=" << oif << ", "
@@ -694,7 +694,7 @@ Ipv4GlobalRouting::RouteInput (
     LocalDeliverCallback lcb,
     ErrorCallback ecb)
 {
-  std::cout << "(#) RouteInput. "
+  std::cout << "# [RouteInput] "
             << "src=" << header.GetSource () << ", "
             << "dest=" << header.GetDestination () << ", "
             << "idev=" << idev << ", "

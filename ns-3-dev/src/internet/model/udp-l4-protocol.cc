@@ -408,7 +408,7 @@ UdpL4Protocol::Receive (Ptr<Packet> packet,
 void
 UdpL4Protocol::Send (Ptr<Packet> packet, 
                      Ipv4Address saddr, Ipv4Address daddr, 
-                     uint16_t sport, uint16_t dport)
+                     uint16_t sport, uint16_t dport, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
 
@@ -425,13 +425,13 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 
   packet->AddHeader (udpHeader);
 
-  m_downTarget (packet, saddr, daddr, PROT_NUMBER, 0);
+  m_downTarget (packet, saddr, daddr, PROT_NUMBER, 0, flags);
 }
 
 void
 UdpL4Protocol::Send (Ptr<Packet> packet, 
                      Ipv4Address saddr, Ipv4Address daddr, 
-                     uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route)
+                     uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport << route);
 
@@ -448,7 +448,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 
   packet->AddHeader (udpHeader);
 
-  m_downTarget (packet, saddr, daddr, PROT_NUMBER, route);
+  m_downTarget (packet, saddr, daddr, PROT_NUMBER, route, flags);
 }
 
 void

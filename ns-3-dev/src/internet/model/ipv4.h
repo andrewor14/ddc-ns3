@@ -141,7 +141,8 @@ public:
    * down the stack to the MAC and PHY layers.
    */
   virtual void Send (Ptr<Packet> packet, Ipv4Address source,
-                     Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route) = 0;
+                     Ipv4Address destination, uint8_t protocol,
+                     Ptr<Ipv4Route> route, uint32_t flags) = 0;
 
   /**
    * \param protocol a pointer to the protocol to add to this L4 Demux.

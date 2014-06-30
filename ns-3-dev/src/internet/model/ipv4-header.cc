@@ -41,7 +41,8 @@ Ipv4Header::Ipv4Header ()
     m_fragmentOffset (0),
     m_checksum (0),
     m_goodChecksum (true),
-    m_headerSize(5*4)
+    m_headerSize(5*4),
+    m_is_control(0)
 {
 }
 

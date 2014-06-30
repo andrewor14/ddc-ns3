@@ -540,7 +540,8 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
                       Ipv4Address source,
                       Ipv4Address destination,
                       uint8_t protocol,
-                      Ptr<Ipv4Route> route)
+                      Ptr<Ipv4Route> route,
+                      uint32_t flags)
 {
   NS_LOG_FUNCTION (this << packet << source << destination << uint32_t (protocol) << route);
 
@@ -567,7 +568,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   if (destination.IsBroadcast () || destination.IsLocalMulticast ())
     {
       NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 1:  limited broadcast");
-      ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
+      ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment, flags);
       uint32_t ifaceIndex = 0;
       for (Ipv4InterfaceList::iterator ifaceIter = m_interfaces.begin ();
            ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
@@ -599,7 +600,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
               destination.CombineMask (ifAddr.GetMask ()) == ifAddr.GetLocal ().CombineMask (ifAddr.GetMask ())   )
             {
               NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 2:  subnet directed bcast to " << ifAddr.GetLocal ());
-              ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
+              ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment, flags);
               Ptr<Packet> packetCopy = packet->Copy ();
               m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
               packetCopy->AddHeader (ipHeader);
@@ -616,7 +617,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   if (route && route->GetGateway () != Ipv4Address ())
     {
       NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 3:  passed in with route");
-      ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
+      ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment, flags);
       int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
       m_sendOutgoingTrace (ipHeader, packet, interface);
       SendRealOut (route, packet->Copy (), ipHeader);
@@ -635,7 +636,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 5:  passed in with no route " << destination);
   Socket::SocketErrno errno_; 
   Ptr<NetDevice> oif (0); // unused for now
-  ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
+  ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment, flags);
   Ptr<Ipv4Route> newRoute;
   if (m_routingProtocol != 0)
     {
@@ -668,7 +669,8 @@ Ipv4L3Protocol::BuildHeader (
   uint8_t protocol,
   uint16_t payloadSize,
   uint8_t ttl,
-  bool mayFragment)
+  bool mayFragment,
+  uint32_t flags)
 {
   NS_LOG_FUNCTION (this << source << destination << (uint16_t)protocol << payloadSize << (uint16_t)ttl << mayFragment);
   Ipv4Header ipHeader;
@@ -677,6 +679,8 @@ Ipv4L3Protocol::BuildHeader (
   ipHeader.SetProtocol (protocol);
   ipHeader.SetPayloadSize (payloadSize);
   ipHeader.SetTtl (ttl);
+  // Control packets are identified by the 18th bit (arbitrary)
+  ipHeader.SetControl(flags >> 14 == 1);
   if (mayFragment == true)
     {
       ipHeader.SetMayFragment ();

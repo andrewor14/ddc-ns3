@@ -351,11 +351,11 @@ UdpSocketImpl::Send (Ptr<Packet> p, uint32_t flags)
       m_errno = ERROR_NOTCONN;
       return -1;
     }
-  return DoSend (p);
+  return DoSend (p, flags);
 }
 
 int 
-UdpSocketImpl::DoSend (Ptr<Packet> p)
+UdpSocketImpl::DoSend (Ptr<Packet> p, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << p);
   if ((m_endPoint == 0) && (InetSocketAddress::IsMatchingType(m_defaultAddress) == true))
@@ -382,11 +382,11 @@ UdpSocketImpl::DoSend (Ptr<Packet> p)
       return -1;
     } 
 
-  return DoSendTo (p, (const Address)m_defaultAddress);
+  return DoSendTo (p, (const Address)m_defaultAddress, flags);
 }
 
 int
-UdpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
+UdpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << p << address);
 
@@ -398,7 +398,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
           InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
           Ipv4Address ipv4 = transport.GetIpv4 ();
           uint16_t port = transport.GetPort ();
-          return DoSendTo (p, ipv4, port);
+          return DoSendTo (p, ipv4, port, flags);
         }
       else if (Inet6SocketAddress::IsMatchingType(address) == true)
         {
@@ -418,7 +418,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
       NS_LOG_LOGIC ("Connected");
       if (Ipv4Address::IsMatchingType(m_defaultAddress))
         {
-          return DoSendTo (p, Ipv4Address::ConvertFrom(m_defaultAddress), m_defaultPort);
+          return DoSendTo (p, Ipv4Address::ConvertFrom(m_defaultAddress), m_defaultPort, flags);
         }
       else if (Ipv6Address::IsMatchingType(m_defaultAddress))
         {
@@ -430,9 +430,10 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
 }
 
 int
-UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
+UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << p << dest << port);
+
   if (m_boundnetdevice)
     {
       NS_LOG_LOGIC ("Bound interface number " << m_boundnetdevice->GetIfIndex ());
@@ -533,7 +534,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
               NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << dest
                                                      << " (mask is " << maski << ")");
               m_udp->Send (p->Copy (), addri, dest,
-                           m_endPoint->GetLocalPort (), port);
+                           m_endPoint->GetLocalPort (), port, flags);
               NotifyDataSent (p->GetSize ());
               NotifySend (GetTxAvailable ());
             }
@@ -544,7 +545,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
               NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << bcast
                                                      << " (mask is " << maski << ")");
               m_udp->Send (p->Copy (), addri, bcast,
-                           m_endPoint->GetLocalPort (), port);
+                           m_endPoint->GetLocalPort (), port, flags);
               NotifyDataSent (p->GetSize ());
               NotifySend (GetTxAvailable ());
             }
@@ -555,7 +556,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   else if (m_endPoint->GetLocalAddress () != Ipv4Address::GetAny ())
     {
       m_udp->Send (p->Copy (), m_endPoint->GetLocalAddress (), dest,
-                   m_endPoint->GetLocalPort (), port, 0);
+                   m_endPoint->GetLocalPort (), port, 0, flags);
       NotifyDataSent (p->GetSize ());
       NotifySend (GetTxAvailable ());
       return p->GetSize ();
@@ -563,6 +564,8 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   else if (ipv4->GetRoutingProtocol () != 0)
     {
       Ipv4Header header;
+      // Control packets are identified by the 18th bit
+      header.SetControl(flags >> 14 == 1);
       header.SetDestination (dest);
       header.SetProtocol (UdpL4Protocol::PROT_NUMBER);
       Socket::SocketErrno errno_;
@@ -590,7 +593,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
 
           header.SetSource (route->GetSource ());
           m_udp->Send (p->Copy (), header.GetSource (), header.GetDestination (),
-                       m_endPoint->GetLocalPort (), port, route);
+                       m_endPoint->GetLocalPort (), port, route, flags);
           NotifyDataSent (p->GetSize ());
           return p->GetSize ();
         }
@@ -739,7 +742,7 @@ UdpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       Ipv4Address ipv4 = transport.GetIpv4 ();
       uint16_t port = transport.GetPort ();
-      return DoSendTo (p, ipv4, port);
+      return DoSendTo (p, ipv4, port, flags);
     }
   else if (Inet6SocketAddress::IsMatchingType (address))
     {

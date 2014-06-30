@@ -378,7 +378,7 @@ void NscTcpL4Protocol::send_callback (const void* data, int datalen)
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   NS_ASSERT_MSG (ipv4, "nsc callback invoked, but node has no ipv4 object");
 
-  m_downTarget (p, saddr, daddr, PROT_NUMBER, 0);
+  m_downTarget (p, saddr, daddr, PROT_NUMBER, 0, 0);
   m_nscStack->if_send_finish (0);
 }
 

@@ -273,6 +273,31 @@ UdpEchoClient::ScheduleTransmit (Time dt)
 void 
 UdpEchoClient::Send (void)
 {
+  DoSend (0);
+}
+
+/**
+ * Send a control plane packet.
+ * Control packets are identified by the 18th bit (arbitrary).
+ */
+void
+UdpEchoClient::SendControlPacket (void)
+{
+  DoSend (1 << 14);
+}
+
+/**
+ * Send a data plane packet.
+ */
+void
+UdpEchoClient::SendDataPacket (void)
+{
+  Send ();
+}
+
+void
+UdpEchoClient::DoSend (uint32_t flags)
+{
   NS_LOG_FUNCTION_NOARGS ();
 
   //NS_ASSERT (m_sendEvent.IsExpired ());
@@ -304,7 +329,7 @@ UdpEchoClient::Send (void)
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
   m_txTrace (p, (uint32_t)GetNode()->GetId(), Ipv4Address::ConvertFrom(m_peerAddress));
-  m_socket->Send (p);
+  m_socket->Send (p, flags);
 
   ++m_sent;
 

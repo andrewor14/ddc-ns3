@@ -102,7 +102,7 @@ public:
                             Ipv6Address payloadSource, Ipv6Address payloadDestination,
                             const uint8_t payload[8]);
 
-  typedef Callback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint8_t, Ptr<Ipv4Route> > DownTargetCallback;
+  typedef Callback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint8_t, Ptr<Ipv4Route>, uint32_t> DownTargetCallback;
   typedef Callback<void,Ptr<Packet>, Ipv6Address, Ipv6Address, uint8_t, Ptr<Ipv6Route> > DownTargetCallback6;
   /**
    * This method allows a caller to set the current down target callback

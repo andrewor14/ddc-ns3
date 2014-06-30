@@ -493,7 +493,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
           NS_LOG_ERROR ("No IPV4 Routing Protocol");
           route = 0;
         }
-      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
+      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route, 0);
     }
 }
 
@@ -582,7 +582,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
           NS_LOG_ERROR ("No IPV4 Routing Protocol");
           route = 0;
         }
-      m_downTarget (packet, saddr, daddr, PROT_NUMBER, route);
+      m_downTarget (packet, saddr, daddr, PROT_NUMBER, route, 0);
     }
   else
     NS_FATAL_ERROR ("Trying to use Tcp on a node without an Ipv4 interface");

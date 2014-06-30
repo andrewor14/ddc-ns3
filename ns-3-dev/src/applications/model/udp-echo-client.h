@@ -125,6 +125,8 @@ public:
 
   void SendBurst (uint32_t, Time);
   void Send (void);
+  void SendControlPacket (void);
+  void SendDataPacket (void);
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
@@ -139,6 +141,7 @@ private:
   void SendInternal (Ptr<Packet> p);
   void ScheduleTransmit (Time dt);
 
+  void DoSend (uint32_t flags);
   void HandleRead (Ptr<Socket> socket);
 
   uint32_t m_count;

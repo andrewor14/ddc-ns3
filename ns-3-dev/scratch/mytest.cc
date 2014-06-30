@@ -95,7 +95,7 @@ void ClientRxPacket(Ptr<const Packet> packet, Ipv4Header &header) {
  */
 int main (int argc, char *argv[])
 {
-  LogComponentEnable("Andrew-DDC-test", LOG_LEVEL_INFO);
+  LogComponentEnable ("Andrew-DDC-test", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
@@ -156,7 +156,7 @@ int main (int argc, char *argv[])
     UdpEchoClient* client = (UdpEchoClient*) GetPointer(clientApps.Get(0));
     client->AddReceivePacketEvent(MakeCallback(&ClientRxPacket));
     if (i == 4) {
-      Simulator::Schedule(Seconds(5.0), &UdpEchoClient::Send, client);
+      Simulator::Schedule(Seconds(5.0), &UdpEchoClient::SendControlPacket, client);
     }
   }
 

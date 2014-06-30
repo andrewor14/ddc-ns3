@@ -1299,7 +1299,8 @@ DsrRouting::Send (Ptr<Packet> packet,
                   Ipv4Address source,
                   Ipv4Address destination,
                   uint8_t protocol,
-                  Ptr<Ipv4Route> route)
+                  Ptr<Ipv4Route> route,
+                  uint32_t flags)
 {
   NS_LOG_FUNCTION (this << packet << source << destination << (uint32_t)protocol << route);
   NS_ASSERT_MSG (!m_downTarget.IsNull (), "Error, DsrRouting cannot send downward");
@@ -1599,7 +1600,7 @@ DsrRouting::SendRealDown (DsrNetworkQueueEntry & newEntry)
   Ipv4Address nextHop = newEntry.GetNextHopAddress ();
   Ptr<Packet> packet = newEntry.GetPacket ()->Copy ();
   Ptr<Ipv4Route> route = newEntry.GetIpv4Route ();
-  m_downTarget (packet, source, nextHop, GetProtocolNumber (), route);
+  m_downTarget (packet, source, nextHop, GetProtocolNumber (), route, 0);
   return true;
 }
 

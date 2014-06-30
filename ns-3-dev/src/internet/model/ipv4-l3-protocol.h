@@ -171,7 +171,7 @@ public:
    * down the stack to the MAC and PHY layers.
    */
   void Send (Ptr<Packet> packet, Ipv4Address source, 
-             Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
+             Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route, uint32_t flags);
   /**
    * \param packet packet to send
    * \param ipHeader IP Header
@@ -235,7 +235,8 @@ private:
     uint8_t protocol,
     uint16_t payloadSize,
     uint8_t ttl,
-    bool mayFragment);
+    bool mayFragment,
+    uint32_t flags);
 
   void
   SendRealOut (Ptr<Ipv4Route> route,

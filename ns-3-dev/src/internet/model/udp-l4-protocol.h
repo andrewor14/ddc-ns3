@@ -90,10 +90,10 @@ public:
    */
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
-             uint16_t sport, uint16_t dport);
+             uint16_t sport, uint16_t dport, uint32_t flags);
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
-             uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route);
+             uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route, uint32_t flags);
   void Send (Ptr<Packet> packet,
              Ipv6Address saddr, Ipv6Address daddr, 
              uint16_t sport, uint16_t dport);
