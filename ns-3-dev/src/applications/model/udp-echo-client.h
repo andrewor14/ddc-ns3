@@ -123,7 +123,7 @@ public:
    */
   void SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize);
 
-  void SendBurst (uint32_t, Time);
+  void SendBurst (uint32_t, Time, uint32_t flags);
   void Send (void);
   void SendControlPacket (void);
   void SendDataPacket (void);
@@ -138,7 +138,7 @@ protected:
 
 private:
 
-  void SendInternal (Ptr<Packet> p);
+  void SendInternal (Ptr<Packet> p, uint32_t flags);
   void ScheduleTransmit (Time dt);
 
   void DoSend (uint32_t flags);

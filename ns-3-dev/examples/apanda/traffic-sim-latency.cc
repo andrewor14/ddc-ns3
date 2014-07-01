@@ -314,7 +314,7 @@ class Topology : public Object
       NS_LOG_LOGIC("Untranslated sending between " << client);
       NS_LOG_LOGIC("Sending between " << client);
       Simulator::ScheduleNow(&UdpEchoClient::StartApplication, client);
-      Simulator::Schedule(Seconds(1.0), &UdpEchoClient::SendBurst, client, m_packets, MicroSeconds(900));
+      Simulator::Schedule(Seconds(1.0), &UdpEchoClient::SendBurst, client, m_packets, MicroSeconds(900), 0);
     }
     
     void FailLink (uint32_t from, uint32_t to)

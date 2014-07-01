@@ -266,7 +266,7 @@ class Topology : public Object
       m_clients[client]->SetRemote(m_nodes.Get(server)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal(), 9);
       Simulator::ScheduleNow(&UdpEchoClient::StopApplication, m_clients[client]);
       Simulator::ScheduleNow(&UdpEchoClient::StartApplication, m_clients[client]);
-      Simulator::Schedule(Seconds(1.0), &UdpEchoClient::SendBurst, m_clients[client], m_packets, MicroSeconds(10));
+      Simulator::Schedule(Seconds(1.0), &UdpEchoClient::SendBurst, m_clients[client], m_packets, MicroSeconds(10), 0);
     }
     
     void FailLink (uint32_t from, uint32_t to)
