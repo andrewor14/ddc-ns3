@@ -41,8 +41,7 @@ Ipv4Header::Ipv4Header ()
     m_fragmentOffset (0),
     m_checksum (0),
     m_goodChecksum (true),
-    m_headerSize(5*4),
-    m_is_control(0)
+    m_headerSize(5*4)
 {
 }
 
@@ -334,9 +333,9 @@ Ipv4Header::Print (std::ostream &os) const
      << "offset (bytes) " << m_fragmentOffset << " "
      << "flags [" << flags << "] "
      << "length: " << (m_payloadSize + 5 * 4)
-     << "DDC seq: " << (uint32_t)m_seq 
-     << "DDC vnode: " << (uint32_t)m_vnode 
-     << "DDC control: " << (uint32_t)m_is_control
+     << "DDC seq: " << (uint32_t) m_seq
+     << "DDC vnode: " << (uint32_t) m_vnode
+     << "DDC control: " << (uint32_t) IsControl()
      << " " 
      << m_source << " > " << m_destination
   ;
@@ -345,7 +344,7 @@ uint32_t
 Ipv4Header::GetSerializedSize (void) const
 {
   //return 5 * 4;
-	return m_headerSize;
+  return m_headerSize;
 }
 
 void
@@ -375,7 +374,7 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
   i.WriteU8 (m_protocol);
   i.WriteU8 ((uint8_t)m_seq); 
   i.WriteU8 ((uint8_t)m_vnode);
-  i.WriteU8 ((uint8_t)m_is_control);
+  i.WriteU8 ((uint8_t)IsControl());
   i.WriteHtonU32 (m_source.Get ());
   i.WriteHtonU32 (m_destination.Get ());
 
@@ -420,7 +419,10 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   m_protocol = i.ReadU8 ();
   m_seq = i.ReadU8() & 0x1;
   m_vnode = i.ReadU8() & 0x1;
-  m_is_control = i.ReadU8() & 0x1;
+  uint8_t control = i.ReadU8();
+  if (control) {
+    SetControl();
+  }
   m_checksum = 0;
   /* i.Next (2); // checksum */
   m_source.Set (i.ReadNtohU32 ());
@@ -447,7 +449,7 @@ Ipv4Header::SetSeq (uint32_t seq)
 
 // @apanda
 uint32_t
-Ipv4Header::GetSeq () const
+Ipv4Header::GetSeq (void) const
 {
   return (m_seq & 0x1);
 }
@@ -461,23 +463,44 @@ Ipv4Header::SetVnode (uint32_t vnode)
 
 // @apanda
 uint32_t
-Ipv4Header::GetVnode () const
+Ipv4Header::GetVnode (void) const
 {
   return (m_vnode & 0x1);
 }
 
 // @aor
 void
-Ipv4Header::SetControl (uint32_t control)
+Ipv4Header::SetControl (void)
 {
-  m_is_control = (control & 0x1);
+  m_flags |= IS_CONTROL;
+}
+
+// @aor
+bool
+Ipv4Header::IsControl (void) const
+{
+  return (m_flags & IS_CONTROL);
+}
+
+// @aor
+void
+Ipv4Header::SetFlags (uint32_t flags)
+{
+  m_flags = flags;
 }
 
 // @aor
 uint32_t
-Ipv4Header::IsControl () const
+Ipv4Header::GetFlags (void) const
 {
-  return (m_is_control & 0x1);
+  return m_flags;
+}
+
+// @aor
+uint32_t
+Ipv4Header::GetControlFlag (void)
+{
+  return (uint32_t) IS_CONTROL;
 }
 
 } // namespace ns3

@@ -165,9 +165,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
 
       NS_LOG_LOGIC ("Echoing packet");
       m_txTrace(packet, hdr);
-      // Control packets are identified by the 18th bit arbitrarily
-      uint32_t flags = (hdr.IsControl() & 1) << 14;
-      socket->SendTo (packet, flags, from);
+      socket->SendTo (packet, hdr.GetFlags(), from);
 
       if (InetSocketAddress::IsMatchingType (from))
         {

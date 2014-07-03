@@ -246,13 +246,31 @@ public:
    * @aor
    * \param DDC control bit
    */
-  void SetControl (uint32_t);
+  void SetControl (void);
 
   /**
-   * @apanda
+   * @aor
    * \returns DDC control bit
    */
-  uint32_t IsControl (void) const;
+  bool IsControl (void) const;
+
+  /**
+   * @aor
+   * \param Set header flags
+   */
+  void SetFlags (uint32_t);
+
+  /**
+   * @aor
+   * \returns Get header flags
+   */
+  uint32_t GetFlags (void) const;
+
+  /**
+   * @aor
+   * \returns the control flag
+   */
+  uint32_t static GetControlFlag (void);
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
@@ -264,7 +282,8 @@ private:
 
   enum FlagsE {
     DONT_FRAGMENT = (1<<0),
-    MORE_FRAGMENTS = (1<<1)
+    MORE_FRAGMENTS = (1<<1),
+    IS_CONTROL = (1<<2)
   };
 
   bool m_calcChecksum;
@@ -283,7 +302,6 @@ private:
   uint16_t m_headerSize;
   uint32_t m_seq : 1;
   uint32_t m_vnode : 1;
-  uint32_t m_is_control : 1;
 };
 
 } // namespace ns3

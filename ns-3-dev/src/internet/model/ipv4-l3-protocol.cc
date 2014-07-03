@@ -679,8 +679,7 @@ Ipv4L3Protocol::BuildHeader (
   ipHeader.SetProtocol (protocol);
   ipHeader.SetPayloadSize (payloadSize);
   ipHeader.SetTtl (ttl);
-  // Control packets are identified by the 18th bit (arbitrary)
-  ipHeader.SetControl(flags >> 14 == 1);
+  ipHeader.SetFlags (flags);
   if (mayFragment == true)
     {
       ipHeader.SetMayFragment ();

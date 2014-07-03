@@ -564,8 +564,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint32_
   else if (ipv4->GetRoutingProtocol () != 0)
     {
       Ipv4Header header;
-      // Control packets are identified by the 18th bit
-      header.SetControl(flags >> 14 == 1);
+      header.SetFlags(flags);
       header.SetDestination (dest);
       header.SetProtocol (UdpL4Protocol::PROT_NUMBER);
       Socket::SocketErrno errno_;
