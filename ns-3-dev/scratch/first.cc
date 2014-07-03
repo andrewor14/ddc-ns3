@@ -63,9 +63,9 @@ main (int argc, char *argv[])
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
   UdpEchoClient* client = (UdpEchoClient*) PeekPointer(clientApps.Get (0));
   client->SetDataSize(1000);
-  Simulator::Schedule(Seconds(2.0), &UdpEchoClient::Send, client);
-  Simulator::Schedule(Seconds(3.0), &UdpEchoClient::Send, client);
-  Simulator::Schedule(Seconds(4.0), &UdpEchoClient::Send, client);
+  Simulator::Schedule(Seconds(2.0), &UdpEchoClient::SendControlPacket, client);
+  Simulator::Schedule(Seconds(3.0), &UdpEchoClient::SendControlPacket, client);
+  Simulator::Schedule(Seconds(4.0), &UdpEchoClient::SendControlPacket, client);
 
   Simulator::Run ();
   Simulator::Destroy ();

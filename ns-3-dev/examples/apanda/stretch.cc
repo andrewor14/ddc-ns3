@@ -261,7 +261,7 @@ class Topology : public Object
       m_clients[client]->SetRemote(m_nodes.Get(server)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal(), 9);
       Simulator::ScheduleNow(&UdpEchoClient::StopApplication, m_clients[client]);
       Simulator::ScheduleNow(&UdpEchoClient::StartApplication, m_clients[client]);
-      Simulator::ScheduleNow(&UdpEchoClient::Send, m_clients[client]);
+      Simulator::ScheduleNow(&UdpEchoClient::SendControlPacket, m_clients[client]);
       std::cout << "(" << Simulator::Now() << ") ";
     }
     

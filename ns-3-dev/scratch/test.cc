@@ -84,8 +84,9 @@ void ScheduleLinkFailure()
   }*/
   //Simulator::Schedule(Seconds(randVar.GetValue(180.0, 6000.0)), &ScheduleLinkRecovery, failedLink);
 }
+
 void SendToClient(UdpEchoClient* client) {
-    //client->ManualSend();
+  // client->ManualSend();
 }
 
 void RxPacket (Ptr<const Packet> packet, Ipv4Header& header) {
@@ -213,7 +214,7 @@ main (int argc, char *argv[])
     clientApps.Stop (simulationEnd);
     UdpEchoClient* client = (UdpEchoClient*)(PeekPointer(clientApps.Get(0)));
     if ( i == 11 ) {
-      Simulator::Schedule(Seconds(5.0), &UdpEchoClient::Send, client);
+      Simulator::Schedule(Seconds(5.0), &UdpEchoClient::SendControlPacket, client);
     }
     //clients[i]->ChangeDestination(nodes.Get(j)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal(), 9);
     //Simulator::Schedule(Seconds(1.0), &SendToClient, clients[i]);
@@ -222,7 +223,7 @@ main (int argc, char *argv[])
   //  AddressValue(nodes.Get(0)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal()));
   //Simulator::ScheduleNow(&UdpEchoClient::StartApplication, clients[11]);
   //clients[11]->AddReceivePacketEvent(MakeCallback(&RxPacket));
-  //Simulator::Schedule(Seconds(5.0), &UdpEchoClient::Send, clients[11]);
+  //Simulator::Schedule(Seconds(5.0), &UdpEchoClient::SendControlPacket, clients[11]);
   Simulator::Schedule(Seconds(1.0), &ScheduleLinkFailure);
 
   Ptr<OutputStreamWrapper> out = asciiHelper.CreateFileStream("route.table");

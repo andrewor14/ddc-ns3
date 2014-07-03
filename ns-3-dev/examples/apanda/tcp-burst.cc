@@ -14,6 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "boost/algorithm/string.hpp"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
@@ -22,8 +23,9 @@
 #include "ns3/random-variable.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/global-route-manager-impl.h"
-#include "boost/algorithm/string.hpp"
 #include "ns3/data-rate.h"
+#include "ns3/ipv4-header.h"
+
 #include <list>
 #include <vector>
 #include <stack>
@@ -36,6 +38,7 @@
 #include <string>
 #include <utility>
 #include <functional>
+
 #include "stretch-classes.h"
 
 using namespace ns3;
@@ -266,7 +269,9 @@ class Topology : public Object
       m_clients[client]->SetRemote(m_nodes.Get(server)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal(), 9);
       Simulator::ScheduleNow(&UdpEchoClient::StopApplication, m_clients[client]);
       Simulator::ScheduleNow(&UdpEchoClient::StartApplication, m_clients[client]);
-      Simulator::Schedule(Seconds(1.0), &UdpEchoClient::SendBurst, m_clients[client], m_packets, MicroSeconds(10), 0);
+      uint32_t controlFlag = Ipv4Header::GetControlFlag();
+      Simulator::Schedule(Seconds(1.0), &UdpEchoClient::SendBurst,
+        m_clients[client], m_packets, MicroSeconds(10), controlFlag);
     }
     
     void FailLink (uint32_t from, uint32_t to)

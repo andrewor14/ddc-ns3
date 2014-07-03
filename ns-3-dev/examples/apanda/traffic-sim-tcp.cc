@@ -14,6 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "boost/algorithm/string.hpp"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
@@ -22,8 +23,9 @@
 #include "ns3/random-variable.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/global-route-manager-impl.h"
-#include "boost/algorithm/string.hpp"
 #include "ns3/data-rate.h"
+#include "ns3/ipv4-header.h"
+
 #include <list>
 #include <vector>
 #include <stack>
@@ -36,6 +38,7 @@
 #include <string>
 #include <utility>
 #include <functional>
+
 #include "stretch-classes.h"
 
 using namespace ns3;
@@ -347,7 +350,8 @@ class Topology : public Object
       NS_LOG_LOGIC("Untranslated sending between " << client);
       NS_LOG_LOGIC("Sending between " << client);
       Simulator::ScheduleNow(&UdpEchoClient::StartApplication, client);
-      Simulator::Schedule(Seconds(1.0), &UdpEchoClient::SendBurst, client, m_packets, MilliSeconds(0.012), 0);
+      uint32_t controlFlag = Ipv4Header::GetControlFlag();
+      Simulator::Schedule(Seconds(1.0), &UdpEchoClient::SendBurst, client, m_packets, MilliSeconds(0.012), controlFlag);
     }
     
     void FailLink (uint32_t from, uint32_t to)

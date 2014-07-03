@@ -218,7 +218,7 @@ main (int argc, char *argv[])
     AddressValue(nodes.Get(0)->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal()));
   Simulator::ScheduleNow(&UdpEchoClient::StartApplication, clients[11]);
   clients[11]->AddReceivePacketEvent(MakeCallback(&RxPacket));
-  Simulator::Schedule(Seconds(5.0), &UdpEchoClient::Send, clients[11]);
+  Simulator::Schedule(Seconds(5.0), &UdpEchoClient::SendControlPacket, clients[11]);
   Simulator::Schedule(Seconds(1.0), &ScheduleLinkFailure);
 
   Ptr<OutputStreamWrapper> out = asciiHelper.CreateFileStream("route.table");
