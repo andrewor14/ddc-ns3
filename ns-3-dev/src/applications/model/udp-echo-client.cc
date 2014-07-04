@@ -284,6 +284,7 @@ UdpEchoClient::Send (void)
 void
 UdpEchoClient::SendControlPacket (void)
 {
+  std::cout << "UDP echo client SendControlPacket\n";
   DoSend (Ipv4Header::GetControlFlag());
 }
 
@@ -293,6 +294,7 @@ UdpEchoClient::SendControlPacket (void)
 void
 UdpEchoClient::SendDataPacket (void)
 {
+  std::cout << "UDP echo client SendDataPacket\n";
   Send ();
 }
 
@@ -355,7 +357,7 @@ void
 UdpEchoClient::SendInternal (Ptr<Packet> p, uint32_t flags)
 {
   m_txTrace (p, (uint32_t)GetNode()->GetId(), Ipv4Address::ConvertFrom(m_peerAddress));
-  m_socket->Send(p, flags);
+  m_socket->Send (p, flags);
 }
 
 void 

@@ -99,6 +99,7 @@ Ipv4ListRouting::DoStart (void)
 Ptr<Ipv4Route>
 Ipv4ListRouting::RouteOutput (Ptr<Packet> p, Ipv4Header &header, Ptr<NetDevice> oif, enum Socket::SocketErrno &sockerr)
 {
+  std::cout << "Ipv4ListRouting::RouteOutput\n";
   NS_LOG_FUNCTION (this << header.GetDestination () << " " << header.GetSource () << " " << oif);
   Ptr<Ipv4Route> route;
 
@@ -127,6 +128,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, Ipv4Header &header, Ptr<const 
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
                              LocalDeliverCallback lcb, ErrorCallback ecb)
 {
+  std::cout << "Ipv4ListRouting::RouteInput\n";
   bool retVal = false;
   NS_LOG_FUNCTION (p << header << idev);
   NS_LOG_LOGIC ("RouteInput logic for node: " << m_ipv4->GetObject<Node> ()->GetId ());
@@ -149,6 +151,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, Ipv4Header &header, Ptr<const 
         }
       else
         {
+          std::cout << "@@@ One\n";
           lcb (p, header, iif);
           return true;
         }
@@ -157,6 +160,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, Ipv4Header &header, Ptr<const 
   if (m_ipv4->IsForwarding (iif) == false)
     {
       NS_LOG_LOGIC ("Forwarding disabled for this interface");
+      std::cout << "@@@ Two\n";
       ecb (p, header, Socket::ERROR_NOROUTETOHOST);
       return false;
     }
@@ -166,6 +170,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, Ipv4Header &header, Ptr<const 
   LocalDeliverCallback downstreamLcb = lcb;
   if (retVal == true)
     {
+      std::cout << "@@@ Three\n";
       downstreamLcb = MakeNullCallback<void, Ptr<const Packet>, const Ipv4Header &, uint32_t > ();
     }
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
@@ -173,6 +178,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, Ipv4Header &header, Ptr<const 
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
+      std::cout << "@@@ Four\n";
       if ((*rprotoIter).second->RouteInput (p, header, idev, ucb, mcb, downstreamLcb, ecb))
         {
           NS_LOG_LOGIC ("Route found to forward packet in protocol " << (*rprotoIter).second->GetInstanceTypeId ().GetName ()); 

@@ -203,7 +203,9 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
   EndPoints retval4; // Exact match on all 4
 
   NS_LOG_FUNCTION (this << daddr << dport << saddr << sport << incomingInterface);
-  NS_LOG_DEBUG ("Looking up endpoint for destination address " << daddr);
+  std::cout << ">>> --------------------------- Looking up endpoint (Ipv4EndPointDemux)";
+  std::cout << ">>> Calling with daddr=" << daddr << ", dport=" << dport << ", saddr=" << saddr << ", sport=" << sport << "\n";
+  std::cout << ">>> End points size is " << m_endPoints.size () << "\n";
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       Ipv4EndPoint* endP = *i;
@@ -211,6 +213,11 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
                                                  << " daddr=" << endP->GetLocalAddress ()
                                                  << " sport=" << endP->GetPeerPort ()
                                                  << " saddr=" << endP->GetPeerAddress ());
+      std::cout << ">>> Looking at endpoint dport=" << endP->GetLocalPort ()
+                                                 << " daddr=" << endP->GetLocalAddress ()
+                                                 << " sport=" << endP->GetPeerPort ()
+                                                 << " saddr=" << endP->GetPeerAddress () << "\n";
+
       if (endP->GetLocalPort () != dport) 
         {
           NS_LOG_LOGIC ("Skipping endpoint " << &endP

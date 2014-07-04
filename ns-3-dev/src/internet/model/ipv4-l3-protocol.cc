@@ -494,6 +494,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
     }
 
   NS_ASSERT_MSG (m_routingProtocol != 0, "Need a routing protocol object to process packets");
+  std::cout << "================= right before calling RouteInput\n";
   if (!m_routingProtocol->RouteInput (packet, ipHeader, device,
                                       MakeCallback (&Ipv4L3Protocol::IpForward, this),
                                       MakeCallback (&Ipv4L3Protocol::IpMulticastForward, this),
@@ -866,6 +867,8 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
 
   m_localDeliverTrace (ip, packet, iif);
 
+  std::cout << "|||||||||||||||||||||||| LOCAL DELIVER |||||||||||||||||||||||\n";
+
   Ptr<IpL4Protocol> protocol = GetProtocol (ip.GetProtocol ());
   if (protocol != 0)
     {
@@ -876,12 +879,16 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
         protocol->Receive (p, ip, GetInterface (iif));
       switch (status) {
         case IpL4Protocol::RX_OK:
+          std::cout << "||ONE||\n";
         // fall through
         case IpL4Protocol::RX_ENDPOINT_CLOSED:
+          std::cout << "||TWO||\n";
         // fall through
         case IpL4Protocol::RX_CSUM_FAILED:
+          std::cout << "||THREE||\n";
           break;
         case IpL4Protocol::RX_ENDPOINT_UNREACH:
+          std::cout << "||FOUR||\n";
           if (ip.GetDestination ().IsBroadcast () == true ||
               ip.GetDestination ().IsMulticast () == true)
             {

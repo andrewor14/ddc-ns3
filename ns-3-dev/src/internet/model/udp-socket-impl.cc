@@ -571,6 +571,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint32_
       Ptr<Ipv4Route> route;
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a specific device
       // TBD-- we could cache the route and just check its validity
+      std::cout << "HEY BRO NOW I am here.\n";
       route = ipv4->GetRoutingProtocol ()->RouteOutput (p, header, oif, errno_); 
       if (route != 0)
         {

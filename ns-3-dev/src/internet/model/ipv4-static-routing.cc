@@ -486,6 +486,7 @@ Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, Ipv4Header &ipHeader, Ptr<c
                                 UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                 LocalDeliverCallback lcb, ErrorCallback ecb)
 {
+  std::cout << "Ipv4StaticRouting:RouteInput\n";
   NS_LOG_FUNCTION (this << p << ipHeader << ipHeader.GetSource () << ipHeader.GetDestination () << idev);
 
   NS_ASSERT (m_ipv4 != 0);

@@ -533,6 +533,7 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
     LocalDeliverCallback lcb,
     ErrorCallback ecb)
 { 
+  std::cout << "*** ControlRouteInput\n";
   NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
@@ -573,12 +574,14 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
                 {
                   NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << header.GetDestination ());
                 }
+              std::cout << "*** One\n";
               lcb (p, header, iif);
               return true;
             }
           if (header.GetDestination ().IsEqual (iaddr.GetBroadcast ()))
             {
               NS_LOG_LOGIC ("For me (interface broadcast address)");
+              std::cout << "*** Two\n";
               lcb (p, header, iif);
               return true;
             }
@@ -589,6 +592,7 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
   if (m_ipv4->IsForwarding (iif) == false)
     {
       NS_LOG_LOGIC ("Forwarding disabled for this interface");
+      std::cout << "*** Three\n";
       ecb (p, header, Socket::ERROR_NOROUTETOHOST);
       return false;
     }
@@ -604,10 +608,12 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
     NS_LOG_LOGIC ("Received along an input port");
     StandardReceive(destination, header, route, error, iif);
     if (route != 0) {
+      std::cout << "*** Four\n";
       ucb(route, p, header);
       return true;
     }
     else {
+      std::cout << "*** Five\n";
       ecb (p, header, error);
       return false;
     }
@@ -620,6 +626,7 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
         NS_LOG_LOGIC ("Bouncing back, header seq = "<<header.GetSeq() << " Remote = " << (uint32_t)(m_vnodeState[vnode].m_remoteSeq[destination][iif])
                       << " local = " << (uint32_t)(m_vnodeState[vnode].m_localSeq[destination][iif]));
         CreateRoutingEntry(vnode, iif, destination, header, route);
+        std::cout << "*** Six\n";
         ucb(route, p, header);
         return true;
       }
@@ -636,10 +643,12 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
         }
         StandardReceive(destination, header, route, error, iif);
         if (route != 0) {
+          std::cout << "*** Seven\n";
           ucb(route, p, header);
           return true;
         }
         else {
+          std::cout << "*** Eight\n";
           ecb (p, header, error);
           return false;
         }
@@ -652,10 +661,12 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
       NS_LOG_LOGIC ("Received on an uncategorized port");
       StandardReceive(destination, header, route, error, iif);
       if (route != 0) {
+        std::cout << "*** Nine\n";
         ucb(route, p, header);
         return true;
       }
       else {
+        std::cout <<"*** Ten\n";
         ecb (p, header, error);
         return false;
       }
