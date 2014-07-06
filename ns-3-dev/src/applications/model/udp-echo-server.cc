@@ -165,6 +165,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
 
       NS_LOG_LOGIC ("Echoing packet");
       m_txTrace(packet, hdr);
+      // @aor: Pass original flags to response packet
       socket->SendTo (packet, hdr.GetFlags(), from);
 
       if (InetSocketAddress::IsMatchingType (from))

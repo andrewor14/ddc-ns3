@@ -125,8 +125,19 @@ public:
 
   void SendBurst (uint32_t, Time, uint32_t flags);
   void Send (void);
+
+  /**
+   * @aor
+   * Send a control plane packet.
+   */
   void SendControlPacket (void);
+
+  /**
+   * @aor
+   * Send a data plane packet.
+   */
   void SendDataPacket (void);
+
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 

@@ -278,6 +278,7 @@ UdpEchoClient::Send (void)
 }
 
 /**
+ * @aor
  * Send a control plane packet.
  * Control packets are identified by the 18th bit (arbitrary).
  */
@@ -288,6 +289,7 @@ UdpEchoClient::SendControlPacket (void)
 }
 
 /**
+ * @aor
  * Send a data plane packet.
  */
 void

@@ -354,6 +354,11 @@ Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
     }
 }
 
+/**
+ * @aor
+ * Handle data plane packets originating from this node.
+ * This is identical to the original ns3 implementation of RouteOutput.
+ */
 Ptr<Ipv4Route>
 Ipv4GlobalRouting::DataplaneRouteOutput (
     Ptr<Packet> p,
@@ -386,6 +391,11 @@ Ipv4GlobalRouting::DataplaneRouteOutput (
   return rtentry;
 }
 
+/**
+ * @aor
+ * Handle data plane packets received by this node.
+ * This is identical to the original ns3 implementation of RouteInput.
+ */
 bool
 Ipv4GlobalRouting::DataplaneRouteInput (
     Ptr<const Packet> p,
@@ -472,6 +482,10 @@ Ipv4GlobalRouting::DataplaneRouteInput (
     }
 }
 
+/**
+ * @aor
+ * Handle control plane packets originating from this node.
+ */
 Ptr<Ipv4Route>
 Ipv4GlobalRouting::ControlplaneRouteOutput (
     Ptr<Packet> p,
@@ -523,6 +537,10 @@ Ipv4GlobalRouting::ControlplaneRouteOutput (
   return rtentry;
 }
 
+/**
+ * @aor
+ * Handle control plane packets received by this node.
+ */
 bool 
 Ipv4GlobalRouting::ControlplaneRouteInput (
     Ptr<const Packet> p,
@@ -663,6 +681,10 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
   }
 }
 
+/**
+ * @aor
+ * Handle packets originating from this node.
+ */
 Ptr<Ipv4Route>
 Ipv4GlobalRouting::RouteOutput (
     Ptr<Packet> p,
@@ -684,6 +706,10 @@ Ipv4GlobalRouting::RouteOutput (
   }
 }
 
+/**
+ * @aor
+ * Handle packets received by this node.
+ */
 bool
 Ipv4GlobalRouting::RouteInput (
     Ptr<const Packet> p,

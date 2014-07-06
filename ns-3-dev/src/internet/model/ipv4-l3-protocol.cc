@@ -556,7 +556,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
       ttl = tag.GetTtl ();
     }
 
-  // If this is a control packet, use the maximum priority
+  // @aor: If this is a control packet, use the maximum priority
   if (Ipv4Header::IsControl(flags)) {
     PriorityTag ptag;
     ptag.SetPriority(UINT8_MAX);
@@ -687,6 +687,8 @@ Ipv4L3Protocol::BuildHeader (
   ipHeader.SetProtocol (protocol);
   ipHeader.SetPayloadSize (payloadSize);
   ipHeader.SetTtl (ttl);
+  // @aor: Set the flags passed in from higher levels
+  // If the control flag is specified, this implicitly sets the control bit
   ipHeader.SetFlags (flags);
   if (mayFragment == true)
     {

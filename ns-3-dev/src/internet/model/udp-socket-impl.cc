@@ -564,6 +564,8 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint32_
   else if (ipv4->GetRoutingProtocol () != 0)
     {
       Ipv4Header header;
+      // @aor: Set the flags passed in from Send
+      // This may implicitly include the control bit
       header.SetFlags(flags);
       header.SetDestination (dest);
       header.SetProtocol (UdpL4Protocol::PROT_NUMBER);
