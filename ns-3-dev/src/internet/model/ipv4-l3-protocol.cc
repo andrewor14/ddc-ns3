@@ -30,6 +30,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/object-vector.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/priority-tag.h"
 #include "ns3/boolean.h"
 #include "ns3/ipv4-routing-table-entry.h"
 
@@ -554,6 +555,13 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
     {
       ttl = tag.GetTtl ();
     }
+
+  // If this is a control packet, use the maximum priority
+  if (Ipv4Header::IsControl(flags)) {
+    PriorityTag ptag;
+    ptag.SetPriority(UINT8_MAX);
+    packet->AddPacketTag(ptag);
+  }
 
   NS_LOG_LOGIC ("Sending packet with TTL  " << (uint32_t)ttl);
 

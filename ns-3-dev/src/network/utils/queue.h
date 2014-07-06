@@ -159,7 +159,6 @@ protected:
   // called by subclasses to notify parent of packet drops.
   void Drop (Ptr<Packet> packet);
 
-private:
   TracedCallback<Ptr<const Packet> > m_traceEnqueue;
   TracedCallback<Ptr<const Packet> > m_traceDequeue;
   TracedCallback<Ptr<const Packet> > m_traceDrop;

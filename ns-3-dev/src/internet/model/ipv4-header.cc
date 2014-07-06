@@ -503,4 +503,11 @@ Ipv4Header::GetControlFlag (void)
   return (uint32_t) IS_CONTROL;
 }
 
+// @aor
+bool
+Ipv4Header::IsControl (uint32_t flags)
+{
+  return (flags & IS_CONTROL);
+}
+
 } // namespace ns3

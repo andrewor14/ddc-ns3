@@ -244,13 +244,13 @@ public:
 
   /**
    * @aor
-   * \param DDC control bit
+   * \param SDN control bit
    */
   void SetControl (void);
 
   /**
    * @aor
-   * \returns DDC control bit
+   * \returns SDN control bit
    */
   bool IsControl (void) const;
 
@@ -272,12 +272,19 @@ public:
    */
   uint32_t static GetControlFlag (void);
 
+  /**
+   * @aor
+   * \returns whether the given flag has the control bit set
+   */
+  bool static IsControl (uint32_t);
+
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
+
 private:
 
   enum FlagsE {

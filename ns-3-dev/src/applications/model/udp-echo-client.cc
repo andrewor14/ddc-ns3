@@ -327,6 +327,7 @@ UdpEchoClient::DoSend (uint32_t flags)
       //
       p = Create<Packet> (m_size);
     }
+
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
   m_txTrace (p, (uint32_t)GetNode()->GetId(), Ipv4Address::ConvertFrom(m_peerAddress));

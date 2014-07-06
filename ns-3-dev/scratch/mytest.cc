@@ -109,6 +109,7 @@ int main (int argc, char *argv[])
   PointToPointHelper p2p;
   p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  p2p.SetQueue ("ns3::PriorityQueue");
   std::vector<NetDeviceContainer> nodeDevices(numNodes);  
   std::vector<NetDeviceContainer> linkDevices;
   std::vector<PointToPointChannel*> channels;
@@ -124,7 +125,6 @@ int main (int argc, char *argv[])
       channels.push_back((PointToPointChannel*)channel);
     }
   }
-  //p2p.EnablePcapAll("Andrew-DDC");
 
   // Set up each network device
   InternetStackHelper stack;
