@@ -24,6 +24,9 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/nstime.h"
+
+#include <list>
 
 namespace ns3 {
 
@@ -31,6 +34,7 @@ class Socket;
 class Packet;
 
 /**
+ * @aor
  * \brief A simple SDN switch.
  * A switch that responds to controller pings.
  * Each switch should belong to only one controller.
@@ -54,8 +58,33 @@ private:
   void HandleRead (Ptr<Socket> socket);
 
   uint16_t m_port;
+
+  /*
+   * A simple SDN switch assumes we receive packets from controllers on a window basis.
+   * In every window, the switch records the controller IDs from the packets it received.
+   * If more than one controller has contacted this switch within the past window, we
+   * consider this a potential inconsistency in the control plane. Then, we report
+   * violation after the same set of controllers have consistently contacted this switch.
+   */
+  void UpdateWindow (void);
+  void ReportViolation(void);
+
+  // The duration of each window
+  Time m_window_duration;
+
+  // Controller IDs that have contacted this switch in this window
+  std::list<uint32_t> m_current_controllers;
+
+  // Controller IDs that have contacted this switch in the previous window
+  std::list<uint32_t> m_previous_controllers;
+
+  // Number of windows in which multiple controllers (the same set) have contacted this switch
+  uint8_t m_violation_count;
+  uint8_t m_max_violation_count;
+
   Ptr<Socket> m_socket;
   Address m_local;
+
   /// Callbacks for tracing the packet Rx events
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_rxTrace;
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_txTrace;
