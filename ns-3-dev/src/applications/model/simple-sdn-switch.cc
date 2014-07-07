@@ -158,15 +158,21 @@ SimpleSDNSwitch::UpdateWindow ()
   if (m_current_controllers.size() > 1) {
     // Multiple controllers are contacting this switch
     // This is potentially a consistency violation in the control plane
-    m_current_controllers.sort();
-    m_previous_controllers.sort();
-    if (m_current_controllers == m_previous_controllers) {
-      // Same set of controllers as last window
+
+    m_previous_controllers.sort ();
+    std::list<uint32_t> temp_controllers = m_previous_controllers;
+    temp_controllers.merge (m_current_controllers);
+    temp_controllers.sort ();
+    temp_controllers.unique ();
+
+    // If the previous set of controllers subsumes the current set
+    if (temp_controllers == m_previous_controllers) {
       m_violation_count++;
     } else {
-      // Otherwise, refresh violation count
       m_violation_count = 1;
     }
+
+    // If we have exceeded our threshold for number of windows with violation
     if (m_violation_count >= m_max_violation_count) {
       ReportViolation();
     }
