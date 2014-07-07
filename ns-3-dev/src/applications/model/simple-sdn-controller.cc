@@ -24,6 +24,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/simple-sdn-header.h"
 
 #include "simple-sdn-controller.h"
 
@@ -42,21 +43,35 @@ SimpleSDNController::GetTypeId (void)
                    MakeUintegerAccessor (&SimpleSDNController::m_id),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
-                   UintegerValue (9),
+                   UintegerValue (9966),
                    MakeUintegerAccessor (&SimpleSDNController::m_port),
-                   MakeUintegerChecker<uint16_t> ());
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("PingSwitchesInterval",
+                   "Interval between which this controller pings its peering switches.",
+                   TimeValue (Seconds (1.0)),
+                   MakeTimeAccessor (&SimpleSDNController::m_ping_switches_interval),
+                   MakeTimeChecker ())
+    .AddAttribute ("PingControllersInterval",
+                   "Interval between which this controller pings its peering controllers.",
+                   TimeValue (Seconds (0.1)),
+                   MakeTimeAccessor (&SimpleSDNController::m_ping_controllers_interval),
+                   MakeTimeChecker ());
   return tid;
 }
 
 SimpleSDNController::SimpleSDNController ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_leader_id = UINT32_MAX;
 }
 
 SimpleSDNController::~SimpleSDNController()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_socket = 0;
+  m_receive_socket = 0;
+  m_switch_addresses.clear ();
+  m_controller_addresses.clear ();
+  m_send_sockets.clear ();
 }
 
 void
@@ -70,23 +85,89 @@ void
 SimpleSDNController::StartApplication (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_socket == 0) {
+
+  // Set up receive socket
+  if (m_receive_socket == 0) {
     TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-    m_socket = Socket::CreateSocket (GetNode (), tid);
+    m_receive_socket = Socket::CreateSocket (GetNode (), tid);
     InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
-    m_socket->Bind (local);
+    m_receive_socket->Bind (local);
   }
-  m_socket->SetRecvCallback (MakeCallback (&SimpleSDNController::HandleRead, this));
+  m_receive_socket->SetRecvCallback (MakeCallback (&SimpleSDNController::HandleRead, this));
+
+  // Set up send sockets
+  std::list<InetSocketAddress>::iterator it;
+  for (it = m_switch_addresses.begin (); it != m_switch_addresses.end (); it++) {
+    CreateSendSocket(*it);
+  }
+  for (it = m_controller_addresses.begin (); it != m_controller_addresses.end (); it++) {
+    CreateSendSocket(*it);
+  }
+
+  // Begin pinging peers
+  Simulator::Schedule (m_ping_switches_interval, &SimpleSDNController::PingSwitches, this);
 }
 
 void 
 SimpleSDNController::StopApplication ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_socket != 0) {
-    m_socket->Close ();
-    m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
+  if (m_receive_socket != 0) {
+    m_receive_socket->Close ();
+    m_receive_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   }
+  std::map<InetSocketAddress, Ptr<Socket> >::iterator it;
+  for (it = m_send_sockets.begin (); it != m_send_sockets.end (); it++) {
+    Ptr<Socket> socket = it->second;
+    socket->Close ();
+    socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
+  }
+}
+
+void
+SimpleSDNController::CreateSendSocket (InetSocketAddress address)
+{
+  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+  Ptr<Socket> socket = Socket::CreateSocket (GetNode (), tid);
+  socket->Bind ();
+  socket->Connect (address);
+  m_send_sockets.at (address) = socket;
+}
+
+void
+SimpleSDNController::PingSwitches ()
+{
+  if (m_id == m_leader_id) {
+    // This controller is the leader
+    // Send a packet to all known switches
+    std::list<InetSocketAddress>::iterator it;
+    for (it = m_switch_addresses.begin ();
+         it != m_switch_addresses.end ();
+         it++) {
+      InetSocketAddress address = *it;
+      Ptr<Packet> p = Create<Packet> ();
+      // Set up application header
+      SimpleSDNHeader sdnHeader;
+      sdnHeader.SetControllerID (m_id);
+      sdnHeader.SetRespondPort (m_port);
+      // Set up IP header
+      uint32_t control_flag = Ipv4Header::GetControlFlag ();
+      Ipv4Header ipHeader;
+      ipHeader.SetFlags (control_flag);
+      ipHeader.SetDestination (address.GetIpv4 ());
+      // Actually send the packet
+      m_txTrace (p, ipHeader);
+      Ptr<Socket> socket = m_send_sockets.at (address);
+      socket->Send (p, control_flag);
+    }
+  }
+  Simulator::Schedule (m_ping_switches_interval, &SimpleSDNController::PingSwitches, this);
+}
+
+void
+SimpleSDNController::PingControllers ()
+{
+  // TO BE IMPLEMENTED
 }
 
 void 
@@ -103,16 +184,15 @@ SimpleSDNController::HandleRead (Ptr<Socket> socket)
         "s controller received " << packet->GetSize () << " bytes from " <<
         InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
         InetSocketAddress::ConvertFrom (from).GetPort ());
-    }
-    packet->RemoveAllPacketTags ();
-    packet->RemoveAllByteTags ();
 
-    NS_LOG_LOGIC ("Echoing packet");
-    m_txTrace(packet, hdr);
-    // @aor: Pass original flags to response packet
-    socket->SendTo (packet, hdr.GetFlags(), from);
+      packet->RemoveAllPacketTags ();
+      packet->RemoveAllByteTags ();
 
-    if (InetSocketAddress::IsMatchingType (from)) {
+      // TODO: Add some important logic here
+
+      m_txTrace(packet, hdr);
+      socket->SendTo (packet, hdr.GetFlags(), from);
+
       NS_LOG_INFO (
         "At time " << Simulator::Now ().GetSeconds () <<
         "s controller sent " << packet->GetSize () << " bytes to " <<

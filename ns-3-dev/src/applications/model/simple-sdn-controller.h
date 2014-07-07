@@ -25,6 +25,8 @@
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4-header.h"
 
+#include <map>
+
 namespace ns3 {
 
 class Socket;
@@ -54,10 +56,40 @@ private:
 
   void HandleRead (Ptr<Socket> socket);
 
+  /**
+   * Helper method for creating and binding to a send socket.
+   */
+  void CreateSendSocket (InetSocketAddress address);
+
+  /**
+   * If this controller is the leader, send a packet to all switches.
+   * This packet entails this controller's ID and the port on which it is listening.
+   * This method calls itself repeatedly after a configurable time interval.
+   */
+  void PingSwitches (void);
+
+  /**
+   * TO BE IMPLEMENTED.
+   */
+  void PingControllers (void);
+
+  /**
+   * Addresses for peering controllers and switches.
+   */
+  std::list<InetSocketAddress> m_controller_addresses;
+  std::list<InetSocketAddress> m_switch_addresses;
+  std::map<InetSocketAddress, Ptr<Socket> > m_send_sockets;
+
+  // Intervals between which this controller pings its peers
+  Time m_ping_switches_interval;
+  Time m_ping_controllers_interval;
+
   uint16_t m_port;
   uint32_t m_id;
-  Ptr<Socket> m_socket;
+  uint32_t m_leader_id;
+  Ptr<Socket> m_receive_socket;
   Address m_local;
+
   /// Callbacks for tracing the packet Rx events
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_rxTrace;
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_txTrace;

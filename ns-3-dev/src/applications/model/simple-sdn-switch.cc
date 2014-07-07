@@ -64,6 +64,8 @@ SimpleSDNSwitch::~SimpleSDNSwitch()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_socket = 0;
+  m_current_controllers.clear ();
+  m_previous_controllers.clear ();
 }
 
 void
