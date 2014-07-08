@@ -43,6 +43,14 @@ class SimpleSDNController : public Application
 public:
   static TypeId GetTypeId (void);
   SimpleSDNController ();
+  SimpleSDNController (uint32_t id);
+
+  /**
+   * Add peering nodes. These must be called before StartApplication.
+   */
+  void AddPeeringController (InetSocketAddress controllerAddress);
+  void AddPeeringSwitch (InetSocketAddress switchAddress);
+
   virtual ~SimpleSDNController ();
   void AddReceivePacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > rxEvent);
   void AddTransmitPacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > txEvent);
@@ -55,6 +63,7 @@ private:
   virtual void StopApplication (void);
 
   void HandleRead (Ptr<Socket> socket);
+  void HandleControllerRead (Ptr<Packet> p);
 
   /**
    * Helper method for creating and binding to a send socket.
@@ -62,16 +71,27 @@ private:
   void CreateSendSocket (InetSocketAddress address);
 
   /**
-   * If this controller is the leader, send a packet to all switches.
-   * This packet entails this controller's ID and the port on which it is listening.
+   * If this controller is the leader, send a special SDN packet to all switches.
    * This method calls itself repeatedly after a configurable time interval.
    */
   void PingSwitches (void);
 
   /**
-   * TO BE IMPLEMENTED.
+   * Send a special SDN packet to all peering controllers.
+   * Each call to this method is considered the beginning of a new epoch.
+   * This method calls itself repeatedly after a configurable time interval.
    */
   void PingControllers (void);
+
+  /**
+   * Send a special SDN packet to the given address.
+   */
+  void SendSDNPacket (InetSocketAddress address);
+
+  /**
+   * Select a leader based on packets received from other controllers.
+   */
+  void SelectLeader (void);
 
   /**
    * Addresses for peering controllers and switches.
@@ -84,11 +104,17 @@ private:
   Time m_ping_switches_interval;
   Time m_ping_controllers_interval;
 
+  // A list of controller IDs that represent leader candidates
+  std::list<uint32_t> m_leader_candidates;
+
+  // Buffered packets with higher epochs
+  std::list<Ptr<Packet> > m_buffered_packets;
+
   uint16_t m_port;
   uint32_t m_id;
   uint32_t m_leader_id;
+  uint32_t m_epoch;
   Ptr<Socket> m_receive_socket;
-  Address m_local;
 
   /// Callbacks for tracing the packet Rx events
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_rxTrace;

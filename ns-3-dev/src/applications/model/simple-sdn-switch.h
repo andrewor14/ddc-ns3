@@ -44,6 +44,7 @@ class SimpleSDNSwitch : public Application
 public:
   static TypeId GetTypeId (void);
   SimpleSDNSwitch ();
+  SimpleSDNSwitch (uint32_t id);
   virtual ~SimpleSDNSwitch ();
   void AddReceivePacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > rxEvent);
   void AddTransmitPacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > txEvent);
@@ -56,8 +57,6 @@ private:
   virtual void StopApplication (void);
 
   void HandleRead (Ptr<Socket> socket);
-
-  uint16_t m_port;
 
   /*
    * A simple SDN switch assumes we receive packets from controllers on a window basis.
@@ -82,8 +81,9 @@ private:
   uint8_t m_violation_count;
   uint8_t m_max_violation_count;
 
+  uint16_t m_port;
+  uint32_t m_id;
   Ptr<Socket> m_socket;
-  Address m_local;
 
   /// Callbacks for tracing the packet Rx events
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_rxTrace;

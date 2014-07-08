@@ -58,6 +58,13 @@ SimpleSDNSwitch::GetTypeId (void)
 SimpleSDNSwitch::SimpleSDNSwitch ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  NS_ABORT_MSG ("Constructor not supported.");
+}
+
+SimpleSDNSwitch::SimpleSDNSwitch (uint32_t id)
+{
+  m_id = id;
+  m_violation_count = 0;
 }
 
 SimpleSDNSwitch::~SimpleSDNSwitch()
@@ -109,11 +116,13 @@ SimpleSDNSwitch::HandleRead (Ptr<Socket> socket)
     m_rxTrace (packet, hdr);
 
     if (InetSocketAddress::IsMatchingType (from)) {
+      InetSocketAddress returnAddress = InetSocketAddress::ConvertFrom (from);
       NS_LOG_INFO (
-        "At time " << Simulator::Now ().GetSeconds () <<
-        "s switch received " << packet->GetSize () << " bytes from " <<
-        InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
-        InetSocketAddress::ConvertFrom (from).GetPort ());
+        "At time " << Simulator::Now ().GetSeconds () << " s " <<
+        "switch " << m_id << " " <<
+        "received " << packet->GetSize () << " bytes " <<
+        "from " << returnAddress.GetIpv4 () << " " <<
+        "port " << returnAddress.GetPort ());
 
       packet->RemoveAllPacketTags ();
       packet->RemoveAllByteTags ();
@@ -123,7 +132,6 @@ SimpleSDNSwitch::HandleRead (Ptr<Socket> socket)
       packet->RemoveHeader (appHeader);
       uint16_t respond_port = appHeader.GetRespondPort ();
       uint32_t controller_id = appHeader.GetControllerID ();
-      InetSocketAddress returnAddress = InetSocketAddress::ConvertFrom (from);
       returnAddress.SetPort (respond_port);
       appHeader.SetRespondPort (m_port);
       packet->AddHeader (appHeader);
@@ -134,10 +142,12 @@ SimpleSDNSwitch::HandleRead (Ptr<Socket> socket)
       m_current_controllers.push_back (controller_id);
 
       NS_LOG_INFO (
-        "At time " << Simulator::Now ().GetSeconds () <<
-        "s switch sent " << packet->GetSize () << " bytes to " <<
-        InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
-        InetSocketAddress::ConvertFrom (from).GetPort ());
+        "At time " << Simulator::Now ().GetSeconds () << " s " <<
+        "switch " << m_id << " " <<
+        "sent " << packet->GetSize () << " bytes " <<
+        "to " << returnAddress.GetIpv4 () << " " <<
+        "port " << returnAddress.GetPort () << " " <<
+        "(controller " << controller_id << ")");
     }
   }
 }
@@ -157,17 +167,17 @@ SimpleSDNSwitch::AddTransmitPacketEvent (Callback<void, Ptr<const Packet>, Ipv4H
 void
 SimpleSDNSwitch::UpdateWindow ()
 {
+  m_current_controllers.unique ();
   if (m_current_controllers.size() > 1) {
     // Multiple controllers are contacting this switch
     // This is potentially a consistency violation in the control plane
 
-    m_previous_controllers.sort ();
+    // Check if the current set of controllers is a subset of the previous set
     std::list<uint32_t> temp_controllers = m_previous_controllers;
     temp_controllers.merge (m_current_controllers);
     temp_controllers.sort ();
     temp_controllers.unique ();
-
-    // If the previous set of controllers subsumes the current set
+    m_previous_controllers.sort ();
     if (temp_controllers == m_previous_controllers) {
       m_violation_count++;
     } else {
@@ -193,7 +203,7 @@ SimpleSDNSwitch::UpdateWindow ()
 void
 SimpleSDNSwitch::ReportViolation ()
 {
-  NS_ABORT_MSG ("Inconsistency in the control plane detected!");
+  NS_ABORT_MSG ("Switch " << m_id << ": Inconsistency in the control plane detected!");
 }
 
 } // Namespace ns3

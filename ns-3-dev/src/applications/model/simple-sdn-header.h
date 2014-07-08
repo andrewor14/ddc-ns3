@@ -36,10 +36,20 @@ public:
   void SetControllerID (uint32_t controller_id);
 
   /**
+   * \param leader_id the ID of the leader
+   */
+  void SetLeaderID (uint32_t leader_id);
+
+  /**
    * \param respond_port the port at which the receiver
    *                     of this packet should respond
    */
   void SetRespondPort (uint16_t respond_port);
+
+  /**
+   * \param epoch the current epoch
+   */
+  void SetEpoch (uint32_t epoch);
 
   /**
    * \return the controller ID
@@ -47,9 +57,19 @@ public:
   uint32_t GetControllerID (void) const;
 
   /**
+   * \return the ID of the current leader
+   */
+  uint32_t GetLeaderID (void) const;
+
+  /**
    * \return the port at which the receiver at this packet should respond
    */
   uint16_t GetRespondPort (void) const;
+
+  /**
+   * \return the current epoch
+   */
+  uint32_t GetEpoch (void) const;
 
   static TypeId GetTypeId (void);
 
@@ -61,7 +81,9 @@ private:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
   uint32_t m_controller_id;
+  uint32_t m_leader_id;
   uint16_t m_respond_port;
+  uint32_t m_epoch;
 };
 
 } // namespace ns3

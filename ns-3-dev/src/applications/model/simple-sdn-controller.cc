@@ -15,6 +15,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/core-module.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
@@ -25,6 +26,8 @@
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/simple-sdn-header.h"
+
+#include <algorithm>
 
 #include "simple-sdn-controller.h"
 
@@ -38,10 +41,6 @@ SimpleSDNController::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SimpleSDNController")
     .SetParent<Application> ()
     .AddConstructor<SimpleSDNController> ()
-    .AddAttribute ("ID", "Controller ID.",
-                   UintegerValue (9),
-                   MakeUintegerAccessor (&SimpleSDNController::m_id),
-                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
                    UintegerValue (9966),
                    MakeUintegerAccessor (&SimpleSDNController::m_port),
@@ -62,7 +61,15 @@ SimpleSDNController::GetTypeId (void)
 SimpleSDNController::SimpleSDNController ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_leader_id = UINT32_MAX;
+  NS_ABORT_MSG ("Constructor not supported.");
+}
+
+SimpleSDNController::SimpleSDNController (uint32_t id)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_id = id;
+  m_leader_id = m_id;
+  m_epoch = 0;
 }
 
 SimpleSDNController::~SimpleSDNController()
@@ -72,6 +79,8 @@ SimpleSDNController::~SimpleSDNController()
   m_switch_addresses.clear ();
   m_controller_addresses.clear ();
   m_send_sockets.clear ();
+  m_leader_candidates.clear ();
+  m_buffered_packets.clear ();
 }
 
 void
@@ -79,6 +88,18 @@ SimpleSDNController::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Application::DoDispose ();
+}
+
+void
+SimpleSDNController::AddPeeringController (InetSocketAddress controllerAddress)
+{
+  m_controller_addresses.push_back (controllerAddress);
+}
+
+void
+SimpleSDNController::AddPeeringSwitch (InetSocketAddress switchAddress)
+{
+  m_switch_addresses.push_back (switchAddress);
 }
 
 void 
@@ -95,7 +116,7 @@ SimpleSDNController::StartApplication (void)
   }
   m_receive_socket->SetRecvCallback (MakeCallback (&SimpleSDNController::HandleRead, this));
 
-  // Set up send sockets
+  // Set up send sockets. Peers must be set up by the time this is called.
   std::list<InetSocketAddress>::iterator it;
   for (it = m_switch_addresses.begin (); it != m_switch_addresses.end (); it++) {
     CreateSendSocket(*it);
@@ -106,6 +127,7 @@ SimpleSDNController::StartApplication (void)
 
   // Begin pinging peers
   Simulator::Schedule (m_ping_switches_interval, &SimpleSDNController::PingSwitches, this);
+  Simulator::Schedule (m_ping_controllers_interval, &SimpleSDNController::PingControllers, this);
 }
 
 void 
@@ -137,28 +159,13 @@ SimpleSDNController::CreateSendSocket (InetSocketAddress address)
 void
 SimpleSDNController::PingSwitches ()
 {
+  // If I am the leader, ping all switches
   if (m_id == m_leader_id) {
-    // This controller is the leader
-    // Send a packet to all known switches
     std::list<InetSocketAddress>::iterator it;
     for (it = m_switch_addresses.begin ();
          it != m_switch_addresses.end ();
          it++) {
-      InetSocketAddress address = *it;
-      Ptr<Packet> p = Create<Packet> ();
-      // Set up application header
-      SimpleSDNHeader sdnHeader;
-      sdnHeader.SetControllerID (m_id);
-      sdnHeader.SetRespondPort (m_port);
-      // Set up IP header
-      uint32_t control_flag = Ipv4Header::GetControlFlag ();
-      Ipv4Header ipHeader;
-      ipHeader.SetFlags (control_flag);
-      ipHeader.SetDestination (address.GetIpv4 ());
-      // Actually send the packet
-      m_txTrace (p, ipHeader);
-      Ptr<Socket> socket = m_send_sockets.at (address);
-      socket->Send (p, control_flag);
+      SendSDNPacket(*it);
     }
   }
   Simulator::Schedule (m_ping_switches_interval, &SimpleSDNController::PingSwitches, this);
@@ -167,7 +174,45 @@ SimpleSDNController::PingSwitches ()
 void
 SimpleSDNController::PingControllers ()
 {
-  // TO BE IMPLEMENTED
+  SelectLeader();
+  // This is a new epoch
+  m_epoch++;
+  std::list<InetSocketAddress>::iterator it;
+  for (it = m_controller_addresses.begin ();
+       it != m_controller_addresses.end ();
+       it++) {
+    SendSDNPacket(*it);
+  }
+  Simulator::Schedule (m_ping_controllers_interval, &SimpleSDNController::PingControllers, this);
+}
+
+void
+SimpleSDNController::SendSDNPacket (InetSocketAddress address)
+{
+  Ptr<Packet> p = Create<Packet> ();
+  // Set up application header
+  SimpleSDNHeader sdnHeader;
+  sdnHeader.SetControllerID (m_id);
+  sdnHeader.SetLeaderID (m_leader_id);
+  sdnHeader.SetRespondPort (m_port);
+  sdnHeader.SetEpoch (m_epoch);
+  // Set up IP header
+  uint32_t control_flag = Ipv4Header::GetControlFlag ();
+  Ipv4Header ipHeader;
+  ipHeader.SetFlags (control_flag);
+  ipHeader.SetDestination (address.GetIpv4 ());
+  // Actually send the packet
+  m_txTrace (p, ipHeader);
+  Ptr<Socket> socket = m_send_sockets.at (address);
+  socket->Send (p, control_flag);
+  NS_LOG_INFO (
+    "At time " << Simulator::Now ().GetSeconds () << "s " <<
+    "controller " << m_id << " " <<
+    "(leader " << m_leader_id << ") " <<
+    "sent "<< p->GetSize () << " bytes " <<
+    "to " << address.GetIpv4 () << " " <<
+    "port " << address.GetPort () << " " <<
+    "(epoch " << m_epoch << ")");
 }
 
 void 
@@ -179,27 +224,79 @@ SimpleSDNController::HandleRead (Ptr<Socket> socket)
   while ((packet = socket->RecvFrom (from, hdr))) {
     m_rxTrace (packet, hdr);
     if (InetSocketAddress::IsMatchingType (from)) {
+      InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom (from);
       NS_LOG_INFO (
-        "At time " << Simulator::Now ().GetSeconds () <<
-        "s controller received " << packet->GetSize () << " bytes from " <<
-        InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
-        InetSocketAddress::ConvertFrom (from).GetPort ());
+        "At time " << Simulator::Now ().GetSeconds () << "s " <<
+        "controller " << m_id << " " <<
+        "(leader " << m_leader_id << ") " <<
+        "received "<< packet->GetSize () << " bytes " <<
+        "from " << fromAddress.GetIpv4 () << " " <<
+        "port " << fromAddress.GetPort () << " " <<
+        "(epoch " << m_epoch << ")");
 
       packet->RemoveAllPacketTags ();
       packet->RemoveAllByteTags ();
 
-      // TODO: Add some important logic here
-
-      m_txTrace(packet, hdr);
-      socket->SendTo (packet, hdr.GetFlags(), from);
-
-      NS_LOG_INFO (
-        "At time " << Simulator::Now ().GetSeconds () <<
-        "s controller sent " << packet->GetSize () << " bytes to " <<
-        InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
-        InetSocketAddress::ConvertFrom (from).GetPort ());
+      // Handle only packets received from other controllers
+      std::list<InetSocketAddress>::iterator it;
+      for (it = m_controller_addresses.begin ();
+           it != m_controller_addresses.end ();
+           it++) {
+        if (fromAddress.GetIpv4 () == it->GetIpv4 ()) {
+          HandleControllerRead(packet);
+          break;
+        }
+      }
     }
   }
+}
+
+void
+SimpleSDNController::HandleControllerRead (Ptr<Packet> p)
+{
+  SimpleSDNHeader sdnHeader;
+  uint32_t controller_id = sdnHeader.GetControllerID ();
+  uint32_t leader_id = sdnHeader.GetLeaderID ();
+  uint32_t epoch = sdnHeader.GetEpoch ();
+  NS_LOG_INFO (
+    "  -> Packet received from " <<
+    "controller " << controller_id << " " <<
+    "(leader " << leader_id << ") has" <<
+    "epoch = " << epoch << ". " <<
+    "(m_epoch = " << m_epoch << ")");
+  if (epoch == m_epoch) {
+    uint32_t candidate_id = std::max (controller_id, leader_id);
+    m_leader_candidates.push_back (candidate_id);
+  } else if (epoch > m_epoch) {
+    m_buffered_packets.push_back (p);
+  }
+}
+
+void
+SimpleSDNController::SelectLeader ()
+{
+  // Collect packets belonging to this epoch from buffer
+  std::list<Ptr<Packet> >::iterator it = m_buffered_packets.begin ();
+  while (it != m_buffered_packets.end ()) {
+    Ptr<Packet> p = *it;
+    SimpleSDNHeader sdnHeader;
+    uint32_t epoch = sdnHeader.GetEpoch ();
+    if (epoch == m_epoch) {
+      uint32_t controller_id = sdnHeader.GetControllerID ();
+      uint32_t leader_id = sdnHeader.GetLeaderID ();
+      uint32_t candidate_id = std::max (controller_id, leader_id);
+      m_leader_candidates.push_back (candidate_id);
+      m_buffered_packets.erase (it);
+    } else {
+      it++;
+    }
+  }
+
+  // Select leader to be the controller with the max ID
+  m_leader_candidates.push_back (m_id);
+  m_leader_candidates.unique ();
+  m_leader_id = *(std::max_element (m_leader_candidates.begin (), m_leader_candidates.end ()));
+  m_leader_candidates.clear ();
 }
 
 void 
