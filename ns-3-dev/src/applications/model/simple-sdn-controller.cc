@@ -241,6 +241,7 @@ SimpleSDNController::SendSDNPacket (InetSocketAddress address)
   sdnHeader.SetLeaderID (m_leader_id);
   sdnHeader.SetRespondPort (m_port);
   sdnHeader.SetEpoch (m_epoch);
+  p->AddHeader (sdnHeader);
   // Set up IP header
   uint32_t control_flag = Ipv4Header::GetControlFlag ();
   Ipv4Header ipHeader;
@@ -279,19 +280,8 @@ SimpleSDNController::HandleRead (Ptr<Socket> socket)
         "port " << fromAddress.GetPort () << " " <<
         "(epoch " << m_epoch << ")");
 
-      packet->RemoveAllPacketTags ();
-      packet->RemoveAllByteTags ();
-
-      // Handle only packets received from other controllers
-      std::list<InetSocketAddress>::iterator it;
-      for (it = m_controller_addresses.begin ();
-           it != m_controller_addresses.end ();
-           it++) {
-        if (fromAddress.GetIpv4 () == it->GetIpv4 ()) {
-          HandleControllerRead(packet);
-          break;
-        }
-      }
+      // Assume all packets are from controllers (i.e. peers are non-byzantine)
+      HandleControllerRead(packet);
     }
   }
 }
@@ -300,20 +290,23 @@ void
 SimpleSDNController::HandleControllerRead (Ptr<Packet> p)
 {
   SimpleSDNHeader sdnHeader;
+  p->RemoveHeader (sdnHeader);
   uint32_t controller_id = sdnHeader.GetControllerID ();
-  uint32_t leader_id = sdnHeader.GetLeaderID ();
-  uint32_t epoch = sdnHeader.GetEpoch ();
-  NS_LOG_INFO (
-    "  -> Packet received from " <<
-    "controller " << controller_id << " " <<
-    "(leader " << leader_id << ") has" <<
-    "epoch = " << epoch << ". " <<
-    "(m_epoch = " << m_epoch << ")");
-  if (epoch == m_epoch) {
-    uint32_t candidate_id = std::max (controller_id, leader_id);
-    m_leader_candidates.push_back (candidate_id);
-  } else if (epoch > m_epoch) {
-    m_buffered_packets.push_back (p);
+  if (controller_id != m_id) {
+    uint32_t leader_id = sdnHeader.GetLeaderID ();
+    uint32_t epoch = sdnHeader.GetEpoch ();
+    NS_LOG_INFO (
+      "    Packet received from " <<
+      "controller " << controller_id << " " <<
+      "(leader " << leader_id << ") has " <<
+      "epoch = " << epoch << ". " <<
+      "(m_epoch = " << m_epoch << ")");
+    if (epoch == m_epoch) {
+      uint32_t candidate_id = std::max (controller_id, leader_id);
+      m_leader_candidates.push_back (candidate_id);
+    } else if (epoch > m_epoch) {
+      m_buffered_packets.push_back (p);
+    }
   }
 }
 
@@ -342,7 +335,7 @@ SimpleSDNController::SelectLeader ()
   m_leader_candidates.unique ();
   m_leader_id = *(std::max_element (m_leader_candidates.begin (), m_leader_candidates.end ()));
   m_leader_candidates.clear ();
-  NS_LOG_INFO ("SELECT LEADER (epoch " << m_epoch << ") *** leader = " << m_leader_id << " ***");
+  NS_LOG_INFO ("* SELECT LEADER (id " << m_id << ", epoch " << m_epoch << ") *** leader = " << m_leader_id << " ***");
 }
 
 void 

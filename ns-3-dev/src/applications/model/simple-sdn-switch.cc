@@ -157,24 +157,10 @@ SimpleSDNSwitch::HandleRead (Ptr<Socket> socket)
       // Respond on the port specified in the SDN header
       SimpleSDNHeader appHeader;
       packet->RemoveHeader (appHeader);
-      uint16_t respond_port = appHeader.GetRespondPort ();
       uint32_t controller_id = appHeader.GetControllerID ();
-      returnAddress.SetPort (respond_port);
-      appHeader.SetRespondPort (m_port);
-      packet->AddHeader (appHeader);
-      m_txTrace (packet, hdr);
-      socket->SendTo (packet, hdr.GetFlags(), returnAddress);
 
       // Keep track of the controller ID
       m_current_controllers.push_back (controller_id);
-
-      NS_LOG_INFO (
-        "At time " << Simulator::Now ().GetSeconds () << " s " <<
-        "switch " << m_id << " " <<
-        "sent " << packet->GetSize () << " bytes " <<
-        "to " << returnAddress.GetIpv4 () << " " <<
-        "port " << returnAddress.GetPort () << " " <<
-        "(controller " << controller_id << ")");
     }
   }
 }

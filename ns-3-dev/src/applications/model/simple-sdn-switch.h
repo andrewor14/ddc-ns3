@@ -36,7 +36,7 @@ class Packet;
 /**
  * @aor
  * \brief A simple SDN switch.
- * A switch that responds to controller pings.
+ * A switch that accepts controller pings and detects control plane inconsistency.
  * Each switch should belong to only one controller.
  */
 class SimpleSDNSwitch : public Application 
