@@ -144,15 +144,12 @@ SimpleSDNSwitch::HandleRead (Ptr<Socket> socket)
 
     if (InetSocketAddress::IsMatchingType (from)) {
       InetSocketAddress returnAddress = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO (
+      NS_LOG_LOGIC (
         "At time " << Simulator::Now ().GetSeconds () << " s " <<
         "switch " << m_id << " " <<
         "received " << packet->GetSize () << " bytes " <<
         "from " << returnAddress.GetIpv4 () << " " <<
         "port " << returnAddress.GetPort ());
-
-      packet->RemoveAllPacketTags ();
-      packet->RemoveAllByteTags ();
 
       // Respond on the port specified in the SDN header
       SimpleSDNHeader appHeader;
@@ -186,28 +183,33 @@ SimpleSDNSwitch::UpdateWindow ()
     // This is potentially a consistency violation in the control plane
 
     // Check if the current set of controllers is a subset of the previous set
-    std::list<uint32_t> temp_controllers = m_previous_controllers;
-    temp_controllers.merge (m_current_controllers);
-    temp_controllers.sort ();
-    temp_controllers.unique ();
+    std::list<uint32_t> current_controllers_copy = m_current_controllers;
+    std::list<uint32_t> previous_controllers_copy = m_previous_controllers;
+    previous_controllers_copy.merge (current_controllers_copy);
+    previous_controllers_copy.sort ();
+    previous_controllers_copy.unique ();
     m_previous_controllers.sort ();
-    if (temp_controllers == m_previous_controllers) {
+    m_previous_controllers.unique ();
+
+    if (previous_controllers_copy == m_previous_controllers) {
       m_violation_count++;
     } else {
       m_violation_count = 1;
-    }
-
-    // If we have exceeded our threshold for number of windows with violation
-    if (m_violation_count >= m_max_violation_count) {
-      ReportViolation();
     }
   } else {
     m_violation_count = 0;
   }
 
+  NS_LOG_LOGIC("Violation count for switch " << m_id << " is " << (uint32_t) m_violation_count);
+
+  // If we have exceeded our threshold for number of windows with violation
+  if (m_violation_count >= m_max_violation_count) {
+    ReportViolation ();
+  }
+
   // Refresh controller IDs
   m_previous_controllers = m_current_controllers;
-  m_current_controllers.clear();
+  m_current_controllers.clear ();
 
   // Periodically update window
   Simulator::Schedule (m_window_duration, &SimpleSDNSwitch::UpdateWindow, this);

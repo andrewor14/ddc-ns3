@@ -251,7 +251,7 @@ SimpleSDNController::SendSDNPacket (InetSocketAddress address)
   m_txTrace (p, ipHeader);
   Ptr<Socket> socket = m_send_sockets.at (address);
   socket->Send (p, control_flag);
-  NS_LOG_INFO (
+  NS_LOG_LOGIC (
     "At time " << Simulator::Now ().GetSeconds () << "s " <<
     "controller " << m_id << " " <<
     "(leader " << m_leader_id << ") " <<
@@ -271,7 +271,7 @@ SimpleSDNController::HandleRead (Ptr<Socket> socket)
     m_rxTrace (packet, hdr);
     if (InetSocketAddress::IsMatchingType (from)) {
       InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO (
+      NS_LOG_LOGIC (
         "At time " << Simulator::Now ().GetSeconds () << "s " <<
         "controller " << m_id << " " <<
         "(leader " << m_leader_id << ") " <<
@@ -295,15 +295,14 @@ SimpleSDNController::HandleControllerRead (Ptr<Packet> p)
   if (controller_id != m_id) {
     uint32_t leader_id = sdnHeader.GetLeaderID ();
     uint32_t epoch = sdnHeader.GetEpoch ();
-    NS_LOG_INFO (
+    NS_LOG_LOGIC (
       "    Packet received from " <<
       "controller " << controller_id << " " <<
       "(leader " << leader_id << ") has " <<
       "epoch = " << epoch << ". " <<
       "(m_epoch = " << m_epoch << ")");
     if (epoch == m_epoch) {
-      uint32_t candidate_id = std::max (controller_id, leader_id);
-      m_leader_candidates.push_back (candidate_id);
+      m_leader_candidates.push_back (controller_id);
     } else if (epoch > m_epoch) {
       m_buffered_packets.push_back (p);
     }
@@ -321,9 +320,7 @@ SimpleSDNController::SelectLeader ()
     uint32_t epoch = sdnHeader.GetEpoch ();
     if (epoch == m_epoch) {
       uint32_t controller_id = sdnHeader.GetControllerID ();
-      uint32_t leader_id = sdnHeader.GetLeaderID ();
-      uint32_t candidate_id = std::max (controller_id, leader_id);
-      m_leader_candidates.push_back (candidate_id);
+      m_leader_candidates.push_back (controller_id);
       m_buffered_packets.erase (it);
     } else {
       it++;

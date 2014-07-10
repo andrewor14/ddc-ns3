@@ -87,8 +87,7 @@ InetSocketAddress* GetInetSocketAddress (Ptr<Node> node, bool isController) {
 int main (int argc, char *argv[])
 {
   LogComponentEnable ("AndrewSDNTest", LOG_LEVEL_INFO);
-  LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("Ipv4GlobalRouting", LOG_LEVEL_WARN);
   LogComponentEnable ("SimpleSDNControllerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("SimpleSDNSwitchApplication", LOG_LEVEL_INFO);
 
@@ -130,6 +129,15 @@ int main (int argc, char *argv[])
   }
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
+  // Set up switches
+  SimpleSDNSwitchHelper* switchHelper =
+    new SimpleSDNSwitchHelper (
+      switchPort,
+      switchWindowDuration,
+      switchMaxViolationCount);
+  ApplicationContainer switchApp1 = switchHelper->Install (nodes.Get (0), 1001);
+  InetSocketAddress* switchAddress1 = GetInetSocketAddress (nodes.Get (0), false);
+
   // Set up controllers
   SimpleSDNControllerHelper* controllerHelper =
     new SimpleSDNControllerHelper (
@@ -137,21 +145,38 @@ int main (int argc, char *argv[])
       controllerPingSwitchesInterval,
       controllerPingControllersInterval,
       controllerMaxEpoch);
-  ApplicationContainer controllerApp1 = controllerHelper->Install (nodes.Get (0), 1);
-  //ApplicationContainer controllerApp2 = controllerHelper->Install (nodes.Get (2), 2);
-  //ApplicationContainer controllerApp3 = controllerHelper->Install (nodes.Get (3), 3);
-  //ApplicationContainer controllerApp4 = controllerHelper->Install (nodes.Get (4), 4);
+  ApplicationContainer controllerApp1 = controllerHelper->Install (nodes.Get (1), 1);
+  ApplicationContainer controllerApp2 = controllerHelper->Install (nodes.Get (2), 2);
+  ApplicationContainer controllerApp3 = controllerHelper->Install (nodes.Get (3), 3);
+  ApplicationContainer controllerApp4 = controllerHelper->Install (nodes.Get (4), 4);
   SimpleSDNController* controller1 = (SimpleSDNController*) GetPointer (controllerApp1.Get (0));
+  SimpleSDNController* controller2 = (SimpleSDNController*) GetPointer (controllerApp2.Get (0));
+  SimpleSDNController* controller3 = (SimpleSDNController*) GetPointer (controllerApp3.Get (0));
+  SimpleSDNController* controller4 = (SimpleSDNController*) GetPointer (controllerApp4.Get (0));
+  InetSocketAddress* controllerAddress1 = GetInetSocketAddress (nodes.Get (1), true);
+  InetSocketAddress* controllerAddress2 = GetInetSocketAddress (nodes.Get (2), true);
+  InetSocketAddress* controllerAddress3 = GetInetSocketAddress (nodes.Get (3), true);
+  InetSocketAddress* controllerAddress4 = GetInetSocketAddress (nodes.Get (4), true);
 
-  // Set up switches
-  SimpleSDNSwitchHelper* switchHelper =
-    new SimpleSDNSwitchHelper (
-      switchPort,
-      switchWindowDuration,
-      switchMaxViolationCount);
-  ApplicationContainer switchApp1 = switchHelper->Install (nodes.Get (4), 1001);
-  InetSocketAddress* switchAddress1 = GetInetSocketAddress (nodes.Get (4), false);
+  // Connect controllers to each other
+  controller1->AddPeeringController (*controllerAddress2);
+  controller1->AddPeeringController (*controllerAddress3);
+  controller1->AddPeeringController (*controllerAddress4);
+  controller2->AddPeeringController (*controllerAddress1);
+  controller2->AddPeeringController (*controllerAddress3);
+  controller2->AddPeeringController (*controllerAddress4);
+  controller3->AddPeeringController (*controllerAddress1);
+  controller3->AddPeeringController (*controllerAddress2);
+  controller3->AddPeeringController (*controllerAddress4);
+  controller4->AddPeeringController (*controllerAddress1);
+  controller4->AddPeeringController (*controllerAddress2);
+  controller4->AddPeeringController (*controllerAddress4);
+
+  // Connect controllers to switches
   controller1->AddPeeringSwitch (*switchAddress1);
+  controller2->AddPeeringSwitch (*switchAddress1);
+  controller3->AddPeeringSwitch (*switchAddress1);
+  controller4->AddPeeringSwitch (*switchAddress1);
 
   // Actually start the simulation
   NS_LOG_INFO ("-- Simulation starting --");

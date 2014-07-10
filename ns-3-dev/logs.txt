@@ -1,0 +1,803 @@
+Waf: Entering directory `/home/ddc/Documents/ddc-ns3/ns-3-dev/build'
+[ 969/1380] cxx: src/applications/model/simple-sdn-switch.cc -> build/src/applications/model/simple-sdn-switch.cc.1.o
+../src/applications/model/simple-sdn-switch.cc: In member function ‘void ns3::SimpleSDNSwitch::UpdateWindow()’:
+../src/applications/model/simple-sdn-switch.cc:185:15: error: no match for ‘operator<<’ (operand types are ‘std::string {aka std::basic_string<char>}’ and ‘const char [10]’)
+     str = str << "They are:";
+               ^
+../src/applications/model/simple-sdn-switch.cc:185:15: note: candidates are:
+In file included from ./ns3/socket.h:32:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/packet.h:573:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Packet&)
+ std::ostream& operator<< (std::ostream& os, const Packet &packet);
+               ^
+./ns3/packet.h:573:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/packet.h:26:0,
+                 from ./ns3/socket.h:32,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/trailer.h:96:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Trailer&)
+ std::ostream & operator << (std::ostream &os, const Trailer &trailer);
+                ^
+./ns3/trailer.h:96:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/ipv4-header.h:24:0,
+                 from ./ns3/socket.h:31,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/header.h:94:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Header&)
+ std::ostream & operator << (std::ostream &os, const Header &header);
+                ^
+./ns3/header.h:94:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/net-device.h:31:0,
+                 from ./ns3/socket.h:30,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/ipv6-address.h:443:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv6Prefix&)
+ std::ostream& operator<< (std::ostream& os, Ipv6Prefix const& prefix);
+               ^
+./ns3/ipv6-address.h:443:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/ipv6-address.h:442:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv6Address&)
+ std::ostream& operator << (std::ostream& os, Ipv6Address const& address);
+               ^
+./ns3/ipv6-address.h:442:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ../src/applications/model/simple-sdn-switch.cc:19:0:
+./ns3/ipv4-address.h:293:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv4Mask&)
+ std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);
+               ^
+./ns3/ipv4-address.h:293:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/ipv4-address.h:292:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv4Address&)
+ std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
+               ^
+./ns3/ipv4-address.h:292:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/ipv4-address.h:26:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:19:
+./ns3/address.h:232:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Address&)
+ std::ostream& operator<< (std::ostream& os, const Address & address);
+               ^
+./ns3/address.h:232:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:82:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/vector.h:114:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Vector2D&)
+ std::ostream &operator << (std::ostream &os, const Vector2D &vector);
+               ^
+./ns3/vector.h:114:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/vector.h:112:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Vector3D&)
+ std::ostream &operator << (std::ostream &os, const Vector3D &vector);
+               ^
+./ns3/vector.h:112:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:471:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const U&, const ns3::TracedValue<T>&)
+ TracedValue<T> operator << (const U &lhs, const TracedValue<T> &rhs) {
+                ^
+./ns3/traced-value.h:471:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   mismatched types ‘const ns3::TracedValue<T>’ and ‘const char [10]’
+     str = str << "They are:";
+                  ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:466:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const ns3::TracedValue<T>&, const U&)
+ TracedValue<T> operator << (const TracedValue<T> &lhs, const U &rhs) {
+                ^
+./ns3/traced-value.h:466:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘const ns3::TracedValue<T>’
+     str = str << "They are:";
+                  ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:461:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const ns3::TracedValue<T>&, const ns3::TracedValue<U>&)
+ TracedValue<T> operator << (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+                ^
+./ns3/traced-value.h:461:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘const ns3::TracedValue<T>’
+     str = str << "They are:";
+                  ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:136:15: note: template<class T> std::ostream& ns3::operator<<(std::ostream&, const ns3::TracedValue<T>&)
+ std::ostream& operator << (std::ostream& os, const TracedValue<T>& rhs)
+               ^
+./ns3/traced-value.h:136:15: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   cannot convert ‘str’ (type ‘std::string {aka std::basic_string<char>}’) to type ‘std::ostream& {aka std::basic_ostream<char>&}’
+     str = str << "They are:";
+                  ^
+In file included from ./ns3/core-module.h:53:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/random-variable.h:801:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::RandomVariable&)
+ std::ostream & operator << (std::ostream &os, const RandomVariable &var);
+                ^
+./ns3/random-variable.h:801:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/simulator-impl.h:28:0,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/object-factory.h:91:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::ObjectFactory&)
+ std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
+                ^
+./ns3/object-factory.h:91:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/simulator-impl.h:26:0,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/nstime.h:573:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Time&)
+ std::ostream& operator<< (std::ostream& os, const Time & time);
+               ^
+./ns3/nstime.h:573:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/nstime.h:26:0,
+                 from ./ns3/simulator-impl.h:26,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/int64x64.h:82:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::int64x64_t&)
+ std::ostream &operator << (std::ostream &os, const int64x64_t &val);
+               ^
+./ns3/int64x64.h:82:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/object-base.h:23:0,
+                 from ./ns3/object.h:29,
+                 from ./ns3/scheduler.h:25,
+                 from ./ns3/calendar-scheduler.h:24,
+                 from ./ns3/core-module.h:18,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/type-id.h:332:16: note: std::ostream& ns3::operator<<(std::ostream&, ns3::TypeId)
+ std::ostream & operator << (std::ostream &os, TypeId tid);
+                ^
+./ns3/type-id.h:332:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:16:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/boolean.h:64:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::BooleanValue&)
+ std::ostream & operator << (std::ostream &os, const BooleanValue &value);
+                ^
+./ns3/boolean.h:64:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/attribute.h:25:0,
+                 from ./ns3/attribute-accessor-helper.h:23,
+                 from ./ns3/core-module.h:12,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/ptr.h:292:15: note: template<class T> std::ostream& ns3::operator<<(std::ostream&, const ns3::Ptr<T>&)
+ std::ostream &operator << (std::ostream &os, const Ptr<T> &p)
+               ^
+./ns3/ptr.h:292:15: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   cannot convert ‘str’ (type ‘std::string {aka std::basic_string<char>}’) to type ‘std::ostream& {aka std::basic_ostream<char>&}’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:548:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const unsigned char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const unsigned char* __s)
+     ^
+/usr/include/c++/4.8/ostream:548:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:543:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const signed char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const signed char* __s)
+     ^
+/usr/include/c++/4.8/ostream:543:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:530:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const char* __s)
+     ^
+/usr/include/c++/4.8/ostream:530:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/ostream:609:0,
+                 from /usr/include/c++/4.8/iostream:39,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/bits/ostream.tcc:321:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const char*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const char* __s)
+     ^
+/usr/include/c++/4.8/bits/ostream.tcc:321:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:513:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const _CharT*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const _CharT* __s)
+     ^
+/usr/include/c++/4.8/ostream:513:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:493:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, unsigned char)
+     operator<<(basic_ostream<char, _Traits>& __out, unsigned char __c)
+     ^
+/usr/include/c++/4.8/ostream:493:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:488:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, signed char)
+     operator<<(basic_ostream<char, _Traits>& __out, signed char __c)
+     ^
+/usr/include/c++/4.8/ostream:488:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:482:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char)
+     operator<<(basic_ostream<char, _Traits>& __out, char __c)
+     ^
+/usr/include/c++/4.8/ostream:482:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:476:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, char)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, char __c)
+     ^
+/usr/include/c++/4.8/ostream:476:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:471:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, _CharT)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, _CharT __c)
+     ^
+/usr/include/c++/4.8/ostream:471:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "They are:";
+                  ^
+In file included from /usr/include/c++/4.8/string:52:0,
+                 from ./ns3/log.h:24,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/bits/basic_string.h:2753:5: note: template<class _CharT, class _Traits, class _Alloc> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::basic_string<_CharT, _Traits, _Alloc>&)
+     operator<<(basic_ostream<_CharT, _Traits>& __os,
+     ^
+/usr/include/c++/4.8/bits/basic_string.h:2753:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:185:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "They are:";
+                  ^
+../src/applications/model/simple-sdn-switch.cc:188:17: error: no match for ‘operator<<’ (operand types are ‘std::string {aka std::basic_string<char>}’ and ‘const char [2]’)
+       str = str << " " << *it << " ";
+                 ^
+../src/applications/model/simple-sdn-switch.cc:188:17: note: candidates are:
+In file included from ./ns3/socket.h:32:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/packet.h:573:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Packet&)
+ std::ostream& operator<< (std::ostream& os, const Packet &packet);
+               ^
+./ns3/packet.h:573:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/packet.h:26:0,
+                 from ./ns3/socket.h:32,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/trailer.h:96:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Trailer&)
+ std::ostream & operator << (std::ostream &os, const Trailer &trailer);
+                ^
+./ns3/trailer.h:96:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/ipv4-header.h:24:0,
+                 from ./ns3/socket.h:31,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/header.h:94:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Header&)
+ std::ostream & operator << (std::ostream &os, const Header &header);
+                ^
+./ns3/header.h:94:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/net-device.h:31:0,
+                 from ./ns3/socket.h:30,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/ipv6-address.h:443:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv6Prefix&)
+ std::ostream& operator<< (std::ostream& os, Ipv6Prefix const& prefix);
+               ^
+./ns3/ipv6-address.h:443:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/ipv6-address.h:442:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv6Address&)
+ std::ostream& operator << (std::ostream& os, Ipv6Address const& address);
+               ^
+./ns3/ipv6-address.h:442:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ../src/applications/model/simple-sdn-switch.cc:19:0:
+./ns3/ipv4-address.h:293:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv4Mask&)
+ std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);
+               ^
+./ns3/ipv4-address.h:293:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/ipv4-address.h:292:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv4Address&)
+ std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
+               ^
+./ns3/ipv4-address.h:292:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/ipv4-address.h:26:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:19:
+./ns3/address.h:232:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Address&)
+ std::ostream& operator<< (std::ostream& os, const Address & address);
+               ^
+./ns3/address.h:232:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:82:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/vector.h:114:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Vector2D&)
+ std::ostream &operator << (std::ostream &os, const Vector2D &vector);
+               ^
+./ns3/vector.h:114:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/vector.h:112:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Vector3D&)
+ std::ostream &operator << (std::ostream &os, const Vector3D &vector);
+               ^
+./ns3/vector.h:112:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:471:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const U&, const ns3::TracedValue<T>&)
+ TracedValue<T> operator << (const U &lhs, const TracedValue<T> &rhs) {
+                ^
+./ns3/traced-value.h:471:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   mismatched types ‘const ns3::TracedValue<T>’ and ‘const char [2]’
+       str = str << " " << *it << " ";
+                    ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:466:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const ns3::TracedValue<T>&, const U&)
+ TracedValue<T> operator << (const TracedValue<T> &lhs, const U &rhs) {
+                ^
+./ns3/traced-value.h:466:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘const ns3::TracedValue<T>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:461:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const ns3::TracedValue<T>&, const ns3::TracedValue<U>&)
+ TracedValue<T> operator << (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+                ^
+./ns3/traced-value.h:461:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘const ns3::TracedValue<T>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:136:15: note: template<class T> std::ostream& ns3::operator<<(std::ostream&, const ns3::TracedValue<T>&)
+ std::ostream& operator << (std::ostream& os, const TracedValue<T>& rhs)
+               ^
+./ns3/traced-value.h:136:15: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   cannot convert ‘str’ (type ‘std::string {aka std::basic_string<char>}’) to type ‘std::ostream& {aka std::basic_ostream<char>&}’
+       str = str << " " << *it << " ";
+                    ^
+In file included from ./ns3/core-module.h:53:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/random-variable.h:801:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::RandomVariable&)
+ std::ostream & operator << (std::ostream &os, const RandomVariable &var);
+                ^
+./ns3/random-variable.h:801:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/simulator-impl.h:28:0,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/object-factory.h:91:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::ObjectFactory&)
+ std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
+                ^
+./ns3/object-factory.h:91:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/simulator-impl.h:26:0,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/nstime.h:573:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Time&)
+ std::ostream& operator<< (std::ostream& os, const Time & time);
+               ^
+./ns3/nstime.h:573:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/nstime.h:26:0,
+                 from ./ns3/simulator-impl.h:26,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/int64x64.h:82:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::int64x64_t&)
+ std::ostream &operator << (std::ostream &os, const int64x64_t &val);
+               ^
+./ns3/int64x64.h:82:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/object-base.h:23:0,
+                 from ./ns3/object.h:29,
+                 from ./ns3/scheduler.h:25,
+                 from ./ns3/calendar-scheduler.h:24,
+                 from ./ns3/core-module.h:18,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/type-id.h:332:16: note: std::ostream& ns3::operator<<(std::ostream&, ns3::TypeId)
+ std::ostream & operator << (std::ostream &os, TypeId tid);
+                ^
+./ns3/type-id.h:332:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:16:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/boolean.h:64:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::BooleanValue&)
+ std::ostream & operator << (std::ostream &os, const BooleanValue &value);
+                ^
+./ns3/boolean.h:64:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/attribute.h:25:0,
+                 from ./ns3/attribute-accessor-helper.h:23,
+                 from ./ns3/core-module.h:12,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/ptr.h:292:15: note: template<class T> std::ostream& ns3::operator<<(std::ostream&, const ns3::Ptr<T>&)
+ std::ostream &operator << (std::ostream &os, const Ptr<T> &p)
+               ^
+./ns3/ptr.h:292:15: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   cannot convert ‘str’ (type ‘std::string {aka std::basic_string<char>}’) to type ‘std::ostream& {aka std::basic_ostream<char>&}’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:548:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const unsigned char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const unsigned char* __s)
+     ^
+/usr/include/c++/4.8/ostream:548:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:543:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const signed char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const signed char* __s)
+     ^
+/usr/include/c++/4.8/ostream:543:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:530:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const char* __s)
+     ^
+/usr/include/c++/4.8/ostream:530:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/ostream:609:0,
+                 from /usr/include/c++/4.8/iostream:39,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/bits/ostream.tcc:321:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const char*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const char* __s)
+     ^
+/usr/include/c++/4.8/bits/ostream.tcc:321:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:513:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const _CharT*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const _CharT* __s)
+     ^
+/usr/include/c++/4.8/ostream:513:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:493:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, unsigned char)
+     operator<<(basic_ostream<char, _Traits>& __out, unsigned char __c)
+     ^
+/usr/include/c++/4.8/ostream:493:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:488:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, signed char)
+     operator<<(basic_ostream<char, _Traits>& __out, signed char __c)
+     ^
+/usr/include/c++/4.8/ostream:488:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:482:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char)
+     operator<<(basic_ostream<char, _Traits>& __out, char __c)
+     ^
+/usr/include/c++/4.8/ostream:482:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:476:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, char)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, char __c)
+     ^
+/usr/include/c++/4.8/ostream:476:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:471:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, _CharT)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, _CharT __c)
+     ^
+/usr/include/c++/4.8/ostream:471:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+In file included from /usr/include/c++/4.8/string:52:0,
+                 from ./ns3/log.h:24,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/bits/basic_string.h:2753:5: note: template<class _CharT, class _Traits, class _Alloc> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::basic_string<_CharT, _Traits, _Alloc>&)
+     operator<<(basic_ostream<_CharT, _Traits>& __os,
+     ^
+/usr/include/c++/4.8/bits/basic_string.h:2753:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:188:20: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+       str = str << " " << *it << " ";
+                    ^
+../src/applications/model/simple-sdn-switch.cc:190:15: error: no match for ‘operator<<’ (operand types are ‘std::string {aka std::basic_string<char>}’ and ‘const char [2]’)
+     str = str << "\n";
+               ^
+../src/applications/model/simple-sdn-switch.cc:190:15: note: candidates are:
+In file included from ./ns3/socket.h:32:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/packet.h:573:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Packet&)
+ std::ostream& operator<< (std::ostream& os, const Packet &packet);
+               ^
+./ns3/packet.h:573:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/packet.h:26:0,
+                 from ./ns3/socket.h:32,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/trailer.h:96:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Trailer&)
+ std::ostream & operator << (std::ostream &os, const Trailer &trailer);
+                ^
+./ns3/trailer.h:96:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/ipv4-header.h:24:0,
+                 from ./ns3/socket.h:31,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/header.h:94:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Header&)
+ std::ostream & operator << (std::ostream &os, const Header &header);
+                ^
+./ns3/header.h:94:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/net-device.h:31:0,
+                 from ./ns3/socket.h:30,
+                 from ../src/applications/model/simple-sdn-switch.cc:22:
+./ns3/ipv6-address.h:443:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv6Prefix&)
+ std::ostream& operator<< (std::ostream& os, Ipv6Prefix const& prefix);
+               ^
+./ns3/ipv6-address.h:443:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/ipv6-address.h:442:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv6Address&)
+ std::ostream& operator << (std::ostream& os, Ipv6Address const& address);
+               ^
+./ns3/ipv6-address.h:442:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ../src/applications/model/simple-sdn-switch.cc:19:0:
+./ns3/ipv4-address.h:293:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv4Mask&)
+ std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);
+               ^
+./ns3/ipv4-address.h:293:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/ipv4-address.h:292:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Ipv4Address&)
+ std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
+               ^
+./ns3/ipv4-address.h:292:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/ipv4-address.h:26:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:19:
+./ns3/address.h:232:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Address&)
+ std::ostream& operator<< (std::ostream& os, const Address & address);
+               ^
+./ns3/address.h:232:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:82:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/vector.h:114:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Vector2D&)
+ std::ostream &operator << (std::ostream &os, const Vector2D &vector);
+               ^
+./ns3/vector.h:114:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+./ns3/vector.h:112:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Vector3D&)
+ std::ostream &operator << (std::ostream &os, const Vector3D &vector);
+               ^
+./ns3/vector.h:112:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:471:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const U&, const ns3::TracedValue<T>&)
+ TracedValue<T> operator << (const U &lhs, const TracedValue<T> &rhs) {
+                ^
+./ns3/traced-value.h:471:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   mismatched types ‘const ns3::TracedValue<T>’ and ‘const char [2]’
+     str = str << "\n";
+                  ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:466:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const ns3::TracedValue<T>&, const U&)
+ TracedValue<T> operator << (const TracedValue<T> &lhs, const U &rhs) {
+                ^
+./ns3/traced-value.h:466:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘const ns3::TracedValue<T>’
+     str = str << "\n";
+                  ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:461:16: note: template<class T, class U> ns3::TracedValue<T> ns3::operator<<(const ns3::TracedValue<T>&, const ns3::TracedValue<U>&)
+ TracedValue<T> operator << (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+                ^
+./ns3/traced-value.h:461:16: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘const ns3::TracedValue<T>’
+     str = str << "\n";
+                  ^
+In file included from ./ns3/core-module.h:75:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/traced-value.h:136:15: note: template<class T> std::ostream& ns3::operator<<(std::ostream&, const ns3::TracedValue<T>&)
+ std::ostream& operator << (std::ostream& os, const TracedValue<T>& rhs)
+               ^
+./ns3/traced-value.h:136:15: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   cannot convert ‘str’ (type ‘std::string {aka std::basic_string<char>}’) to type ‘std::ostream& {aka std::basic_ostream<char>&}’
+     str = str << "\n";
+                  ^
+In file included from ./ns3/core-module.h:53:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/random-variable.h:801:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::RandomVariable&)
+ std::ostream & operator << (std::ostream &os, const RandomVariable &var);
+                ^
+./ns3/random-variable.h:801:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/simulator-impl.h:28:0,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/object-factory.h:91:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::ObjectFactory&)
+ std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
+                ^
+./ns3/object-factory.h:91:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/simulator-impl.h:26:0,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/nstime.h:573:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::Time&)
+ std::ostream& operator<< (std::ostream& os, const Time & time);
+               ^
+./ns3/nstime.h:573:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/nstime.h:26:0,
+                 from ./ns3/simulator-impl.h:26,
+                 from ./ns3/default-simulator-impl.h:24,
+                 from ./ns3/core-module.h:23,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/int64x64.h:82:15: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::int64x64_t&)
+ std::ostream &operator << (std::ostream &os, const int64x64_t &val);
+               ^
+./ns3/int64x64.h:82:15: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/object-base.h:23:0,
+                 from ./ns3/object.h:29,
+                 from ./ns3/scheduler.h:25,
+                 from ./ns3/calendar-scheduler.h:24,
+                 from ./ns3/core-module.h:18,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/type-id.h:332:16: note: std::ostream& ns3::operator<<(std::ostream&, ns3::TypeId)
+ std::ostream & operator << (std::ostream &os, TypeId tid);
+                ^
+./ns3/type-id.h:332:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/core-module.h:16:0,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/boolean.h:64:16: note: std::ostream& ns3::operator<<(std::ostream&, const ns3::BooleanValue&)
+ std::ostream & operator << (std::ostream &os, const BooleanValue &value);
+                ^
+./ns3/boolean.h:64:16: note:   no known conversion for argument 1 from ‘std::string {aka std::basic_string<char>}’ to ‘std::ostream& {aka std::basic_ostream<char>&}’
+In file included from ./ns3/attribute.h:25:0,
+                 from ./ns3/attribute-accessor-helper.h:23,
+                 from ./ns3/core-module.h:12,
+                 from ../src/applications/model/simple-sdn-switch.cc:18:
+./ns3/ptr.h:292:15: note: template<class T> std::ostream& ns3::operator<<(std::ostream&, const ns3::Ptr<T>&)
+ std::ostream &operator << (std::ostream &os, const Ptr<T> &p)
+               ^
+./ns3/ptr.h:292:15: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   cannot convert ‘str’ (type ‘std::string {aka std::basic_string<char>}’) to type ‘std::ostream& {aka std::basic_ostream<char>&}’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:548:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const unsigned char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const unsigned char* __s)
+     ^
+/usr/include/c++/4.8/ostream:548:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:543:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const signed char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const signed char* __s)
+     ^
+/usr/include/c++/4.8/ostream:543:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:530:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const char* __s)
+     ^
+/usr/include/c++/4.8/ostream:530:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/ostream:609:0,
+                 from /usr/include/c++/4.8/iostream:39,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/bits/ostream.tcc:321:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const char*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const char* __s)
+     ^
+/usr/include/c++/4.8/bits/ostream.tcc:321:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:513:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const _CharT*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const _CharT* __s)
+     ^
+/usr/include/c++/4.8/ostream:513:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:493:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, unsigned char)
+     operator<<(basic_ostream<char, _Traits>& __out, unsigned char __c)
+     ^
+/usr/include/c++/4.8/ostream:493:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:488:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, signed char)
+     operator<<(basic_ostream<char, _Traits>& __out, signed char __c)
+     ^
+/usr/include/c++/4.8/ostream:488:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:482:5: note: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char)
+     operator<<(basic_ostream<char, _Traits>& __out, char __c)
+     ^
+/usr/include/c++/4.8/ostream:482:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<char, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:476:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, char)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, char __c)
+     ^
+/usr/include/c++/4.8/ostream:476:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/iostream:39:0,
+                 from ./ns3/log.h:25,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/ostream:471:5: note: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, _CharT)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, _CharT __c)
+     ^
+/usr/include/c++/4.8/ostream:471:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "\n";
+                  ^
+In file included from /usr/include/c++/4.8/string:52:0,
+                 from ./ns3/log.h:24,
+                 from ../src/applications/model/simple-sdn-switch.cc:17:
+/usr/include/c++/4.8/bits/basic_string.h:2753:5: note: template<class _CharT, class _Traits, class _Alloc> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::basic_string<_CharT, _Traits, _Alloc>&)
+     operator<<(basic_ostream<_CharT, _Traits>& __os,
+     ^
+/usr/include/c++/4.8/bits/basic_string.h:2753:5: note:   template argument deduction/substitution failed:
+../src/applications/model/simple-sdn-switch.cc:190:18: note:   ‘std::string {aka std::basic_string<char>}’ is not derived from ‘std::basic_ostream<_CharT, _Traits>’
+     str = str << "\n";
+                  ^
+Waf: Leaving directory `/home/ddc/Documents/ddc-ns3/ns-3-dev/build'
+Build failed
+ -> task in 'ns3-applications' failed (exit status 1): 
+	{task 140614036201616: cxx simple-sdn-switch.cc -> simple-sdn-switch.cc.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-Ibuild', '-I.', '-I/usr/include/libxml2', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/applications/model/simple-sdn-switch.cc', '-c', '-o', 'src/applications/model/simple-sdn-switch.cc.1.o']
