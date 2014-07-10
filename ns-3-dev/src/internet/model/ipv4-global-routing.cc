@@ -695,13 +695,13 @@ Ipv4GlobalRouting::RouteOutput (
     Ptr<NetDevice> oif,
     Socket::SocketErrno &sockerr)
 {
-  std::cout << "* [RouteOutput] "
+  NS_LOG_INFO ("* [RouteOutput] "
             << "src=" << header.GetSource () << ", "
             << "dest=" << header.GetDestination () << ", "
             << "oif=" << oif << ", "
             << "control=" << header.IsControl () << ", "
             << "seq=" << header.GetSeq () << ", "
-            << "vnode=" << header.GetVnode () << "\n";
+            << "vnode=" << header.GetVnode ());
   if (header.IsControl()) {
     return ControlplaneRouteOutput(p, header, oif, sockerr);
   } else {
@@ -723,13 +723,13 @@ Ipv4GlobalRouting::RouteInput (
     LocalDeliverCallback lcb,
     ErrorCallback ecb)
 {
-  std::cout << "# [RouteInput] "
+  NS_LOG_INFO ("# [RouteInput] "
             << "src=" << header.GetSource () << ", "
             << "dest=" << header.GetDestination () << ", "
             << "idev=" << idev << ", "
             << "control=" << header.IsControl () << ", "
             << "seq=" << header.GetSeq () << ", "
-            << "vnode=" << header.GetVnode () << "\n";
+            << "vnode=" << header.GetVnode ());
   if (header.IsControl()) {
     return ControlplaneRouteInput(p, header, idev, ucb, mcb, lcb, ecb);
   } else {
