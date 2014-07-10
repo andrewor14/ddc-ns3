@@ -44,8 +44,12 @@ class SimpleSDNSwitch : public Application
 public:
   static TypeId GetTypeId (void);
   SimpleSDNSwitch ();
-  SimpleSDNSwitch (uint32_t id);
+  SimpleSDNSwitch (uint32_t);
   virtual ~SimpleSDNSwitch ();
+  void SetID (uint32_t);
+  void SetPort (uint16_t);
+  uint32_t GetID (void) const;
+  uint16_t GetPort (void) const;
   void AddReceivePacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > rxEvent);
   void AddTransmitPacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > txEvent);
 
@@ -80,6 +84,9 @@ private:
   // Number of windows in which multiple controllers (the same set) have contacted this switch
   uint8_t m_violation_count;
   uint8_t m_max_violation_count;
+
+  // StartApplication is being called twice for some reason...
+  bool m_application_started;
 
   uint16_t m_port;
   uint32_t m_id;

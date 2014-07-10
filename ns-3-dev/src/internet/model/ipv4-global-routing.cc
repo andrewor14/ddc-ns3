@@ -618,7 +618,10 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
   NS_LOG_LOGIC ("Received for vnode = " << (uint32_t)vnode);
   if (m_vnodeState[vnode].m_directions[destination][iif] == In) {
     // This assertion is now approved
-    NS_ASSERT(m_vnodeState[vnode].m_remoteSeq[destination][iif] == header.GetSeq());
+    // NS_ASSERT(m_vnodeState[vnode].m_remoteSeq[destination][iif] == header.GetSeq());
+    if (m_vnodeState[vnode].m_remoteSeq[destination][iif] != header.GetSeq ()) {
+      NS_LOG_WARN("DDC - remoteSeq is not the same as header.GetSeq ()");
+    }
     NS_LOG_LOGIC ("Received along an input port");
     StandardReceive(destination, header, route, error, iif);
     if (route != 0) {

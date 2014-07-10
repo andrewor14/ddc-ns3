@@ -58,13 +58,11 @@ SimpleSDNSwitch::GetTypeId (void)
 SimpleSDNSwitch::SimpleSDNSwitch ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_ABORT_MSG ("Constructor not supported.");
 }
 
 SimpleSDNSwitch::SimpleSDNSwitch (uint32_t id)
 {
-  m_id = id;
-  m_violation_count = 0;
+  SetID (id);
 }
 
 SimpleSDNSwitch::~SimpleSDNSwitch()
@@ -82,18 +80,47 @@ SimpleSDNSwitch::DoDispose (void)
   Application::DoDispose ();
 }
 
+void
+SimpleSDNSwitch::SetID (uint32_t id)
+{
+  m_id = id;
+}
+
+void
+SimpleSDNSwitch::SetPort (uint16_t port)
+{
+  m_port = port;
+}
+
+uint32_t
+SimpleSDNSwitch::GetID (void) const
+{
+  return m_id;
+}
+
+uint16_t
+SimpleSDNSwitch::GetPort (void) const
+{
+  return m_port;
+}
+
 void 
 SimpleSDNSwitch::StartApplication (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_socket == 0) {
-    TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-    m_socket = Socket::CreateSocket (GetNode (), tid);
-    InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
-    m_socket->Bind (local);
+
+  // Initialize only once
+  if (!m_application_started) {
+    m_application_started = true;
+    if (m_socket == 0) {
+      TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+      m_socket = Socket::CreateSocket (GetNode (), tid);
+      InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
+      m_socket->Bind (local);
+    }
+    m_socket->SetRecvCallback (MakeCallback (&SimpleSDNSwitch::HandleRead, this));
+    Simulator::Schedule (m_window_duration, &SimpleSDNSwitch::UpdateWindow, this);
   }
-  m_socket->SetRecvCallback (MakeCallback (&SimpleSDNSwitch::HandleRead, this));
-  Simulator::Schedule (m_window_duration, &SimpleSDNSwitch::UpdateWindow, this);
 }
 
 void 

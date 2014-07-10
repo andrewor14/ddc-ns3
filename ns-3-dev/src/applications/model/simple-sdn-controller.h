@@ -22,6 +22,7 @@
 #include "ns3/ptr.h"
 #include "ns3/address.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/inet-socket-address.h"
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4-header.h"
 
@@ -43,13 +44,20 @@ class SimpleSDNController : public Application
 public:
   static TypeId GetTypeId (void);
   SimpleSDNController ();
-  SimpleSDNController (uint32_t id);
+  SimpleSDNController (uint32_t);
 
   /**
    * Add peering nodes. These must be called before StartApplication.
    */
   void AddPeeringController (InetSocketAddress controllerAddress);
   void AddPeeringSwitch (InetSocketAddress switchAddress);
+
+  void SetID (uint32_t);
+  void SetLeaderID (uint32_t);
+  void SetPort (uint16_t);
+  uint32_t GetID (void) const;
+  uint32_t GetLeaderID (void) const;
+  uint16_t GetPort (void) const;
 
   virtual ~SimpleSDNController ();
   void AddReceivePacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > rxEvent);
@@ -71,6 +79,16 @@ private:
   void CreateSendSocket (InetSocketAddress address);
 
   /**
+   * Send a special SDN packet to the given address.
+   */
+  void SendSDNPacket (InetSocketAddress address);
+
+  /**
+   * Select a leader based on packets received from other controllers.
+   */
+  void SelectLeader (void);
+
+  /**
    * If this controller is the leader, send a special SDN packet to all switches.
    * This method calls itself repeatedly after a configurable time interval.
    */
@@ -82,16 +100,6 @@ private:
    * This method calls itself repeatedly after a configurable time interval.
    */
   void PingControllers (void);
-
-  /**
-   * Send a special SDN packet to the given address.
-   */
-  void SendSDNPacket (InetSocketAddress address);
-
-  /**
-   * Select a leader based on packets received from other controllers.
-   */
-  void SelectLeader (void);
 
   /**
    * Addresses for peering controllers and switches.
@@ -110,10 +118,17 @@ private:
   // Buffered packets with higher epochs
   std::list<Ptr<Packet> > m_buffered_packets;
 
+  // StartApplication is being called twice for some reason...
+  bool m_application_started;
+
   uint16_t m_port;
   uint32_t m_id;
   uint32_t m_leader_id;
   uint32_t m_epoch;
+
+  // Number of epochs before stopping the simulation
+  uint32_t m_max_epoch;
+
   Ptr<Socket> m_receive_socket;
 
   /// Callbacks for tracing the packet Rx events

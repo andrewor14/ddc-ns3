@@ -47,29 +47,30 @@ SimpleSDNController::GetTypeId (void)
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("PingSwitchesInterval",
                    "Interval between which this controller pings its peering switches.",
-                   TimeValue (Seconds (1.0)),
+                   TimeValue (Seconds (10.0)),
                    MakeTimeAccessor (&SimpleSDNController::m_ping_switches_interval),
                    MakeTimeChecker ())
     .AddAttribute ("PingControllersInterval",
                    "Interval between which this controller pings its peering controllers.",
-                   TimeValue (Seconds (0.1)),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&SimpleSDNController::m_ping_controllers_interval),
-                   MakeTimeChecker ());
+                   MakeTimeChecker ())
+    .AddAttribute ("MaxEpoch",
+                   "Max epoch before stopping the application.",
+                   UintegerValue (25),
+                   MakeUintegerAccessor (&SimpleSDNController::m_max_epoch),
+                   MakeUintegerChecker<uint32_t> ());
   return tid;
 }
 
 SimpleSDNController::SimpleSDNController ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_ABORT_MSG ("Constructor not supported.");
 }
 
 SimpleSDNController::SimpleSDNController (uint32_t id)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  m_id = id;
-  m_leader_id = m_id;
-  m_epoch = 0;
+  SetID (id);
 }
 
 SimpleSDNController::~SimpleSDNController()
@@ -91,6 +92,42 @@ SimpleSDNController::DoDispose (void)
 }
 
 void
+SimpleSDNController::SetID (uint32_t id)
+{
+  m_id = id;
+}
+
+void
+SimpleSDNController::SetLeaderID (uint32_t leader_id)
+{
+  m_leader_id = leader_id;
+}
+
+void
+SimpleSDNController::SetPort (uint16_t port)
+{
+  m_port = port;
+}
+
+uint32_t
+SimpleSDNController::GetID (void) const
+{
+  return m_id;
+}
+
+uint32_t
+SimpleSDNController::GetLeaderID (void) const
+{
+  return m_leader_id;
+}
+
+uint16_t
+SimpleSDNController::GetPort (void) const
+{
+  return m_port;
+}
+
+void
 SimpleSDNController::AddPeeringController (InetSocketAddress controllerAddress)
 {
   m_controller_addresses.push_back (controllerAddress);
@@ -107,27 +144,32 @@ SimpleSDNController::StartApplication (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  // Set up receive socket
-  if (m_receive_socket == 0) {
-    TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-    m_receive_socket = Socket::CreateSocket (GetNode (), tid);
-    InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
-    m_receive_socket->Bind (local);
-  }
-  m_receive_socket->SetRecvCallback (MakeCallback (&SimpleSDNController::HandleRead, this));
+  // Initialize only once
+  if (!m_application_started) {
+    m_application_started = true;
 
-  // Set up send sockets. Peers must be set up by the time this is called.
-  std::list<InetSocketAddress>::iterator it;
-  for (it = m_switch_addresses.begin (); it != m_switch_addresses.end (); it++) {
-    CreateSendSocket(*it);
-  }
-  for (it = m_controller_addresses.begin (); it != m_controller_addresses.end (); it++) {
-    CreateSendSocket(*it);
-  }
+    // Set up receive socket
+    if (m_receive_socket == 0) {
+      TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+      m_receive_socket = Socket::CreateSocket (GetNode (), tid);
+      InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
+      m_receive_socket->Bind (local);
+    }
+    m_receive_socket->SetRecvCallback (MakeCallback (&SimpleSDNController::HandleRead, this));
 
-  // Begin pinging peers
-  Simulator::Schedule (m_ping_switches_interval, &SimpleSDNController::PingSwitches, this);
-  Simulator::Schedule (m_ping_controllers_interval, &SimpleSDNController::PingControllers, this);
+    // Set up send sockets. Peers must be set up by the time this is called.
+    std::list<InetSocketAddress>::iterator it;
+    for (it = m_switch_addresses.begin (); it != m_switch_addresses.end (); it++) {
+      CreateSendSocket(*it);
+    }
+    for (it = m_controller_addresses.begin (); it != m_controller_addresses.end (); it++) {
+      CreateSendSocket(*it);
+    }
+
+    // Begin pinging peers
+    PingSwitches();
+    PingControllers();
+  }
 }
 
 void 
@@ -153,7 +195,7 @@ SimpleSDNController::CreateSendSocket (InetSocketAddress address)
   Ptr<Socket> socket = Socket::CreateSocket (GetNode (), tid);
   socket->Bind ();
   socket->Connect (address);
-  m_send_sockets.at (address) = socket;
+  m_send_sockets.insert (std::pair<InetSocketAddress, Ptr<Socket> > (address, socket));
 }
 
 void
@@ -174,6 +216,9 @@ SimpleSDNController::PingSwitches ()
 void
 SimpleSDNController::PingControllers ()
 {
+  if (m_epoch > m_max_epoch) {
+    NS_ABORT_MSG("epoch over!");
+  }
   SelectLeader();
   // This is a new epoch
   m_epoch++;
@@ -297,6 +342,7 @@ SimpleSDNController::SelectLeader ()
   m_leader_candidates.unique ();
   m_leader_id = *(std::max_element (m_leader_candidates.begin (), m_leader_candidates.end ()));
   m_leader_candidates.clear ();
+  NS_LOG_INFO ("SELECT LEADER (epoch " << m_epoch << ") *** leader = " << m_leader_id << " ***");
 }
 
 void 
