@@ -53,16 +53,24 @@ public:
   void SetAttribute (std::string name, const AttributeValue &value);
 
   /**
-   * Create a SimpleSDNController on the specified node.
+   * Install SimpleSDNController on the specified node(s).
+   * If multiple nodes are provided, automatically connect all nodes as peers.
    */
   ApplicationContainer Install (Ptr<Node> node, uint32_t id) const;
+  ApplicationContainer Install (NodeContainer nodes, uint32_t start_id) const;
+
+  /**
+   * Connect all controllers to all switches.
+   */
+  void ConnectToSwitches (NodeContainer controllers, NodeContainer switches);
 
 private:
   ObjectFactory m_factory;
+  Ptr<Application> InstallPrivate (Ptr<Node> node, uint32_t id) const;
 };
 
 /**
- * \brief Create a switch that listens for and responds to controller pings.
+ * \brief Create a switch that listens for controller pings.
  */
 class SimpleSDNSwitchHelper
 {
@@ -87,12 +95,14 @@ public:
   void SetAttribute (std::string name, const AttributeValue &value);
 
   /**
-   * Create a SimpleSDNSwitch on the specified node.
+   * Install SimpleSDNSwitch on the specified node(s).
    */
   ApplicationContainer Install (Ptr<Node> node, uint32_t id) const;
+  ApplicationContainer Install (NodeContainer nodes, uint32_t start_id) const;
 
 private:
   ObjectFactory m_factory;
+  Ptr<Application> InstallPrivate (Ptr<Node> node, uint32_t id) const;
 };
 
 } // namespace ns3
