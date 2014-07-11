@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
   controller3->AddPeeringController (*controllerAddress4);
   controller4->AddPeeringController (*controllerAddress1);
   controller4->AddPeeringController (*controllerAddress2);
-  controller4->AddPeeringController (*controllerAddress4);
+  controller4->AddPeeringController (*controllerAddress3);
 
   // Connect controllers to switches
   controller1->AddPeeringSwitch (*switchAddress1);
