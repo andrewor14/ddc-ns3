@@ -72,9 +72,7 @@ SimpleSDNControllerHelper::Install (NodeContainer nodes, uint32_t start_id) cons
     for (uint32_t j = 0; j < numApps; j++) {
       if (i != j) {
         SimpleSDNController* otherController = (SimpleSDNController*) GetPointer (apps.Get (j));
-        UintegerValue portValue;
-        otherController->GetAttribute ("Port", portValue);
-        uint16_t port = (uint16_t) portValue.Get ();
+        uint16_t port = (uint16_t) otherController->GetPort ();
         Ipv4Address ipv4 = nodes.Get (j)->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
         InetSocketAddress* address = new InetSocketAddress (ipv4, port);
         controller->AddPeeringController (*address);
@@ -88,6 +86,7 @@ void
 SimpleSDNControllerHelper::ConnectToSwitches (NodeContainer controllers, NodeContainer switches)
 {
   // Add all switches to all controllers as ppers
+  // This assumes all controllers and switches are already installed
   NodeContainer::Iterator it_c;
   NodeContainer::Iterator it_s;
   for (it_c = controllers.Begin (); it_c != controllers.End (); it_c++) {
@@ -96,9 +95,7 @@ SimpleSDNControllerHelper::ConnectToSwitches (NodeContainer controllers, NodeCon
     for (it_s = switches.Begin (); it_s != switches.End (); it_s++) {
       Node* node_s = (Node*) GetPointer (*it_s);
       SimpleSDNSwitch* app_s = (SimpleSDNSwitch*) GetPointer (node_s->GetApplication (0));
-      UintegerValue portValue;
-      app_s->GetAttribute ("Port", portValue);
-      uint16_t port = (uint16_t) portValue.Get ();
+      uint16_t port = (uint16_t) app_s->GetPort ();
       Ipv4Address ipv4 = node_s->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
       InetSocketAddress* switchAddress = new InetSocketAddress (ipv4, port);
       app_c->AddPeeringSwitch (*switchAddress);
