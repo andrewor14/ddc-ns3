@@ -27,7 +27,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/simple-sdn-header.h"
 
-#include <algorithm>
+#include <stdlib.h>
 
 #include "simple-sdn-controller.h"
 
@@ -167,9 +167,9 @@ SimpleSDNController::StartApplication (void)
     }
 
     // Begin pinging peers
+    // It is important to wait a short duration for control plane connectivity to be set up.
     Simulator::Schedule (m_ping_switches_interval, &SimpleSDNController::PingSwitches, this);
     Simulator::Schedule (m_ping_controllers_interval, &SimpleSDNController::PingControllers, this);
-    //PingControllers();
   }
 }
 
@@ -218,7 +218,8 @@ void
 SimpleSDNController::PingControllers ()
 {
   if (m_epoch > m_max_epoch) {
-    NS_ABORT_MSG("epoch over!");
+    NS_LOG_INFO ("=== Max epoch (" << m_max_epoch << ") reached. Terminating simulation. ===\n");
+    exit (EXIT_SUCCESS);
   }
   SelectLeader();
   // This is a new epoch
@@ -333,7 +334,9 @@ SimpleSDNController::SelectLeader ()
   m_leader_candidates.unique ();
   m_leader_id = *(std::max_element (m_leader_candidates.begin (), m_leader_candidates.end ()));
   m_leader_candidates.clear ();
-  NS_LOG_INFO ("* SELECT LEADER (id " << m_id << ", epoch " << m_epoch << ") *** leader = " << m_leader_id << " ***");
+  if (m_epoch % 10 == 0) {
+    NS_LOG_INFO ("* SELECT LEADER (id " << m_id << ", epoch " << m_epoch << ") *** leader = " << m_leader_id << " ***");
+  }
 }
 
 void 

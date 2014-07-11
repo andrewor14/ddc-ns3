@@ -200,7 +200,10 @@ SimpleSDNSwitch::UpdateWindow ()
     m_violation_count = 0;
   }
 
-  NS_LOG_LOGIC("Violation count for switch " << m_id << " is " << (uint32_t) m_violation_count);
+  NS_LOG_INFO (
+    "Switch " << m_id << " " <<
+    "has observed " << (uint32_t) m_violation_count << " " <<
+    "consecutive violation(s)");
 
   // If we have exceeded our threshold for number of windows with violation
   if (m_violation_count >= m_max_violation_count) {
@@ -218,7 +221,7 @@ SimpleSDNSwitch::UpdateWindow ()
 void
 SimpleSDNSwitch::ReportViolation ()
 {
-  NS_ABORT_MSG ("Switch " << m_id << ": Inconsistency in the control plane detected!");
+  NS_ABORT_MSG ("Switch " << m_id << " has detected inconsistency in the control plane!");
 }
 
 } // Namespace ns3

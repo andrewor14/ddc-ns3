@@ -26,7 +26,7 @@ std::list<uint32_t>* connectivityGraph [numNodes];
 const uint32_t controllerPort = 2244;
 const Time controllerPingSwitchesInterval = Time (Seconds (1.0));
 const Time controllerPingControllersInterval = Time (Seconds (0.1));
-const uint32_t controllerMaxEpoch = 50;
+const uint32_t controllerMaxEpoch = 80;
 
 // Switch attributes
 const uint32_t switchPort = 3355;
@@ -34,5 +34,5 @@ const Time switchWindowDuration = controllerPingSwitchesInterval;
 const uint8_t switchMaxViolationCount = 3;
 
 // Simulation end time
-Time simulationEnd = Seconds(5.0);//60.0 * 60.0 * 24 * 7);
+Time simulationEnd = Seconds(60.0 * 60.0 * 24 * 7);
 

@@ -69,19 +69,6 @@ void InitializeTopology ()
 }
 
 /**
- * Return the InetSocketAddress of a node.
- */
-InetSocketAddress* GetInetSocketAddress (Ptr<Node> node, bool isController) {
-  Address addr = node->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
-  Ipv4Address ipv4Addr = Ipv4Address::ConvertFrom (addr);
-  if (isController) {
-    return new InetSocketAddress (ipv4Addr, controllerPort);
-  } else {
-    return new InetSocketAddress (ipv4Addr, switchPort);
-  }
-}
-
-/**
  * Run the simulation.
  */
 int main (int argc, char *argv[])
