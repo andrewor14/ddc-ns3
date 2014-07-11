@@ -618,10 +618,15 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
   NS_LOG_LOGIC ("Received for vnode = " << (uint32_t)vnode);
   if (m_vnodeState[vnode].m_directions[destination][iif] == In) {
     // This assertion is now approved
-    // NS_ASSERT(m_vnodeState[vnode].m_remoteSeq[destination][iif] == header.GetSeq());
     if (m_vnodeState[vnode].m_remoteSeq[destination][iif] != header.GetSeq ()) {
-      NS_LOG_WARN("DDC - remoteSeq is not the same as header.GetSeq ()");
+      NS_LOG_WARN("DDC - remoteSeq is not the same as header.GetSeq () " << vnode << 
+                    " " << 
+                    destination << 
+                    " " << iif 
+                    << " " << header.GetSeq()
+                    << " expected " << m_vnodeState[vnode].m_remoteSeq[destination][iif]);
     }
+    NS_ASSERT(m_vnodeState[vnode].m_remoteSeq[destination][iif] == header.GetSeq());
     NS_LOG_LOGIC ("Received along an input port");
     StandardReceive(destination, header, route, error, iif);
     if (route != 0) {
@@ -668,18 +673,21 @@ Ipv4GlobalRouting::ControlplaneRouteInput (
 
     }
     else {
-      m_vnodeState[vnode].m_directions[destination][iif] = In;
-      m_vnodeState[vnode].m_remoteSeq[destination][iif] = header.GetSeq();
-      NS_LOG_LOGIC ("Received on an uncategorized port");
-      StandardReceive(destination, header, route, error, iif);
-      if (route != 0) {
-        ucb(route, p, header);
-        return true;
-      }
-      else {
-        ecb (p, header, error);
-        return false;
-      }
+      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      return false;
+      //m_vnodeState[vnode].m_directions[destination][iif] = In;
+      //m_vnodeState[vnode].m_remoteSeq[destination][iif] = header.GetSeq();
+      //NS_LOG_LOGIC ("Received on an uncategorized port " << iif << " for destination " << destination << " setting
+              //remote seq to " << header.GetSeq() << " for VNODE " << vnode);
+      //StandardReceive(destination, header, route, error, iif);
+      //if (route != 0) {
+        //ucb(route, p, header);
+        //return true;
+      //}
+      //else {
+        //ecb (p, header, error);
+        //return false;
+      //}
     }
   }
 }
@@ -865,6 +873,7 @@ Ipv4GlobalRouting::NotifyInterfaceUp (uint32_t i)
         m_vnodeState[vnode].m_directions[dest][i] = Unknown;
         m_vnodeState[vnode].m_localSeq[dest][i] = 0;
         m_vnodeState[vnode].m_remoteSeq[dest][i] = 0;
+        NS_LOG_LOGIC ("Interface Up " << i << " for destination " << dest << " setting remote seq to " << 0 << " for VNODE " << vnode);
         m_ttl[dest][i] = 0;
         m_vnodeState[vnode].m_inputs[dest].push_back(i);
         m_vnodeState[vnode].m_to_reverse[dest].push_back(i);
@@ -936,6 +945,7 @@ Ipv4GlobalRouting::PrimitiveAEO (Ipv4Address dest)
           m_vnodeState[newVnode].m_directions[dest][i] = Out;
           m_vnodeState[newVnode].m_localSeq[dest][i] = 0;
           m_vnodeState[newVnode].m_remoteSeq[dest][i] = 0;
+          NS_LOG_LOGIC ("Primitive AEO " << i << " for destination " << dest << " setting remote seq to " << 0 << " for VNODE " << newVnode);
           // Reset TTL during AEO operation, this makes sense since AEO is
           // primarily a control plane primitive, and is called in order, and
           // sets true directions
@@ -1078,6 +1088,7 @@ Ipv4GlobalRouting::ReverseOutputToInput (uint8_t vnode, Ipv4Address addr, uint32
   m_vnodeState[vnode].m_directions[addr][link] = In;
   m_vnodeState[vnode].m_inputs[addr].push_front(link);
   m_vnodeState[vnode].m_remoteSeq[addr][link] = ((m_vnodeState[vnode].m_remoteSeq[addr][link] + 1) & 0x1);
+  NS_LOG_LOGIC ("Reverse Out to In " << link << " for destination " << addr<< " setting remote seq to " << m_vnodeState[vnode].m_remoteSeq[addr][link] << " for VNODE " << vnode);
 }
 
 // @apanda
