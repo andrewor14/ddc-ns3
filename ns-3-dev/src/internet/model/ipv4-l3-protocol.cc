@@ -18,6 +18,8 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
+#define __STDC_LIMIT_MACROS
+#include <stdint.h>
 #include "ns3/packet.h"
 #include "ns3/log.h"
 #include "ns3/callback.h"
