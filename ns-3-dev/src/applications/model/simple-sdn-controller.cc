@@ -167,8 +167,9 @@ SimpleSDNController::StartApplication (void)
     }
 
     // Begin pinging peers
-    PingSwitches();
-    PingControllers();
+    Simulator::Schedule (m_ping_switches_interval, &SimpleSDNController::PingSwitches, this);
+    Simulator::Schedule (m_ping_controllers_interval, &SimpleSDNController::PingControllers, this);
+    //PingControllers();
   }
 }
 
