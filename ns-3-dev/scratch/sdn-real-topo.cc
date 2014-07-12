@@ -36,7 +36,6 @@ void InitializeTopology (std::string filename)
 {
   NS_LOG_INFO ("* Initializing topology from \"" << filename << "\"");
   std::map<uint32_t, std::list<uint32_t>*> nodeMapping;
-  std::map<uint32_t, uint32_t> nodeTranslateMap;
   std::ifstream file (filename.c_str ());
   if (!file.is_open ()) {
     NS_LOG_ERROR("File " << filename << " not found or cannot be opened!");
@@ -75,7 +74,7 @@ void InitializeTopology (std::string filename)
   }
 
   // Initialize connectivity graph from node mapping
-  for (int i = 0; i < numNodes; i++) {
+  for (uint32_t i = 0; i < numNodes; i++) {
     connectivityGraph.at (i) = new std::list<uint32_t>;
   }
   NS_LOG_LOGIC ("Adding bi-directional connections (using new node IDs)");
@@ -86,7 +85,7 @@ void InitializeTopology (std::string filename)
     for (it_n = neighbors->begin (); it_n != neighbors->end (); it_n++) {
       uint32_t to = nodeTranslateMap[*it_n];
       connectivityGraph.at (from)->push_back (to);
-      NS_LOG_LOGIC("  " << from << " <-> " << to);
+      NS_LOG_LOGIC ("  " << from << " <-> " << to);
     }
   }
 }
@@ -101,12 +100,34 @@ int main (int argc, char *argv[])
   LogComponentEnable ("SimpleSDNControllerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("SimpleSDNSwitchApplication", LOG_LEVEL_INFO);
 
-  if (argc < 2) {
-    NS_LOG_ERROR("Usage: sdn-real-topo [topology file]");
+  if (argc < 4) {
+    NS_LOG_ERROR ("Usage: sdn-real-topo [topology file] [controller-id-start] [controller-id-end]");
     exit (EXIT_FAILURE);
   }
 
   InitializeTopology (argv[1]);
+
+  // Resolve controller ID range
+  uint32_t oldControllerStartID = std::atoi (argv[2]);
+  uint32_t oldControllerEndID = std::atoi (argv[3]);
+  if (nodeTranslateMap.find (oldControllerStartID) == nodeTranslateMap.end ()) {
+    NS_LOG_ERROR ("Controller start ID " << oldControllerStartID << " not found!");
+    exit (EXIT_FAILURE);
+  }
+  if (nodeTranslateMap.find (oldControllerEndID) == nodeTranslateMap.end ()) {
+    NS_LOG_ERROR ("Controller end ID " << oldControllerEndID << " not found!");
+    exit (EXIT_FAILURE);
+  }
+  if (oldControllerStartID > oldControllerEndID) {
+    NS_LOG_ERROR (
+      "Controller start ID " << oldControllerStartID << " must be <= " <<
+      "controller end ID " << oldControllerEndID << "!");
+    exit (EXIT_FAILURE);
+  }
+  uint32_t controllerStartID = nodeTranslateMap.at (std::atoi (argv[2]));
+  uint32_t controllerEndID = nodeTranslateMap.at (std::atoi (argv[3]));
+  NS_LOG_LOGIC ("Controllers ID range (new IDs): "
+    << controllerStartID << " - " << controllerEndID);
 
   // Initialize the nodes
   NodeContainer nodes;
@@ -120,7 +141,7 @@ int main (int argc, char *argv[])
   std::vector<NetDeviceContainer> nodeDevices (numNodes);  
   std::vector<NetDeviceContainer> linkDevices;
   std::vector<PointToPointChannel*> channels;
-  for (int i = 0; i < numNodes; i++) {
+  for (uint32_t i = 0; i < numNodes; i++) {
     for (std::list<uint32_t>::iterator it = connectivityGraph[i]->begin ();
          it != connectivityGraph[i]->end ();
          it++) {
@@ -147,8 +168,8 @@ int main (int argc, char *argv[])
   // Set up switches and controllers
   NodeContainer switchNodes;
   NodeContainer controllerNodes;
-  for (int i = 0; i < numNodes; i++) {
-    if (i >= 1 && i <= 4) {
+  for (uint32_t i = 0; i < numNodes; i++) {
+    if (i >= controllerStartID && i <= controllerEndID) {
       controllerNodes.Add (nodes.Get (i));
     } else {
       switchNodes.Add (nodes.Get (i));
@@ -177,7 +198,7 @@ int main (int argc, char *argv[])
 
   // Clean up
   Simulator::Destroy ();
-  for (int i = 0; i < numNodes; i++) {
+  for (uint32_t i = 0; i < numNodes; i++) {
     delete connectivityGraph[i];
   }
 

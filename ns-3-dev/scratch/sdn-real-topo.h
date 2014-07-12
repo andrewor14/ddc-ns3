@@ -17,10 +17,13 @@
 using namespace ns3;
 
 // Number of nodes in this network
-int32_t numNodes = -1;
+uint32_t numNodes = -1;
 
 // Graph representation of the network
 std::vector<std::list<uint32_t>*> connectivityGraph;
+
+// Mapping from old ID to new ID, in case the node ID space is not continuous
+std::map<uint32_t, uint32_t> nodeTranslateMap;
 
 // Controller attributes
 const uint32_t controllerPort = 2244;
