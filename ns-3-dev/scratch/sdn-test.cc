@@ -116,31 +116,31 @@ int main (int argc, char *argv[])
   }
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  // Set up switches
+  // Set up switches and controllers
   NodeContainer switchNodes;
-  switchNodes.Add (nodes.Get (0));
+  NodeContainer controllerNodes;
+  for (int i = 0; i < numNodes; i++) {
+    if (i >= 1 && i <= 4) {
+      controllerNodes.Add (nodes.Get (i));
+    } else {
+      switchNodes.Add (nodes.Get (i));
+    }
+  }
+
+  // Install switch and controller applications
   SimpleSDNSwitchHelper* switchHelper =
     new SimpleSDNSwitchHelper (
       switchPort,
       switchWindowDuration,
       switchMaxViolationCount);
-  ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
-
-  // Set up controllers
-  NodeContainer controllerNodes;
-  controllerNodes.Add (nodes.Get (1));
-  controllerNodes.Add (nodes.Get (2));
-  controllerNodes.Add (nodes.Get (3));
-  controllerNodes.Add (nodes.Get (4));
   SimpleSDNControllerHelper* controllerHelper =
     new SimpleSDNControllerHelper (
       controllerPort,
       controllerPingSwitchesInterval,
       controllerPingControllersInterval,
       controllerMaxEpoch);
+  ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
-
-  // Connect switches and controllers
   controllerHelper->ConnectToSwitches (controllerNodes, switchNodes);
 
   // Actually start the simulation
