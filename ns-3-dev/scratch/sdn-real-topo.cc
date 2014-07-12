@@ -20,48 +20,75 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 
-#include "sdn-test.h"
+#include <string>
+#include <stdlib.h>
+
+#include "sdn-real-topo.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("AndrewSDNTest");
+NS_LOG_COMPONENT_DEFINE ("AndrewSDNTopologyTest");
 
 /**
- * Initialize the connectivity graph.
+ * Initialize the connectivity graph from the given topology file.
  */
-void InitializeTopology ()
+void InitializeTopology (std::string filename)
 {
-  for (int i = 0; i < numNodes; i++) {
-    connectivityGraph[i] = new std::list<uint32_t>;
+  NS_LOG_INFO ("* Initializing topology from \"" << filename << "\"");
+  std::map<uint32_t, std::list<uint32_t>*> nodeMapping;
+  std::map<uint32_t, uint32_t> nodeTranslateMap;
+  std::ifstream file (filename.c_str ());
+  if (!file.is_open ()) {
+    NS_LOG_ERROR("File " << filename << " not found or cannot be opened!");
+    exit (EXIT_FAILURE);
   }
-  connectivityGraph[0]->push_back (1);
-  connectivityGraph[0]->push_back (5);
-  connectivityGraph[0]->push_back (6);
-  connectivityGraph[0]->push_back (7);
 
-  connectivityGraph[1]->push_back (6);
-  connectivityGraph[1]->push_back (7);
-  connectivityGraph[1]->push_back (8);
+  // Populate node connectivity mapping from file
+  while (file.good ()) {
+    std::string input;
+    getline (file, input);
+    size_t found = input.find (" ");
+    if (found == std::string::npos) {
+      continue;
+    }
+    std::string node1s = input.substr (0, int (found)).c_str ();
+    std::string node2s =
+      input.substr (int (found) + 1, input.length () - (int (found) + 1));
+    uint32_t node1 = std::atoi (node1s.c_str ()) ;
+    uint32_t node2 = std::atoi (node2s.c_str ());
+    if (!nodeMapping[node1]) { nodeMapping[node1] = new std::list<uint32_t>; }
+    if (!nodeMapping[node2]) { nodeMapping[node2] = new std::list<uint32_t>; }
+    nodeMapping[node1]->push_back(node2);
+  }
 
-  connectivityGraph[2]->push_back (3);
-  connectivityGraph[2]->push_back (5);
-  connectivityGraph[2]->push_back (7);
-  connectivityGraph[2]->push_back (8);
-  connectivityGraph[2]->push_back (9);
+  numNodes = nodeMapping.size();
+  connectivityGraph.resize (numNodes);
 
-  connectivityGraph[3]->push_back (8);
-  connectivityGraph[3]->push_back (9);
-  connectivityGraph[3]->push_back (10);
+  // Translate old ID to new ID in case the ID space is not continuous
+  uint32_t new_id = 0;
+  std::map<uint32_t, std::list<uint32_t>*>::iterator it;
+  NS_LOG_LOGIC ("Initializing node mapping");
+  for (it = nodeMapping.begin (); it != nodeMapping.end (); it++) {
+    uint32_t old_id = it->first;
+    NS_LOG_LOGIC ("  " << old_id << " -> " << new_id);
+    nodeTranslateMap[old_id] = new_id++;
+  }
 
-  connectivityGraph[4]->push_back (5);
-  connectivityGraph[4]->push_back (9);
-  connectivityGraph[4]->push_back (10);
-  connectivityGraph[4]->push_back (11);
-
-  connectivityGraph[7]->push_back (8);
-  connectivityGraph[8]->push_back (11);
-  connectivityGraph[9]->push_back (10);
-  connectivityGraph[10]->push_back (11);
+  // Initialize connectivity graph from node mapping
+  for (int i = 0; i < numNodes; i++) {
+    connectivityGraph.at (i) = new std::list<uint32_t>;
+  }
+  NS_LOG_LOGIC ("Adding bi-directional connections (using new node IDs)");
+  for (it = nodeMapping.begin (); it != nodeMapping.end (); it++) {
+    uint32_t from = nodeTranslateMap[it->first];
+    std::list<uint32_t>* neighbors = it->second;
+    std::list<uint32_t>::iterator it_n;
+    for (it_n = neighbors->begin (); it_n != neighbors->end (); it_n++) {
+      uint32_t to = nodeTranslateMap[*it_n];
+      connectivityGraph.at (from)->push_back (to);
+      NS_LOG_LOGIC("  " << from << " <-> " << to);
+    }
+  }
 }
 
 /**
@@ -69,12 +96,17 @@ void InitializeTopology ()
  */
 int main (int argc, char *argv[])
 {
-  LogComponentEnable ("AndrewSDNTest", LOG_LEVEL_INFO);
+  LogComponentEnable ("AndrewSDNTopologyTest", LOG_LEVEL_INFO);
   LogComponentEnable ("Ipv4GlobalRouting", LOG_LEVEL_WARN);
   LogComponentEnable ("SimpleSDNControllerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("SimpleSDNSwitchApplication", LOG_LEVEL_INFO);
 
-  InitializeTopology ();
+  if (argc < 2) {
+    NS_LOG_ERROR("Usage: sdn-real-topo [topology file]");
+    exit (EXIT_FAILURE);
+  }
+
+  InitializeTopology (argv[1]);
 
   // Initialize the nodes
   NodeContainer nodes;
