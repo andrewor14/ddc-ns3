@@ -32,8 +32,8 @@ std::vector<PointToPointChannel*> channels;
 
 // Controller attributes
 const uint32_t controllerPort = 2244;
-const Time controllerPingSwitchesInterval = Time (Seconds (1.0));
-const Time controllerPingControllersInterval = Time (Seconds (0.1));
+const Time controllerPingSwitchesInterval = Seconds (1.0);
+const Time controllerPingControllersInterval = Seconds (0.1);
 const uint32_t controllerMaxEpoch = 100;
 
 // For failing links
@@ -44,7 +44,4 @@ const Time linkFailureInterval = controllerPingControllersInterval;
 const uint32_t switchPort = 3355;
 const Time switchWindowDuration = controllerPingSwitchesInterval;
 const uint8_t switchMaxViolationCount = 3;
-
-// Simulation end time
-Time simulationEnd = Seconds(60.0 * 60.0 * 24 * 7);
 

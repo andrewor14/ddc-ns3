@@ -27,8 +27,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/simple-sdn-header.h"
 
-#include <stdlib.h>
-
 #include "simple-sdn-controller.h"
 
 namespace ns3 {
@@ -208,6 +206,9 @@ SimpleSDNController::CreateSendSocket (InetSocketAddress address)
 void
 SimpleSDNController::PingSwitches ()
 {
+  if (m_epoch > m_max_epoch) {
+    return;
+  }
   // If I am the leader, ping all switches
   if (m_id == m_leader_id) {
     std::list<InetSocketAddress>::iterator it;
@@ -226,7 +227,7 @@ SimpleSDNController::PingControllers ()
   if (m_epoch > m_max_epoch) {
     NS_LOG_INFO ("=== Max epoch (" << m_max_epoch << ") reached. Terminating simulation. ===\n");
     StopApplication ();
-    exit (EXIT_SUCCESS);
+    return;
   }
   SelectLeader();
   // This is a new epoch
