@@ -200,10 +200,12 @@ SimpleSDNSwitch::UpdateWindow ()
     m_violation_count = 0;
   }
 
-  NS_LOG_INFO (
-    "Switch " << m_id << " " <<
-    "has observed " << (uint32_t) m_violation_count << " " <<
-    "consecutive violation(s)");
+  if (m_violation_count > 0) {
+    NS_LOG_INFO (
+      "Switch " << m_id << " " <<
+      "has observed " << (uint32_t) m_violation_count << " " <<
+      "consecutive violation(s)");
+  }
 
   // If we have exceeded our threshold for number of windows with violation
   if (m_violation_count >= m_max_violation_count) {

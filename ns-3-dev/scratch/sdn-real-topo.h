@@ -14,6 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "ns3/random-variable.h"
+
 using namespace ns3;
 
 // Number of nodes in this network
@@ -25,11 +27,19 @@ std::vector<std::list<uint32_t>*> connectivityGraph;
 // Mapping from old ID to new ID, in case the node ID space is not continuous
 std::map<uint32_t, uint32_t> nodeTranslateMap;
 
+// Keep track of all links to fail them
+std::vector<PointToPointChannel*> channels;
+
 // Controller attributes
 const uint32_t controllerPort = 2244;
 const Time controllerPingSwitchesInterval = Time (Seconds (1.0));
 const Time controllerPingControllersInterval = Time (Seconds (0.1));
-const uint32_t controllerMaxEpoch = 80;
+const uint32_t controllerMaxEpoch = 100;
+
+// Link failure properties
+UniformVariable rv;
+const uint32_t maxLinksFailed = 100;
+const Time linkFailureInterval = controllerPingControllersInterval;
 
 // Switch attributes
 const uint32_t switchPort = 3355;

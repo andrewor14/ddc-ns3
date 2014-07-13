@@ -19,6 +19,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/random-variable.h"
 
 #include <string>
 #include <stdlib.h>
@@ -91,11 +92,28 @@ void InitializeTopology (std::string filename)
 }
 
 /**
+ * Fail a random link.
+ */
+void FailRandomLink () {
+  if (channels.size () > 0) {
+    uint32_t linkIndex = rv.GetInteger (0, channels.size () - 1);
+    uint32_t node1 = channels[linkIndex]->GetDevice (0)->GetNode()->GetId ();
+    uint32_t node2 = channels[linkIndex]->GetDevice (1)->GetNode()->GetId ();
+    NS_LOG_LOGIC ("Failing link " << node1 << " <-> " << node2);
+    PointToPointChannel* linkToFail = channels.at (linkIndex);
+    linkToFail->SetLinkDown ();
+    channels.erase (channels.begin () + linkIndex);
+  } else {
+    NS_LOG_LOGIC ("No more links to fail!");
+  }
+}
+
+/**
  * Run the simulation.
  */
 int main (int argc, char *argv[])
 {
-  LogComponentEnable ("AndrewSDNTopologyTest", LOG_LEVEL_INFO);
+  LogComponentEnable ("AndrewSDNTopologyTest", LOG_LEVEL_LOGIC);
   LogComponentEnable ("Ipv4GlobalRouting", LOG_LEVEL_WARN);
   LogComponentEnable ("SimpleSDNControllerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("SimpleSDNSwitchApplication", LOG_LEVEL_INFO);
@@ -140,7 +158,6 @@ int main (int argc, char *argv[])
   p2p.SetQueue ("ns3::PriorityQueue");
   std::vector<NetDeviceContainer> nodeDevices (numNodes);  
   std::vector<NetDeviceContainer> linkDevices;
-  std::vector<PointToPointChannel*> channels;
   for (uint32_t i = 0; i < numNodes; i++) {
     for (std::list<uint32_t>::iterator it = connectivityGraph[i]->begin ();
          it != connectivityGraph[i]->end ();
@@ -191,6 +208,13 @@ int main (int argc, char *argv[])
   ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
   controllerHelper->ConnectToSwitches (controllerNodes, switchNodes);
+
+  // Schedule link failures
+  Time nextLinkFail = linkFailureInterval;
+  for (uint32_t i = 0; i < maxLinksFailed; i++) {
+    Simulator::Schedule (nextLinkFail, &FailRandomLink);
+    nextLinkFail += linkFailureInterval;
+  }
 
   // Actually start the simulation
   NS_LOG_INFO ("-- Simulation starting --");
