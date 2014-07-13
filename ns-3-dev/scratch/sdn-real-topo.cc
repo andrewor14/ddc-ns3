@@ -113,7 +113,7 @@ void FailRandomLink () {
  */
 int main (int argc, char *argv[])
 {
-  LogComponentEnable ("AndrewSDNTopologyTest", LOG_LEVEL_LOGIC);
+  LogComponentEnable ("AndrewSDNTopologyTest", LOG_LEVEL_INFO);
   LogComponentEnable ("Ipv4GlobalRouting", LOG_LEVEL_WARN);
   LogComponentEnable ("SimpleSDNControllerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("SimpleSDNSwitchApplication", LOG_LEVEL_INFO);

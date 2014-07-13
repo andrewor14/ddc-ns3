@@ -24,3 +24,4 @@ route.table
 *.tr
 core
 *.swo
+*.log

@@ -170,6 +170,11 @@ SimpleSDNController::StartApplication (void)
     // It is important to wait a short duration for control plane connectivity to be set up.
     Simulator::Schedule (m_ping_switches_interval, &SimpleSDNController::PingSwitches, this);
     Simulator::Schedule (m_ping_controllers_interval, &SimpleSDNController::PingControllers, this);
+
+    // Log latency to file
+    std::stringstream filename;
+    filename << "controller-" << m_id << "-latency.log";
+    m_file.open (filename.str ().c_str ());
   }
 }
 
@@ -187,6 +192,7 @@ SimpleSDNController::StopApplication ()
     socket->Close ();
     socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   }
+  m_file.close ();
 }
 
 void
@@ -219,6 +225,7 @@ SimpleSDNController::PingControllers ()
 {
   if (m_epoch > m_max_epoch) {
     NS_LOG_INFO ("=== Max epoch (" << m_max_epoch << ") reached. Terminating simulation. ===\n");
+    StopApplication ();
     exit (EXIT_SUCCESS);
   }
   SelectLeader();
@@ -243,6 +250,7 @@ SimpleSDNController::SendSDNPacket (InetSocketAddress address)
   sdnHeader.SetLeaderID (m_leader_id);
   sdnHeader.SetRespondPort (m_port);
   sdnHeader.SetEpoch (m_epoch);
+  sdnHeader.SetTimeSent (Simulator::Now ().GetNanoSeconds ());
   p->AddHeader (sdnHeader);
   // Set up IP header
   uint32_t control_flag = Ipv4Header::GetControlFlag ();
@@ -297,11 +305,16 @@ SimpleSDNController::HandleControllerRead (Ptr<Packet> p)
   if (controller_id != m_id) {
     uint32_t leader_id = sdnHeader.GetLeaderID ();
     uint32_t epoch = sdnHeader.GetEpoch ();
+    uint64_t time_sent = sdnHeader.GetTimeSent ();
+    uint64_t latency = (Simulator::Now () - Time (NanoSeconds (time_sent))).GetNanoSeconds ();
+    m_file << latency << "\n";
     NS_LOG_LOGIC (
       "    Packet received from " <<
       "controller " << controller_id << " " <<
       "(leader " << leader_id << ") has " <<
-      "epoch = " << epoch << ". " <<
+      "epoch = " << epoch << ", " <<
+      "time = " << time_sent << "ns " <<
+      "latency = " << latency << "ns " <<
       "(m_epoch = " << m_epoch << ")");
     if (epoch == m_epoch) {
       m_leader_candidates.push_back (controller_id);

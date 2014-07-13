@@ -43,7 +43,8 @@ SimpleSDNHeader::SimpleSDNHeader ():
   m_controller_id (0),
   m_leader_id (0),
   m_respond_port (0),
-  m_epoch (0) { }
+  m_epoch (0),
+  m_time_sent (0) { }
 
 void
 SimpleSDNHeader::SetControllerID (uint32_t controller_id)
@@ -94,19 +95,32 @@ SimpleSDNHeader::GetEpoch (void) const
 }
 
 void
+SimpleSDNHeader::SetTimeSent (uint64_t time_sent)
+{
+  m_time_sent = time_sent;
+}
+
+uint64_t
+SimpleSDNHeader::GetTimeSent (void) const
+{
+  return m_time_sent;
+}
+
+void
 SimpleSDNHeader::Print (std::ostream &os) const
 {
   os << "(" <<
     "controller_id=" << m_controller_id << " " <<
     "leader_id=" << m_leader_id << " " <<
     "respond_port=" << m_respond_port << " " <<
-    "epoch=" << m_epoch << ")";
+    "epoch=" << m_epoch << " " <<
+    "time_sent=" << m_time_sent << ")";
 }
 
 uint32_t
 SimpleSDNHeader::GetSerializedSize (void) const
 {
-  return 4 + 4 + 2 + 4;
+  return 4 + 4 + 2 + 4 + 8;
 }
 
 void
@@ -117,6 +131,7 @@ SimpleSDNHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU32 (m_leader_id);
   i.WriteHtonU16 (m_respond_port);
   i.WriteHtonU32 (m_epoch);
+  i.WriteHtonU64 (m_time_sent);
 }
 
 uint32_t
@@ -127,6 +142,7 @@ SimpleSDNHeader::Deserialize (Buffer::Iterator start)
   m_leader_id = i.ReadNtohU32 ();
   m_respond_port = i.ReadNtohU16 ();
   m_epoch = i.ReadNtohU32 ();
+  m_time_sent = i.ReadNtohU64 ();
   return GetSerializedSize ();
 }
 

@@ -27,6 +27,7 @@
 #include "ns3/ipv4-header.h"
 
 #include <map>
+#include <fstream>
 
 namespace ns3 {
 
@@ -125,6 +126,9 @@ private:
   uint32_t m_id;
   uint32_t m_leader_id;
   uint32_t m_epoch;
+
+  // File for logging packet latencies
+  std::ofstream m_file;
 
   // Number of epochs before stopping the simulation
   uint32_t m_max_epoch;

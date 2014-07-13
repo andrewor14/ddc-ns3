@@ -52,6 +52,11 @@ public:
   void SetEpoch (uint32_t epoch);
 
   /**
+   * \param time_sent the time the packet is sent
+   */
+  void SetTimeSent (uint64_t time_sent);
+
+  /**
    * \return the controller ID
    */
   uint32_t GetControllerID (void) const;
@@ -71,6 +76,11 @@ public:
    */
   uint32_t GetEpoch (void) const;
 
+  /**
+   * \return the time at which the packet was sent
+   */
+  uint64_t GetTimeSent (void) const;
+
   static TypeId GetTypeId (void);
 
 private:
@@ -84,6 +94,7 @@ private:
   uint32_t m_leader_id;
   uint16_t m_respond_port;
   uint32_t m_epoch;
+  uint64_t m_time_sent;
 };
 
 } // namespace ns3
