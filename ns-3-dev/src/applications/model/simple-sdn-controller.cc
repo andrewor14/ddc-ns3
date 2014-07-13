@@ -27,6 +27,9 @@
 #include "ns3/uinteger.h"
 #include "ns3/simple-sdn-header.h"
 
+#include <fstream>
+#include <stdlib.h>
+
 #include "simple-sdn-controller.h"
 
 namespace ns3 {
@@ -107,6 +110,12 @@ SimpleSDNController::SetPort (uint16_t port)
   m_port = port;
 }
 
+void
+SimpleSDNController::SetFilesToClose (std::list<std::ofstream*> files)
+{
+  m_files_to_close = files;
+}
+
 uint32_t
 SimpleSDNController::GetID (void) const
 {
@@ -123,6 +132,12 @@ uint16_t
 SimpleSDNController::GetPort (void) const
 {
   return m_port;
+}
+
+std::ofstream*
+SimpleSDNController::GetFile (void)
+{
+  return &m_file;
 }
 
 void
@@ -190,7 +205,10 @@ SimpleSDNController::StopApplication ()
     socket->Close ();
     socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   }
-  m_file.close ();
+  std::list<std::ofstream*>::iterator it_f;
+  for (it_f = m_files_to_close.begin (); it_f != m_files_to_close.end (); it_f++) {
+    (*it_f)->close();
+  }
 }
 
 void
@@ -227,7 +245,7 @@ SimpleSDNController::PingControllers ()
   if (m_epoch > m_max_epoch) {
     NS_LOG_INFO ("=== Max epoch (" << m_max_epoch << ") reached. Terminating simulation. ===\n");
     StopApplication ();
-    return;
+    exit (EXIT_SUCCESS);
   }
   SelectLeader();
   // This is a new epoch

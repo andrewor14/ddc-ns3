@@ -38,7 +38,7 @@ const uint32_t controllerMaxEpoch = 100;
 
 // For failing links
 UniformVariable rv;
-const Time linkFailureInterval = controllerPingControllersInterval;
+const Time linkFailureInterval = MilliSeconds (10);
 
 // Switch attributes
 const uint32_t switchPort = 3355;

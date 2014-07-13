@@ -22,6 +22,7 @@
 #include "ns3/random-variable.h"
 
 #include <string>
+#include <fstream>
 #include <stdlib.h>
 
 #include "sdn-real-topo.h"
@@ -219,6 +220,18 @@ int main (int argc, char *argv[])
   ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
   controllerHelper->ConnectToSwitches (controllerNodes, switchNodes);
+
+  // On exit, close all open files
+  std::list<std::ofstream*> filesToClose;
+  ApplicationContainer::Iterator it;
+  for (it = controllerApps.Begin (); it != controllerApps.End (); it++) {
+    SimpleSDNController* app = (SimpleSDNController*) GetPointer (*it);
+    filesToClose.push_back(app->GetFile ());
+  }
+  for (it = controllerApps.Begin (); it != controllerApps.End (); it++) {
+    SimpleSDNController* app = (SimpleSDNController*) GetPointer (*it);
+    app->SetFilesToClose (filesToClose);
+  }
 
   // Schedule link failures
   Time nextLinkFail = linkFailureInterval;
