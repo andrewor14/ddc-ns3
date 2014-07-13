@@ -25,3 +25,4 @@ route.table
 core
 *.swo
 *.log
+results/
