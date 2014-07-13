@@ -118,8 +118,12 @@ int main (int argc, char *argv[])
   LogComponentEnable ("SimpleSDNControllerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("SimpleSDNSwitchApplication", LOG_LEVEL_INFO);
 
-  if (argc < 4) {
-    NS_LOG_ERROR ("Usage: sdn-real-topo [topology file] [controller-id-start] [controller-id-end]");
+  if (argc < 5) {
+    NS_LOG_ERROR ("Usage: sdn-real-topo " <<
+                    "[topology file] " <<
+                    "[controller-id-start] " <<
+                    "[controller-id-end] " <<
+                    "[link-failure-percent]");
     exit (EXIT_FAILURE);
   }
 
@@ -146,6 +150,13 @@ int main (int argc, char *argv[])
   uint32_t controllerEndID = nodeTranslateMap.at (std::atoi (argv[3]));
   NS_LOG_LOGIC ("Controllers ID range (new IDs): "
     << controllerStartID << " - " << controllerEndID);
+
+  // Set percentage of links to fail
+  double linkFailurePercent = std::atof (argv[4]);
+  if (linkFailurePercent < 0 || linkFailurePercent > 1) {
+    NS_LOG_ERROR ("Link failure percent must be between 0 and 1!");
+    exit (EXIT_FAILURE);
+  }
 
   // Initialize the nodes
   NodeContainer nodes;
@@ -211,7 +222,9 @@ int main (int argc, char *argv[])
 
   // Schedule link failures
   Time nextLinkFail = linkFailureInterval;
-  for (uint32_t i = 0; i < maxLinksFailed; i++) {
+  uint32_t numLinksToFail = (uint32_t) channels.size () * linkFailurePercent;
+  NS_LOG_INFO ("* Failing " << numLinksToFail << " links over the course of the simulation.");
+  for (uint32_t i = 0; i < numLinksToFail; i++) {
     Simulator::Schedule (nextLinkFail, &FailRandomLink);
     nextLinkFail += linkFailureInterval;
   }

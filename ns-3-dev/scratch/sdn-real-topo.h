@@ -36,9 +36,8 @@ const Time controllerPingSwitchesInterval = Time (Seconds (1.0));
 const Time controllerPingControllersInterval = Time (Seconds (0.1));
 const uint32_t controllerMaxEpoch = 100;
 
-// Link failure properties
+// For failing links
 UniformVariable rv;
-const uint32_t maxLinksFailed = 100;
 const Time linkFailureInterval = controllerPingControllersInterval;
 
 // Switch attributes
