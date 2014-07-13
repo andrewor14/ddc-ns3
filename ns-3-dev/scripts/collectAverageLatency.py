@@ -13,7 +13,7 @@ if __name__ == "__main__":
   baseDir = os.path.abspath(sys.argv[1])
   
   # Return (link fail percent, average control latency) pairs
-  results = []
+  results = {}
   for f in sorted(os.listdir(baseDir)):
     key = re.compile("-.*%").search(f).group()
     if key is None:
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     key = float(key) / 100
     f = os.path.join(baseDir, f)
     value = computeAverage(f + "/all.log", verbose)
-    results.append("%s %s" % (key, value))
+    results[key] = value
 
-  for result in results:
-    print result
+  for k in sorted(results.keys()):
+    print k, results[k]
