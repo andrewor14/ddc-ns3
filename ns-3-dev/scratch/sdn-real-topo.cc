@@ -92,6 +92,10 @@ void InitializeTopology (std::string filename)
   }
 }
 
+void recoverLink (PointToPointChannel* recover) {
+  recover->SetLinkUp ();
+}
+
 /**
  * Fail a random link.
  */
@@ -104,6 +108,8 @@ void FailRandomLink () {
     PointToPointChannel* linkToFail = channels.at (linkIndex);
     linkToFail->SetLinkDown ();
     channels.erase (channels.begin () + linkIndex);
+    // TODO: Fill in recovery time
+    Simulator::Schedule(Seconds(1), &recoverLink, linkToFail); 
   } else {
     NS_LOG_LOGIC ("No more links to fail!");
   }
