@@ -16,13 +16,14 @@ set border 3 back linestyle 80
 # than strictly primary colors or hard-to-see colors
 # like gnuplot's default yellow.  Make the lines thick
 # so they're easy to see in small plots in papers.
-set style line 1 lt rgb "#5060D0" lw 9 pt 3 ps 1
-set style line 2 lt rgb "#A00000" lw 3 pt 2 ps 3 
+set style line 1 lt rgb "#5060D0" lw 6 pt 3 ps 1
+set style line 2 lt rgb "#A00000" lw 6 pt 3 ps 1
 set style line 3 lt rgb "#00A000" lw 3 pt 4 ps 3
 set style line 4 lt rgb "#F25900" lw 3 pt 6 ps 3
 set style line 5 lt rgb "#716342" lw 3 pt 8 ps 3
 
-set key off
+set title "8-pod FatTree"
+set title font ",30"
 
 set xtics 20
 set ytics 5
@@ -38,10 +39,13 @@ set ylabel font ",25"
 set xlabel offset 0,-1
 set ylabel offset -2,0
 
+set yrange [*:50]
+
 set lmargin 12
 set bmargin 5
 
 # Note that we're leaving out output, title, and plot
 set output "ft8.pdf"
-plot 'ft8.dat' w lp ls 1
+plot 'ft8.dat' title "No reversal delay" w lp ls 1, \
+     'ft8-100us-delay.dat' title "100us reversal delay" w lp ls 2
 
