@@ -858,12 +858,6 @@ void
 Ipv4GlobalRouting::NotifyInterfaceUp (uint32_t i)
 {
   //NS_LOG_FUNCTION (this << i);
-  if (m_respondToInterfaceEvents && Simulator::Now ().GetSeconds () > 0)  // avoid startup events
-    {
-      GlobalRouteManager::DeleteGlobalRoutes ();
-      GlobalRouteManager::BuildGlobalRoutingDatabase ();
-      GlobalRouteManager::InitializeRoutes ();
-    }
   if (Simulator::Now ().GetSeconds() > 0) {
     for (InterfacePriorities::iterator it = m_priorities.begin();
          it != m_priorities.end();
@@ -879,6 +873,12 @@ Ipv4GlobalRouting::NotifyInterfaceUp (uint32_t i)
         m_vnodeState[vnode].m_to_reverse[dest].push_back(i);
     }
   }
+  if (Simulator::Now ().GetSeconds () > 0)  // avoid startup events
+    {
+      GlobalRouteManager::DeleteGlobalRoutes ();
+      GlobalRouteManager::BuildGlobalRoutingDatabase ();
+      GlobalRouteManager::InitializeRoutes ();
+    }
 }
 
 void 
