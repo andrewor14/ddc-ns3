@@ -92,31 +92,44 @@ void InitializeTopology (std::string filename)
   }
 }
 
-void recomputeDDC () {
+void RecomputeDDC () {
   GlobalRouteManager::DeleteGlobalRoutes ();
   GlobalRouteManager::BuildGlobalRoutingDatabase ();
   GlobalRouteManager::InitializeRoutes ();
-  Simulator::Schedule (Seconds(30), &recomputeDDC);
+  Simulator::Schedule (Seconds (ddcRefreshInterval), &RecomputeDDC);
 }
 
-void recoverLink (PointToPointChannel* recover) {
-  recover->SetLinkUp ();
+void RecoverLink (PointToPointChannel* link) {
+  uint32_t node1 = link->GetDevice (0)->GetNode ()->GetId ();
+  uint32_t node2 = link->GetDevice (1)->GetNode ()->GetId ();
+  NS_LOG_INFO ("Recovering link " << node1 << " <-> " << node2);
+  link->SetLinkUp ();
+  channels.push_back (link);
+  numLinksToFail++;
 }
 
 /**
  * Fail a random link.
  */
 void FailRandomLink () {
-  if (channels.size () > 0) {
+  if (channels.size () > 0 && numLinksToFail > 0) {
     uint32_t linkIndex = rv.GetInteger (0, channels.size () - 1);
-    uint32_t node1 = channels[linkIndex]->GetDevice (0)->GetNode()->GetId ();
-    uint32_t node2 = channels[linkIndex]->GetDevice (1)->GetNode()->GetId ();
-    NS_LOG_LOGIC ("Failing link " << node1 << " <-> " << node2);
     PointToPointChannel* linkToFail = channels.at (linkIndex);
+    uint32_t node1 = linkToFail->GetDevice (0)->GetNode ()->GetId ();
+    uint32_t node2 = linkToFail->GetDevice (1)->GetNode ()->GetId ();
+    NS_LOG_INFO ("Failing link " << node1 << " <-> " << node2);
     linkToFail->SetLinkDown ();
     channels.erase (channels.begin () + linkIndex);
-    // TODO: Fill in recovery time
-    Simulator::Schedule(Seconds(1), &recoverLink, linkToFail); 
+    numLinksToFail--;
+
+    // Schedule next failure
+    uint32_t failureDelay = rv.GetInteger (minFailureDelay, maxFailureDelay);
+    Simulator::Schedule (Seconds (failureDelay), &FailRandomLink);
+
+    // Schedule recovery
+    uint32_t recoveryDelay = rv.GetInteger (minRecoveryDelay, maxRecoveryDelay);
+    Simulator::Schedule (Seconds (recoveryDelay), &RecoverLink, linkToFail);
+
   } else {
     NS_LOG_LOGIC ("No more links to fail!");
   }
@@ -165,7 +178,7 @@ int main (int argc, char *argv[])
   uint32_t controllerEndID = nodeTranslateMap.at (std::atoi (argv[3]));
   NS_LOG_LOGIC ("Controllers ID range (new IDs): "
     << controllerStartID << " - " << controllerEndID);
-  uint32_t numLinksToFail = std::atoi (argv[4]);
+  numLinksToFail = std::atoi (argv[4]);
   uint32_t seed = std::atoi (argv[5]);
   SeedManager::SetSeed (seed);
 
@@ -193,12 +206,16 @@ int main (int argc, char *argv[])
     }
   }
 
+  // Schedule link failures
   if (numLinksToFail > channels.size ()) {
     NS_LOG_ERROR ("Attempted to fail more links " <<
       "(" << numLinksToFail << ") than possible " <<
       "(" << channels.size () << ")!");
     exit (EXIT_FAILURE);
   }
+  NS_LOG_INFO ("* Failing " << numLinksToFail << " links over the course of the simulation.");
+  uint32_t failureDelay = rv.GetInteger (minFailureDelay, maxFailureDelay);
+  Simulator::Schedule (Seconds (failureDelay), &FailRandomLink);
 
   // Set up each network device
   InternetStackHelper stack;
@@ -238,7 +255,7 @@ int main (int argc, char *argv[])
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
   controllerHelper->ConnectToSwitches (controllerNodes, switchNodes);
 
-  // On exit, close all open files
+  // On exit, close all open files (hack)
   std::list<std::ofstream*> filesToClose;
   ApplicationContainer::Iterator it;
   for (it = controllerApps.Begin (); it != controllerApps.End (); it++) {
@@ -250,14 +267,9 @@ int main (int argc, char *argv[])
     app->SetFilesToClose (filesToClose);
   }
 
-  Simulator::Schedule (Seconds(30), &recomputeDDC);
-  // Schedule link failures
-  Time nextLinkFail = linkFailureInterval;
-  NS_LOG_INFO ("* Failing " << numLinksToFail << " links over the course of the simulation.");
-  for (uint32_t i = 0; i < numLinksToFail; i++) {
-    Simulator::Schedule (nextLinkFail, &FailRandomLink);
-    nextLinkFail += linkFailureInterval;
-  }
+  // In case links go back up, re-initialize DDC periodically
+  // NOTE: This currently causes a DDC assertion failure!
+  //Simulator::Schedule (Seconds (ddcRefreshInterval), &RecomputeDDC);
 
   // Actually start the simulation
   NS_LOG_INFO ("-- Simulation starting --");

@@ -8,7 +8,7 @@ if ! [[ "$cwd" == "ns-3-dev" ]]; then
 fi
 
 if [[ $# -lt 4 ]]; then
-  echo "Usage: run-link-failure.sh [topology name] [experiment name] [start controller ID] [end controller ID] [seed]"
+  echo "Usage: run-link-failure.sh [topology name] [experiment name] [start controller ID] [end controller ID]"
   exit 1
 fi
 
@@ -16,11 +16,11 @@ toponame=$1
 expname=$2
 controller_start_id=$3
 controller_end_id=$4
-seed=$5
+seed=0
 
 runSimulation () {
   echo "Running simulation with $numFail links failed"
-  dirname=results-$seed/"$expname"-link-failure-"$numFail"
+  dirname=results-"$expname-$seed"/"$expname"-link-failure-"$numFail"
   ./waf --run "scratch/sdn-real-topo /home/ddc/Documents/ddc-ns3/topos/$toponame $controller_start_id $controller_end_id $numFail $seed" 2>&1 | tee link-failure-"$numFail".log
   mkdir -p $dirname
   mv controller-*-latency.log $dirname
@@ -28,7 +28,20 @@ runSimulation () {
   mv link-failure-"$numFail".log $dirname
 }
 
-for i in `seq 0 16`; do
-  numFail=$(($i * 10)) runSimulation
-done
+seed=4444
+numFail=256 runSimulation
+
+#for i in `seq 0 16`; do
+#  numFail=$(($i * 10)) runSimulation
+#done
+#
+#seed=5555
+#for i in `seq 0 12`; do
+#  numFail=$(($i * 100)) runSimulation
+#done
+#
+#seed=6666
+#for i in `seq 0 12`; do
+#  numFail=$(($i * 100)) runSimulation
+#done
 

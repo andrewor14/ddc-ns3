@@ -32,16 +32,25 @@ std::vector<PointToPointChannel*> channels;
 
 // Controller attributes
 const uint32_t controllerPort = 2244;
-const Time controllerPingSwitchesInterval = Seconds (1.0);
-const Time controllerPingControllersInterval = Seconds (0.1);
-const uint32_t controllerMaxEpoch = 100;
+const Time controllerPingSwitchesInterval = Seconds (10);
+const Time controllerPingControllersInterval = Seconds (1);
+const uint32_t controllerMaxEpoch = 86400; // 1 day
 
 // For failing links
 UniformVariable rv;
-const Time linkFailureInterval = MilliSeconds (10);
+uint32_t numLinksToFail;
+uint32_t meanRecoveryDelay = 300; // seconds, or 5 min
+uint32_t minRecoveryDelay = meanRecoveryDelay * 0.9;
+uint32_t maxRecoveryDelay = meanRecoveryDelay * 1.1;
+uint32_t meanFailureDelay = 3600; // seconds, 60 min
+uint32_t minFailureDelay = meanFailureDelay * 0.9;
+uint32_t maxFailureDelay = meanFailureDelay * 1.1;
 
 // Switch attributes
 const uint32_t switchPort = 3355;
 const Time switchWindowDuration = controllerPingSwitchesInterval;
 const uint8_t switchMaxViolationCount = 3;
+
+// Interval at which we refresh DDC periodically
+uint32_t ddcRefreshInterval = 30; // seconds
 
