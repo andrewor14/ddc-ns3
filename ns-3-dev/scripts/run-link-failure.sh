@@ -7,13 +7,22 @@ if ! [[ "$cwd" == "ns-3-dev" ]]; then
   exit 1
 fi
 
+if [[ $# -lt 4 ]]; then
+  echo "Usage: run-link-failure.sh [topology name] [experiment name] [start controller ID] [end controller ID]"
+  exit 1
+fi
+
+toponame=$1
+expname=$2
+controller_start_id=$3
+controller_end_id=$4
 percent=""
 decimal=""
 
 runSimulation () {
   echo "Running simulation with "$percent" links failed"
-  dirname=results/ft8-"$percent"
-  ./waf --run "scratch/sdn-real-topo /home/ddc/Documents/ddc-ns3/topos/FatTree_8.topo 10 20 $decimal" 2>&1 | tee link-percent-"$percent".log
+  dirname=results/"$expname"-"$percent"
+  ./waf --run "scratch/sdn-real-topo /home/ddc/Documents/ddc-ns3/topos/$toponame $controller_start_id $controller_end_id $decimal" 2>&1 | tee link-percent-"$percent".log
   mkdir -p $dirname
   mv controller-*-latency.log $dirname
   cat $dirname/controller-*-latency.log > $dirname/all.log
