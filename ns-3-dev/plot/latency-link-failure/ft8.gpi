@@ -1,0 +1,47 @@
+# Note you need gnuplot 4.4 for the pdfcairo terminal.
+
+set terminal pdf
+
+# Line style for axes
+set style line 80 lt rgb "#808080"
+
+# Line style for grid
+set style line 81 lt 0  # dashed
+set style line 81 lt rgb "#808080"  # grey
+
+set grid back linestyle 81
+set border 3 back linestyle 80 
+
+# Line styles: try to pick pleasing colors, rather
+# than strictly primary colors or hard-to-see colors
+# like gnuplot's default yellow.  Make the lines thick
+# so they're easy to see in small plots in papers.
+set style line 1 lt rgb "#5060D0" lw 9 pt 1 ps 3
+set style line 2 lt rgb "#A00000" lw 3 pt 2 ps 3 
+set style line 3 lt rgb "#00A000" lw 3 pt 4 ps 3
+set style line 4 lt rgb "#F25900" lw 3 pt 6 ps 3
+set style line 5 lt rgb "#716342" lw 3 pt 8 ps 3
+
+set key off
+
+set xtics 0.1
+set ytics 1
+set xtics font ",20"
+set ytics font ",20"
+
+set xlabel "Fraction of links failed"
+set xlabel font ",25"
+
+set ylabel "Control latency (ms)"
+set ylabel font ",25"
+
+set xlabel offset 0,-1
+set ylabel offset -2,0
+
+set lmargin 12
+set bmargin 5
+
+# Note that we're leaving out output, title, and plot
+set output "ft8.pdf"
+plot 'ft8.dat' w lp ls 1
+
