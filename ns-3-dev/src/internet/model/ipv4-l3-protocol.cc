@@ -267,6 +267,18 @@ Ipv4L3Protocol::SetDefaultTtl (uint8_t ttl)
   m_defaultTtl = ttl;
 }
 
+void 
+Ipv4L3Protocol::LinkChangeCallback (Notify* notify)
+{
+  Ipv4L3Protocol* p = notify->proto;
+  if (p->GetNetDevice(notify->idx)->IsLinkUp()) {
+      p->SetUp (notify->idx);
+  } else {
+    p->SetDown (notify->idx);
+  }
+  
+}
+
 uint32_t 
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
@@ -282,7 +294,12 @@ Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
   interface->SetNode (m_node);
   interface->SetDevice (device);
   interface->SetForwarding (m_ipForward);
-  return AddIpv4Interface (interface);
+  uint32_t index =  AddIpv4Interface (interface);
+  Notify *notify = new Notify();
+  notify->proto = this;
+  notify->idx = index;
+  device->AddLinkChangeCallback (MakeBoundCallback (&Ipv4L3Protocol::LinkChangeCallback, notify));
+  return index;
 }
 
 uint32_t 

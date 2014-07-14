@@ -92,6 +92,13 @@ void InitializeTopology (std::string filename)
   }
 }
 
+void recomputeDDC () {
+  GlobalRouteManager::DeleteGlobalRoutes ();
+  GlobalRouteManager::BuildGlobalRoutingDatabase ();
+  GlobalRouteManager::InitializeRoutes ();
+  Simulator::Schedule (Seconds(30), &recomputeDDC);
+}
+
 void recoverLink (PointToPointChannel* recover) {
   recover->SetLinkUp ();
 }
@@ -239,6 +246,7 @@ int main (int argc, char *argv[])
     app->SetFilesToClose (filesToClose);
   }
 
+  Simulator::Schedule (Seconds(30), &recomputeDDC);
   // Schedule link failures
   Time nextLinkFail = linkFailureInterval;
   uint32_t numLinksToFail = (uint32_t) channels.size () * linkFailurePercent;

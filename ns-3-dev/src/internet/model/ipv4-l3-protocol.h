@@ -144,6 +144,12 @@ public:
    */
   void SetDefaultTtl (uint8_t ttl);
 
+  struct Notify {
+    Ipv4L3Protocol* proto; uint32_t idx;
+  };
+  // @apanda
+  static void LinkChangeCallback (Notify* notify);
+
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
    * The ARP subclass needs to know from which NetDevice this
@@ -359,6 +365,7 @@ public:
      * \return the part we have comeplete
      */
     Ptr<Packet> GetPartialPacket () const;
+
 
 private:
     /**

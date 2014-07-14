@@ -873,12 +873,13 @@ Ipv4GlobalRouting::NotifyInterfaceUp (uint32_t i)
         m_vnodeState[vnode].m_to_reverse[dest].push_back(i);
     }
   }
-  if (Simulator::Now ().GetSeconds () > 0)  // avoid startup events
-    {
-      GlobalRouteManager::DeleteGlobalRoutes ();
-      GlobalRouteManager::BuildGlobalRoutingDatabase ();
-      GlobalRouteManager::InitializeRoutes ();
-    }
+  //if (Simulator::Now ().GetSeconds () > 0)  // avoid startup events
+    //{
+      //std::cerr << "Recomputing routes now\n";
+      //GlobalRouteManager::DeleteGlobalRoutes ();
+      //GlobalRouteManager::BuildGlobalRoutingDatabase ();
+      //GlobalRouteManager::InitializeRoutes ();
+    //}
 }
 
 void 
