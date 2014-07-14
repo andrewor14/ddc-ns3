@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# This must be run from the ns-3-dev directory
+cwd=$(basename $PWD)
+if ! [[ "$cwd" == "ns-3-dev" ]]; then
+  echo "You must run this in the ns-3-dev directory!"
+  exit 1
+fi
+
 percent=""
 decimal=""
 
@@ -7,13 +14,11 @@ runSimulation () {
   echo "Running simulation with "$percent" links failed"
   dirname=results/ft8-"$percent"
   ./waf --run "scratch/sdn-real-topo /home/ddc/Documents/ddc-ns3/topos/FatTree_8.topo 10 20 $decimal" 2>&1 | tee link-percent-"$percent".log
-  mkdir $dirname
+  mkdir -p $dirname
   mv controller-*-latency.log $dirname
   cat $dirname/controller-*-latency.log > $dirname/all.log
   mv link-percent-"$percent".log $dirname
 }
-
-cd ..
 
 # 0%
 percent="0%"
