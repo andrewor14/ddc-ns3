@@ -119,18 +119,19 @@ int main (int argc, char *argv[])
   LogComponentEnable ("SimpleSDNControllerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("SimpleSDNSwitchApplication", LOG_LEVEL_INFO);
 
-  if (argc < 5) {
+  if (argc < 6) {
     NS_LOG_ERROR ("Usage: sdn-real-topo " <<
                     "[topology file] " <<
-                    "[controller-id-start] " <<
-                    "[controller-id-end] " <<
-                    "[link-failure-percent]");
+                    "[controller id start] " <<
+                    "[controller id end] " <<
+                    "[links to fail] " <<
+                    "[seed]");
     exit (EXIT_FAILURE);
   }
 
   InitializeTopology (argv[1]);
 
-  // Resolve controller ID range
+  // Parse command line arguments
   uint32_t oldControllerStartID = std::atoi (argv[2]);
   uint32_t oldControllerEndID = std::atoi (argv[3]);
   if (nodeTranslateMap.find (oldControllerStartID) == nodeTranslateMap.end ()) {
@@ -151,13 +152,9 @@ int main (int argc, char *argv[])
   uint32_t controllerEndID = nodeTranslateMap.at (std::atoi (argv[3]));
   NS_LOG_LOGIC ("Controllers ID range (new IDs): "
     << controllerStartID << " - " << controllerEndID);
-
-  // Set percentage of links to fail
-  double linkFailurePercent = std::atof (argv[4]);
-  if (linkFailurePercent < 0 || linkFailurePercent > 1) {
-    NS_LOG_ERROR ("Link failure percent must be between 0 and 1!");
-    exit (EXIT_FAILURE);
-  }
+  uint32_t numLinksToFail = std::atoi (argv[4]);
+  uint32_t seed = std::atoi (argv[5]);
+  SeedManager::SetSeed (seed);
 
   // Initialize the nodes
   NodeContainer nodes;
@@ -165,8 +162,8 @@ int main (int argc, char *argv[])
 
   // Connect the nodes
   PointToPointHelper p2p;
-  p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("10Gbps"));
+  p2p.SetChannelAttribute ("Delay", TimeValue (MicroSeconds (10)));
   p2p.SetQueue ("ns3::PriorityQueue");
   std::vector<NetDeviceContainer> nodeDevices (numNodes);  
   std::vector<NetDeviceContainer> linkDevices;
@@ -181,6 +178,13 @@ int main (int argc, char *argv[])
       Channel* channel = GetPointer (p2pDevices.Get (0)->GetChannel ());
       channels.push_back ((PointToPointChannel*) channel);
     }
+  }
+
+  if (numLinksToFail > channels.size ()) {
+    NS_LOG_ERROR ("Attempted to fail more links " <<
+      "(" << numLinksToFail << ") than possible " <<
+      "(" << channels.size () << ")!");
+    exit (EXIT_FAILURE);
   }
 
   // Set up each network device
@@ -235,7 +239,6 @@ int main (int argc, char *argv[])
 
   // Schedule link failures
   Time nextLinkFail = linkFailureInterval;
-  uint32_t numLinksToFail = (uint32_t) channels.size () * linkFailurePercent;
   NS_LOG_INFO ("* Failing " << numLinksToFail << " links over the course of the simulation.");
   for (uint32_t i = 0; i < numLinksToFail; i++) {
     Simulator::Schedule (nextLinkFail, &FailRandomLink);

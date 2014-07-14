@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 if len(sys.argv) < 2:
   print >>sys.stderr, "Usages %s arity"%(sys.argv[0])
@@ -21,7 +23,7 @@ for p in xrange(0, pods):
       print "%d %d"%((agg, tor + switches_assigned_so_far))
   switches_assigned_so_far += (arity/2)
   for tor in tors:
-    for host in xrange(0, arity / 2):
-      print "%d %d h"%(tor, host + switches_assigned_so_far)
+    #for host in xrange(0, arity / 2):
+    #  print "%d %d h"%(tor, host + switches_assigned_so_far)
     switches_assigned_so_far += (arity / 2)
 

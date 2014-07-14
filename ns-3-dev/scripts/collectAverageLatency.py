@@ -12,14 +12,14 @@ if __name__ == "__main__":
   verbose = len(sys.argv) > 2 and (sys.argv[2].lower() == "true")
   baseDir = os.path.abspath(sys.argv[1])
   
-  # Return (link fail percent, average control latency) pairs
+  # Return (number of links failed, average control latency) pairs
   results = {}
   for f in sorted(os.listdir(baseDir)):
-    key = re.compile("-.*%").search(f).group()
+    key = re.compile("link-failure-.*").search(f)
     if key is None:
       continue
-    key = key.strip("-").strip("%")
-    key = float(key) / 100
+    key = key.group().replace("link-failure-", "")
+    key = int(key)
     f = os.path.join(baseDir, f)
     value = computeAverage(f + "/all.log", verbose)
     results[key] = value
