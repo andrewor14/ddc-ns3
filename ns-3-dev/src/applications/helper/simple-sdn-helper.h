@@ -48,7 +48,8 @@ public:
     uint16_t port,
     Time ping_switches_interval,
     Time ping_controllers_interval,
-    uint32_t max_epoch);
+    uint32_t max_epoch,
+    std::string exp_name);
 
   void SetAttribute (std::string name, const AttributeValue &value);
 

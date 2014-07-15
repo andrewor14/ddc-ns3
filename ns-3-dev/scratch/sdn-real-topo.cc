@@ -24,6 +24,7 @@
 #include <string>
 #include <fstream>
 #include <stdlib.h>
+#include <string>
 
 #include "sdn-real-topo.h"
 
@@ -154,7 +155,8 @@ int main (int argc, char *argv[])
                     "[controller id end] " <<
                     "[links to fail] " <<
                     "[seed]" <<
-                    "[reverse delay]");
+                    "[reverse delay]" <<
+                    "[experiment name]");
     exit (EXIT_FAILURE);
   }
 
@@ -185,6 +187,7 @@ int main (int argc, char *argv[])
   uint32_t seed = std::atoi (argv[5]);
   SeedManager::SetSeed (seed);
   double reverseDelay = std::atof (argv[6]);
+  std::string expName = argv[7];
 
   std::cerr << "* Setting nodes up\n";
 
@@ -270,7 +273,8 @@ int main (int argc, char *argv[])
       controllerPort,
       controllerPingSwitchesInterval,
       controllerPingControllersInterval,
-      controllerMaxEpoch);
+      controllerMaxEpoch,
+      expName);
   ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
 

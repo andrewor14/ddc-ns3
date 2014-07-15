@@ -134,7 +134,8 @@ int main (int argc, char *argv[])
       controllerPort,
       controllerPingSwitchesInterval,
       controllerPingControllersInterval,
-      controllerMaxEpoch);
+      controllerMaxEpoch,
+      "dummy");
   ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
   controllerHelper->ConnectToSwitches (controllerNodes, switchNodes);

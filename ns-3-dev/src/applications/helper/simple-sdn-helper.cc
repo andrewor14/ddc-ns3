@@ -17,6 +17,7 @@
 #include "ns3/simple-sdn-controller.h"
 #include "ns3/simple-sdn-switch.h"
 #include "ns3/uinteger.h"
+#include "ns3/string.h"
 #include "ns3/names.h"
 #include "ns3/ipv4.h"
 
@@ -33,13 +34,15 @@ SimpleSDNControllerHelper::SimpleSDNControllerHelper (
   uint16_t port,
   Time ping_switches_interval,
   Time ping_controllers_interval,
-  uint32_t max_epoch)
+  uint32_t max_epoch,
+  std::string exp_name)
 {
   m_factory.SetTypeId (SimpleSDNController::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
   SetAttribute ("PingSwitchesInterval", TimeValue (ping_switches_interval));
   SetAttribute ("PingControllersInterval", TimeValue (ping_controllers_interval));
   SetAttribute ("MaxEpoch", UintegerValue (max_epoch));
+  SetAttribute ("ExperimentName", StringValue (exp_name));
 }
 
 void 

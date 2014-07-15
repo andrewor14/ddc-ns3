@@ -25,6 +25,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/string.h"
 #include "ns3/simple-sdn-header.h"
 
 #include <fstream>
@@ -60,7 +61,12 @@ SimpleSDNController::GetTypeId (void)
                    "Max epoch before stopping the application.",
                    UintegerValue (25),
                    MakeUintegerAccessor (&SimpleSDNController::m_max_epoch),
-                   MakeUintegerChecker<uint32_t> ());
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ExperimentName",
+                   "Name of experiment.",
+                   StringValue ("BAD DEFAULT"),
+                   MakeStringAccessor (&SimpleSDNController::m_exp_name),
+                   MakeStringChecker ());
   return tid;
 }
 
@@ -188,7 +194,7 @@ SimpleSDNController::StartApplication (void)
 
     // Log latency to file
     std::stringstream filename;
-    filename << "controller-" << m_id << "-latency.log";
+    filename << m_exp_name << "-controller-" << m_id << "-latency.log";
     m_file.open (filename.str ().c_str ());
   }
 }

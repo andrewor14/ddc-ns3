@@ -22,12 +22,12 @@ seed=0
 runSimulation () {
   echo "Running simulation with $num_fail links failed (seed = $seed) with delay $reverse_delay""us"
   dirname=results-"$expname-$seed"/"$expname"-link-failure-"$num_fail"
-  ./waf --run "scratch/sdn-real-topo /mnt/andrew/ddc-ns3/topos/$toponame $controller_start_id $controller_end_id $num_fail $seed $reverse_delay" 2>&1 | tee link-failure-"$num_fail".log
+  ./waf --run "scratch/sdn-real-topo /mnt/andrew/ddc-ns3/topos/$toponame $controller_start_id $controller_end_id $num_fail $seed $reverse_delay $expname" 2>&1 | tee $expname-link-failure-"$num_fail".log
   mkdir -p $dirname
-  mv controller-*-latency.log $dirname
-  cat $dirname/controller-*-latency.log > $dirname/all.log
+  mv $expname-controller-*-latency.log $dirname
+  cat $dirname/$expname-controller-*-latency.log > $dirname/all.log
   mv $dirname/all.log $dirname/"all.log.$seed"
-  mv link-failure-"$num_fail".log $dirname
+  mv $expname-link-failure-"$num_fail".log $dirname
 }
 
 for i in `seq 0 12`; do
@@ -42,6 +42,6 @@ mkdir $finaldir
 cp -R results-"$expname"-*/* $finaldir
 for dir in $finaldir/*; do
   cat $dir/all.log.* >> $dir/all.log
-  rm -rf $dir/controller*log
+  rm -rf $dir/*controller*log
 done
 

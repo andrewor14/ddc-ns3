@@ -140,6 +140,8 @@ private:
 
   Ptr<Socket> m_receive_socket;
 
+  std::string m_exp_name;
+
   /// Callbacks for tracing the packet Rx events
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_rxTrace;
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_txTrace;
