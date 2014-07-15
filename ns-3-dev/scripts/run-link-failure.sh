@@ -7,8 +7,14 @@ if ! [[ "$cwd" == "ns-3-dev" ]]; then
   exit 1
 fi
 
-if [[ $# -lt 4 ]]; then
-  echo "Usage: run-link-failure.sh [topology name] [experiment name] [start controller ID] [end controller ID] [reverse delay]"
+if [[ $# -lt 6 ]]; then
+  echo "Usage: run-link-failure.sh
+          [topology name]
+          [experiment name]
+          [start controller ID]
+          [end controller ID]
+          [reversal delay]
+          [link latency]"
   exit 1
 fi
 
@@ -16,13 +22,22 @@ toponame=$1
 expname=$2
 controller_start_id=$3
 controller_end_id=$4
-reverse_delay=$5
+reversal_delay=$5
+link_latency=$6
 seed=0
 
 runSimulation () {
-  echo "Running simulation with $num_fail links failed (seed = $seed) with delay $reverse_delay""us"
+  echo "Running simulation with $num_fail links failed (seed = $seed) with reversal delay $reversal_delay and link latency $link_latency"
   dirname=results-"$expname-$seed"/"$expname"-link-failure-"$num_fail"
-  ./waf --run "scratch/sdn-real-topo /mnt/andrew/ddc-ns3/topos/$toponame $controller_start_id $controller_end_id $num_fail $seed $reverse_delay $expname" 2>&1 | tee $expname-link-failure-"$num_fail".log
+  ./waf --run "scratch/sdn-real-topo \
+    --TopologyFile=/mnt/andrew/ddc-ns3/topos/$toponame \
+    --ExperimentName=$expname \
+    --ControllerStartID=$controller_start_id \
+    --ControllerEndID=$controller_end_id \
+    --NumLinksToFail=$num_fail \
+    --Seed=$seed \
+    --ReversalDelay=$reversal_delay \
+    --LinkLatency=$link_latency" 2>&1 | tee $expname-link-failure-"$num_fail".log
   mkdir -p $dirname
   mv $expname-controller-*-latency.log $dirname
   cat $dirname/$expname-controller-*-latency.log > $dirname/all.log
@@ -30,7 +45,7 @@ runSimulation () {
   mv $expname-link-failure-"$num_fail".log $dirname
 }
 
-for i in `seq 0 12`; do
+for i in `seq 0 18`; do
   num_fail=$(($i * 100))
   seed=6127 runSimulation
   seed=4500 runSimulation
