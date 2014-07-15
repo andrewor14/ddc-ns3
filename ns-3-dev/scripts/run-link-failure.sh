@@ -72,15 +72,15 @@ runMultipleTrials () {
   runSimulation
 }
 
-link_failure_interval=120s runMultipleTrials # 1 link / s
-link_failure_interval=60s runMultipleTrials # 1 link / s
-link_failure_interval=30s runMultipleTrials # 1 link / s
+#link_failure_interval=120s runMultipleTrials # 1 link / s
+#link_failure_interval=60s runMultipleTrials # 1 link / s
+#link_failure_interval=30s runMultipleTrials # 1 link / s
 #link_failure_interval=15s runMultipleTrials # 1 link / s
-link_failure_interval=1s runMultipleTrials # 1 link / s
+#link_failure_interval=1s runMultipleTrials # 1 link / s
 #link_failure_interval=500ms runMultipleTrials # 2 links / s
 #link_failure_interval=200ms runMultipleTrials # 5 links / s
 #link_failure_interval=100ms runMultipleTrials # 10 links / s
 #link_failure_interval=50ms runMultipleTrials # 20 links / s
 #link_failure_interval=20ms runMultipleTrials # 50 links / s
-#link_failure_interval=10ms runMultipleTrials # 100 links / s
+link_failure_interval=10ms runMultipleTrials # 100 links / s
 

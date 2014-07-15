@@ -147,7 +147,7 @@ void FailRandomLink () {
     uint32_t node1 = linkToFail->GetDevice (0)->GetNode ()->GetId ();
     uint32_t node2 = linkToFail->GetDevice (1)->GetNode ()->GetId ();
     NS_LOG_INFO ("Failing link " << node1 << " <-> " << node2);
-    std::cerr  << "Failing link " << node1 << " <-> " << node2 << "\n";
+    std::cerr << "Failing link " << node1 << " <-> " << node2 << "\n";
     linkToFail->SetLinkDown ();
     channels.erase (channels.begin () + linkIndex);
     numLinksToFail--;
@@ -157,6 +157,7 @@ void FailRandomLink () {
     Simulator::Schedule (GetRecoveryDelay (), &RecoverLink, linkToFail);
 
   } else {
+    std::cerr << "No more links to fail...\n";
     NS_LOG_LOGIC ("No more links to fail!");
   }
 }
@@ -189,7 +190,7 @@ int main (int argc, char *argv[])
   uint32_t oldControllerID3;
   // controllerMaxEpoch
   // switchMaxViolationCount
-  uint32_t numLinksToFail;
+  // numLinksToFail
   // meanRecoveryDelay
   // meanFailureDelay
   uint32_t seed = 8888;

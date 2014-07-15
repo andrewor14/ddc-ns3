@@ -19,7 +19,6 @@ if __name__ == "__main__":
     if key is None:
       continue
     key = key.group().replace("link-failure-", "")
-    key = int(key)
     f = os.path.join(baseDir, f)
     value = computeAverage(f + "/all.log", verbose)
     results[key] = value
