@@ -19,29 +19,29 @@ controller_end_id=$4
 seed=0
 
 runSimulation () {
-  echo "Running simulation with $numFail links failed"
+  echo "Running simulation with $numFail links failed (seed = $seed)"
   dirname=results-"$expname-$seed"/"$expname"-link-failure-"$numFail"
-  ./waf --run "scratch/sdn-real-topo /home/ddc/Documents/ddc-ns3/topos/$toponame $controller_start_id $controller_end_id $numFail $seed" 2>&1 | tee link-failure-"$numFail".log
+  ./waf --run "scratch/sdn-real-topo /mnt/andrew/ddc-ns3/topos/$toponame $controller_start_id $controller_end_id $numFail $seed" 2>&1 | tee link-failure-"$numFail".log
   mkdir -p $dirname
   mv controller-*-latency.log $dirname
   cat $dirname/controller-*-latency.log > $dirname/all.log
+  mv $dirname/all.log $dirname/"all.log.$seed"
   mv link-failure-"$numFail".log $dirname
 }
 
-seed=4444
-numFail=256 runSimulation
+for i in `seq 0 16`; do
+  numFail=$(($i * 10))
+  seed=6127 runSimulation
+  seed=4500 runSimulation
+  seed=8994 runSimulation
+done
 
-#for i in `seq 0 16`; do
-#  numFail=$(($i * 10)) runSimulation
-#done
-#
-#seed=5555
-#for i in `seq 0 12`; do
-#  numFail=$(($i * 100)) runSimulation
-#done
-#
-#seed=6666
-#for i in `seq 0 12`; do
-#  numFail=$(($i * 100)) runSimulation
-#done
+finaldir="results-final-$expname"
+mkdir $finaldir
+cp -R results-"$expname"-*/* $finaldir
+for dir in $finaldir/*; do
+  cat $dir/all.log.* >> $dir/all.log
+  rm -rf $dir/link*log
+  rm -rf $dir/controller*log
+done
 

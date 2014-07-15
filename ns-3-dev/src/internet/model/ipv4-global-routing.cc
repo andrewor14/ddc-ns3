@@ -54,12 +54,12 @@ Ipv4GlobalRouting::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("ReverseOutputToInputDelay",
                    "Delay reversing output to input",
-                   TimeValue (Seconds (0)),
+                   TimeValue (MicroSeconds (100)),
                    MakeTimeAccessor (&Ipv4GlobalRouting::m_reverseOutputToInputDelay),
                    MakeTimeChecker ())
     .AddAttribute ("ReverseInputToOutputDelay",
                    "Delay reversing input to output",
-                   TimeValue (Seconds (0)),
+                   TimeValue (MicroSeconds (100)),
                    MakeTimeAccessor (&Ipv4GlobalRouting::m_reverseInputToOutputDelay),
                    MakeTimeChecker())
     .AddAttribute ("AllowReversal",

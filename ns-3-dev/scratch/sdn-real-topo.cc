@@ -36,7 +36,8 @@ NS_LOG_COMPONENT_DEFINE ("AndrewSDNTopologyTest");
  */
 void InitializeTopology (std::string filename)
 {
-  NS_LOG_INFO ("* Initializing topology from \"" << filename << "\"");
+  NS_LOG_INFO("* Initializing topology from \"" << filename << "\"");
+  std::cerr << "* Initializing topology from \"" << filename << "\"\n";
   std::map<uint32_t, std::list<uint32_t>*> nodeMapping;
   std::ifstream file (filename.c_str ());
   if (!file.is_open ()) {
@@ -90,6 +91,7 @@ void InitializeTopology (std::string filename)
       NS_LOG_LOGIC ("  " << from << " <-> " << to);
     }
   }
+  std::cerr << "* Topology initialization complete!\n";
 }
 
 void RecomputeDDC () {
@@ -182,6 +184,8 @@ int main (int argc, char *argv[])
   uint32_t seed = std::atoi (argv[5]);
   SeedManager::SetSeed (seed);
 
+  std::cerr << "* Setting nodes up\n";
+
   // Initialize the nodes
   NodeContainer nodes;
   nodes.Create (numNodes);
@@ -272,6 +276,7 @@ int main (int argc, char *argv[])
   //Simulator::Schedule (Seconds (ddcRefreshInterval), &RecomputeDDC);
 
   // Actually start the simulation
+  std::cerr << "-- Simulation starting --\n";
   NS_LOG_INFO ("-- Simulation starting --");
   Simulator::Run ();
 

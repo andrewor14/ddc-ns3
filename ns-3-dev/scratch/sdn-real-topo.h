@@ -34,15 +34,15 @@ std::vector<PointToPointChannel*> channels;
 const uint32_t controllerPort = 2244;
 const Time controllerPingSwitchesInterval = Seconds (10);
 const Time controllerPingControllersInterval = Seconds (1);
-const uint32_t controllerMaxEpoch = 86400; // 1 day
+const uint32_t controllerMaxEpoch = 1000;
 
 // For failing links
 UniformVariable rv;
 uint32_t numLinksToFail;
-uint32_t meanRecoveryDelay = 300; // seconds, or 5 min
+uint32_t meanRecoveryDelay = 10000000; // seconds
 uint32_t minRecoveryDelay = meanRecoveryDelay * 0.9;
 uint32_t maxRecoveryDelay = meanRecoveryDelay * 1.1;
-uint32_t meanFailureDelay = 3600; // seconds, 60 min
+uint32_t meanFailureDelay = 1; // seconds
 uint32_t minFailureDelay = meanFailureDelay * 0.9;
 uint32_t maxFailureDelay = meanFailureDelay * 1.1;
 
