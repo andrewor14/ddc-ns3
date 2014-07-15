@@ -26,7 +26,7 @@ set title "8-pod FatTree"
 set title font ",30"
 
 set xtics 20
-set ytics 5
+set ytics 1
 set xtics font ",15"
 set ytics font ",15"
 
@@ -39,7 +39,7 @@ set ylabel font ",20"
 set xlabel offset 0,-1
 set ylabel offset -2,0
 
-set yrange [*:30]
+set yrange [*:27]
 
 set lmargin 12
 set bmargin 5
