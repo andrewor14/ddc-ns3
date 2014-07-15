@@ -49,7 +49,7 @@ uint32_t maxFailureDelay = meanFailureDelay * 1.1;
 // Switch attributes
 const uint32_t switchPort = 3355;
 const Time switchWindowDuration = controllerPingSwitchesInterval;
-const uint8_t switchMaxViolationCount = 3;
+const uint8_t switchMaxViolationCount = 10;
 
 // Interval at which we refresh DDC periodically
 uint32_t ddcRefreshInterval = 30; // seconds

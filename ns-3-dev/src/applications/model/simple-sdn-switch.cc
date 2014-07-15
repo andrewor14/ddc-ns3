@@ -27,6 +27,8 @@
 #include "ns3/uinteger.h"
 #include "ns3/simple-sdn-header.h"
 
+#include <stdlib.h>
+
 #include "simple-sdn-switch.h"
 
 namespace ns3 {
@@ -200,6 +202,8 @@ SimpleSDNSwitch::UpdateWindow ()
     m_violation_count = 0;
   }
 
+  std::cerr << "### DATA ### switch (" << m_id << ") violation count +++" << m_violation_count << "\n";
+
   if (m_violation_count > 0) {
     NS_LOG_INFO (
       "Switch " << m_id << " " <<
@@ -223,7 +227,8 @@ SimpleSDNSwitch::UpdateWindow ()
 void
 SimpleSDNSwitch::ReportViolation ()
 {
-  NS_ABORT_MSG ("Switch " << m_id << " has detected inconsistency in the control plane!");
+  std::cerr << "Switch " << m_id << " has detected inconsistency in the control plane!";
+  exit (EXIT_FAILURE);
 }
 
 } // Namespace ns3

@@ -327,6 +327,7 @@ SimpleSDNController::HandleControllerRead (Ptr<Packet> p)
     uint64_t time_sent = sdnHeader.GetTimeSent ();
     uint64_t latency = (Simulator::Now () - Time (NanoSeconds (time_sent))).GetNanoSeconds ();
     m_file << latency << "\n";
+    std::cerr << "### DATA ### controller latency (" << m_id << ") +++" << latency << "\n";
     NS_LOG_LOGIC (
       "    Packet received from " <<
       "controller " << controller_id << " " <<
