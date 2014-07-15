@@ -153,7 +153,8 @@ int main (int argc, char *argv[])
                     "[controller id start] " <<
                     "[controller id end] " <<
                     "[links to fail] " <<
-                    "[seed]");
+                    "[seed]" <<
+                    "[reverse delay]");
     exit (EXIT_FAILURE);
   }
 
@@ -183,6 +184,7 @@ int main (int argc, char *argv[])
   numLinksToFail = std::atoi (argv[4]);
   uint32_t seed = std::atoi (argv[5]);
   SeedManager::SetSeed (seed);
+  double reverseDelay = std::atof (argv[6]);
 
   std::cerr << "* Setting nodes up\n";
 
@@ -233,6 +235,14 @@ int main (int argc, char *argv[])
     address.NewNetwork ();
   }
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
+  // Set reversal delays for each node
+  for (uint32_t i = 0; i < numNodes; i++) {
+    Ptr<GlobalRouter> router = nodes.Get(i)->GetObject<GlobalRouter>();
+    Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol();
+    gr->SetAttribute("ReverseOutputToInputDelay", TimeValue (MicroSeconds (reverseDelay)));
+    gr->SetAttribute("ReverseInputToOutputDelay", TimeValue (MicroSeconds (reverseDelay)));
+  }
 
   std::cerr << "* Setting up switches and controllers\n";
 
