@@ -41,7 +41,6 @@ mkdir $finaldir
 cp -R results-"$expname"-*/* $finaldir
 for dir in $finaldir/*; do
   cat $dir/all.log.* >> $dir/all.log
-  rm -rf $dir/link*log
   rm -rf $dir/controller*log
 done
 

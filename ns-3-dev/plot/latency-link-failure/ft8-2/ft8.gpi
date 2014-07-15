@@ -39,7 +39,7 @@ set ylabel font ",20"
 set xlabel offset 0,-1
 set ylabel offset -2,0
 
-set yrange [*:27]
+set yrange [*:48]
 
 set lmargin 12
 set bmargin 5
