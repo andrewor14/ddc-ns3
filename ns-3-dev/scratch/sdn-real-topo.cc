@@ -20,6 +20,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/random-variable.h"
+#include "ns3/nstime.h"
 
 #include <string>
 #include <fstream>
@@ -95,6 +96,9 @@ void InitializeTopology (std::string filename)
   std::cerr << "* Topology initialization complete!\n";
 }
 
+/**
+ * Re-initialize control plane routes.
+ */
 void RecomputeDDC () {
   GlobalRouteManager::DeleteGlobalRoutes ();
   GlobalRouteManager::BuildGlobalRoutingDatabase ();
@@ -102,10 +106,32 @@ void RecomputeDDC () {
   Simulator::Schedule (Seconds (ddcRefreshInterval), &RecomputeDDC);
 }
 
+/**
+ * Return a sampled failure delay.
+ */
+Time GetFailureDelay () {
+  uint32_t mean = meanFailureDelay.GetNanoSeconds ();
+  uint32_t sample = rv.GetInteger (mean * 0.9, mean * 1.1);
+  return NanoSeconds (sample);
+}
+
+/**
+ * Return a sampled recovery delay.
+ */
+Time GetRecoveryDelay () {
+  uint32_t mean = meanRecoveryDelay.GetNanoSeconds ();
+  uint32_t sample = rv.GetInteger (mean * 0.9, mean * 1.1);
+  return NanoSeconds (sample);
+}
+
+/**
+ * Recover a link.
+ */
 void RecoverLink (PointToPointChannel* link) {
   uint32_t node1 = link->GetDevice (0)->GetNode ()->GetId ();
   uint32_t node2 = link->GetDevice (1)->GetNode ()->GetId ();
   NS_LOG_INFO ("Recovering link " << node1 << " <-> " << node2);
+  std::cerr  << "Recovering link " << node1 << " <-> " << node2 << "\n";
   link->SetLinkUp ();
   channels.push_back (link);
   numLinksToFail++;
@@ -121,21 +147,29 @@ void FailRandomLink () {
     uint32_t node1 = linkToFail->GetDevice (0)->GetNode ()->GetId ();
     uint32_t node2 = linkToFail->GetDevice (1)->GetNode ()->GetId ();
     NS_LOG_INFO ("Failing link " << node1 << " <-> " << node2);
+    std::cerr  << "Failing link " << node1 << " <-> " << node2 << "\n";
     linkToFail->SetLinkDown ();
     channels.erase (channels.begin () + linkIndex);
     numLinksToFail--;
 
-    // Schedule next failure
-    uint32_t failureDelay = rv.GetInteger (minFailureDelay, maxFailureDelay);
-    Simulator::Schedule (Seconds (failureDelay), &FailRandomLink);
-
-    // Schedule recovery
-    uint32_t recoveryDelay = rv.GetInteger (minRecoveryDelay, maxRecoveryDelay);
-    Simulator::Schedule (Seconds (recoveryDelay), &RecoverLink, linkToFail);
+    // Schedule next failure and recovery
+    Simulator::Schedule (GetFailureDelay (), &FailRandomLink);
+    Simulator::Schedule (GetRecoveryDelay (), &RecoverLink, linkToFail);
 
   } else {
     NS_LOG_LOGIC ("No more links to fail!");
   }
+}
+
+/**
+ * Translate controller ID.
+ */
+uint32_t TranslateControllerID (uint32_t oldID) {
+  if (nodeTranslateMap.find (oldID) == nodeTranslateMap.end ()) {
+    NS_LOG_ERROR ("Controller start ID " << oldID << " not found!");
+    exit (EXIT_FAILURE);
+  }
+  return nodeTranslateMap.at (oldID);
 }
 
 /**
@@ -150,27 +184,29 @@ int main (int argc, char *argv[])
 
   std::string topoFile;
   std::string expName;
-  uint32_t oldControllerStartID;
-  uint32_t oldControllerEndID;
+  uint32_t oldControllerID1;
+  uint32_t oldControllerID2;
+  uint32_t oldControllerID3;
   // controllerMaxEpoch
   // switchMaxViolationCount
   uint32_t numLinksToFail;
   // meanRecoveryDelay
   // meanFailureDelay
   uint32_t seed = 8888;
-  std::string reversalDelay;
-  std::string linkLatency;
+  Time reversalDelay;
+  Time linkLatency;
 
   CommandLine cmd;
   cmd.AddValue ("TopologyFile", "File of the topology representation", topoFile);
   cmd.AddValue ("ExperimentName", "Name of experiment", expName);
-  cmd.AddValue ("ControllerStartID", "Start ID of the controllers", oldControllerStartID);
-  cmd.AddValue ("ControllerEndID", "End ID of the controllers", oldControllerEndID);
+  cmd.AddValue ("ControllerID1", "Controller #1", oldControllerID1);
+  cmd.AddValue ("ControllerID2", "Controller #2", oldControllerID2);
+  cmd.AddValue ("ControllerID3", "Controller #3", oldControllerID3);
   cmd.AddValue ("ControllerMaxEpoch", "Max epoch", controllerMaxEpoch);
   cmd.AddValue ("SwitchMaxViolation", "Max violation count", switchMaxViolationCount);
   cmd.AddValue ("NumLinksToFail", "Number of links to fail", numLinksToFail);
-  cmd.AddValue ("MeanRecoveryInterval", "Link recovery interval (s)", meanRecoveryDelay);
-  cmd.AddValue ("MeanFailureInterval", "Link failure interval (s)", meanFailureDelay);
+  cmd.AddValue ("MeanRecoveryInterval", "Link recovery interval", meanRecoveryDelay);
+  cmd.AddValue ("MeanFailureInterval", "Link failure interval", meanFailureDelay);
   cmd.AddValue ("Seed", "Seed for choosing random links", seed);
   cmd.AddValue ("ReversalDelay", "Delay for link reversal", reversalDelay);
   cmd.AddValue ("LinkLatency", "Link latency", linkLatency);
@@ -180,8 +216,9 @@ int main (int argc, char *argv[])
     "* Parsed arguments:\n" <<
     "    TopologyFile = " << topoFile << "\n" <<
     "    ExperimentName = " << expName << "\n" <<
-    "    ControllerStartID = " << oldControllerStartID << "\n" <<
-    "    ControllerEndID = " << oldControllerEndID << "\n" <<
+    "    ControllerID1 = " << oldControllerID1 << "\n" <<
+    "    ControllerID2 = " << oldControllerID2 << "\n" <<
+    "    ControllerID3 = " << oldControllerID3 << "\n" <<
     "    ControllerMaxEpoch = " << controllerMaxEpoch << "\n" <<
     "    SwitchMaxViolation = " << (uint32_t) switchMaxViolationCount << "\n" <<
     "    NumLinksToFail = " << numLinksToFail << "\n" <<
@@ -196,23 +233,9 @@ int main (int argc, char *argv[])
   SeedManager::SetSeed (seed);
 
   // Translate controller IDs
-  if (nodeTranslateMap.find (oldControllerStartID) == nodeTranslateMap.end ()) {
-    NS_LOG_ERROR ("Controller start ID " << oldControllerStartID << " not found!");
-    exit (EXIT_FAILURE);
-  }
-  if (nodeTranslateMap.find (oldControllerEndID) == nodeTranslateMap.end ()) {
-    NS_LOG_ERROR ("Controller end ID " << oldControllerEndID << " not found!");
-    exit (EXIT_FAILURE);
-  }
-  if (oldControllerStartID > oldControllerEndID) {
-    NS_LOG_ERROR (
-      "Controller start ID " << oldControllerStartID << " must be <= " <<
-      "controller end ID " << oldControllerEndID << "!");
-    exit (EXIT_FAILURE);
-  }
-  uint32_t controllerStartID = nodeTranslateMap.at (oldControllerStartID);
-  uint32_t controllerEndID = nodeTranslateMap.at (oldControllerEndID);
-  NS_LOG_LOGIC ("Controllers ID range (new IDs): " << controllerStartID << " - " << controllerEndID);
+  uint32_t controllerID1 = TranslateControllerID (oldControllerID1);
+  uint32_t controllerID2 = TranslateControllerID (oldControllerID2);
+  uint32_t controllerID3 = TranslateControllerID (oldControllerID3);
 
   std::cerr << "* Setting nodes up\n";
 
@@ -223,7 +246,7 @@ int main (int argc, char *argv[])
   // Connect the nodes
   PointToPointHelper p2p;
   p2p.SetDeviceAttribute ("DataRate", StringValue ("10Gbps"));
-  p2p.SetChannelAttribute ("Delay", StringValue (linkLatency));
+  p2p.SetChannelAttribute ("Delay", TimeValue (linkLatency));
   p2p.SetQueue ("ns3::PriorityQueue");
   std::vector<NetDeviceContainer> nodeDevices (numNodes);  
   std::vector<NetDeviceContainer> linkDevices;
@@ -249,11 +272,9 @@ int main (int argc, char *argv[])
       "(" << channels.size () << ")!");
     exit (EXIT_FAILURE);
   }
+  Simulator::Schedule (GetFailureDelay (), &FailRandomLink);
   NS_LOG_INFO ("* Failing " << numLinksToFail << " links over the course of the simulation.");
   std::cerr << "* Failing " << numLinksToFail << " links over the course of the simulation.\n";
-
-  uint32_t failureDelay = rv.GetInteger (minFailureDelay, maxFailureDelay);
-  Simulator::Schedule (Seconds (failureDelay), &FailRandomLink);
 
   std::cerr << "* Installing Ipv4 stack on each node\n";
 
@@ -272,8 +293,8 @@ int main (int argc, char *argv[])
   for (uint32_t i = 0; i < numNodes; i++) {
     Ptr<GlobalRouter> router = nodes.Get(i)->GetObject<GlobalRouter>();
     Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol();
-    gr->SetAttribute("ReverseOutputToInputDelay", StringValue (reversalDelay));
-    gr->SetAttribute("ReverseInputToOutputDelay", StringValue (reversalDelay));
+    gr->SetAttribute("ReverseOutputToInputDelay", TimeValue (reversalDelay));
+    gr->SetAttribute("ReverseInputToOutputDelay", TimeValue (reversalDelay));
   }
 
   std::cerr << "* Setting up switches and controllers\n";
@@ -282,7 +303,7 @@ int main (int argc, char *argv[])
   NodeContainer switchNodes;
   NodeContainer controllerNodes;
   for (uint32_t i = 0; i < numNodes; i++) {
-    if (i >= controllerStartID && i <= controllerEndID) {
+    if (i == controllerID1 || i == controllerID2 || i == controllerID3) {
       controllerNodes.Add (nodes.Get (i));
     } else {
       switchNodes.Add (nodes.Get (i));

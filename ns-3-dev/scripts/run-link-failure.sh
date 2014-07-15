@@ -7,54 +7,79 @@ if ! [[ "$cwd" == "ns-3-dev" ]]; then
   exit 1
 fi
 
-if [[ $# -lt 6 ]]; then
+if [[ $# -lt 10 ]]; then
   echo "Usage: run-link-failure.sh
           [topology name]
           [experiment name]
-          [start controller ID]
-          [end controller ID]
+          [controller ID1]
+          [controller ID2]
+          [controller ID3]
+          [controller max epoch]
+          [num links to fail]
+          [recovery interval]
           [reversal delay]
           [link latency]"
   exit 1
 fi
 
-toponame=$1
-expname=$2
-controller_start_id=$3
-controller_end_id=$4
-reversal_delay=$5
-link_latency=$6
-seed=0
+topo_name=$1
+exp_name=$2
+controller_id_1=$3
+controller_id_2=$4
+controller_id_3=$5
+controller_max_epoch=$6
+num_links_to_fail=$7 # upper bound
+link_recovery_interval=$8
+reversal_delay=$9
+link_latency=${10}
+
+seed=0 # This varies
+link_failure_interval=0 # This varies
+switch_max_violation=20
 
 runSimulation () {
-  echo "Running simulation with $num_fail links failed (seed = $seed) with reversal delay $reversal_delay and link latency $link_latency"
-  dirname=results-"$expname-$seed"/"$expname"-link-failure-"$num_fail"
+  echo "Running simulation $exp_name with failure interval $link_failure_interval ($seed)"
+  dirname=results-"$exp_name-$seed"/"$exp_name"-link-failure-"$num_links_to_fail"
   ./waf --run "scratch/sdn-real-topo \
-    --TopologyFile=/mnt/andrew/ddc-ns3/topos/$toponame \
-    --ExperimentName=$expname \
-    --ControllerStartID=$controller_start_id \
-    --ControllerEndID=$controller_end_id \
-    --NumLinksToFail=$num_fail \
+    --TopologyFile=/mnt/andrew/ddc-ns3/topos/$topo_name \
+    --ExperimentName=$exp_name \
+    --ControllerID1=$controller_id_1 \
+    --ControllerID2=$controller_id_2 \
+    --ControllerID3=$controller_id_3 \
+    --ControllerMaxEpoch=$controller_max_epoch \
+    --SwitchMaxViolation=$switch_max_violation \
+    --NumLinksToFail=$num_links_to_fail \
+    --MeanRecoveryInterval=$link_recovery_interval \
+    --MeanFailureInterval=$link_failure_interval \
     --Seed=$seed \
     --ReversalDelay=$reversal_delay \
-    --LinkLatency=$link_latency" 2>&1 | tee $expname-link-failure-"$num_fail".log
+    --LinkLatency=$link_latency" 2>&1 | tee $exp_name-link-failure-"$num_links_to_fail".log
   mkdir -p $dirname
-  mv $expname-controller-*-latency.log $dirname
-  cat $dirname/$expname-controller-*-latency.log > $dirname/all.log
+  mv $exp_name-controller-*-latency.log $dirname
+  cat $dirname/$exp_name-controller-*-latency.log > $dirname/all.log
   mv $dirname/all.log $dirname/"all.log.$seed"
-  mv $expname-link-failure-"$num_fail".log $dirname
+  mv $exp_name-link-failure-"$num_links_to_fail".log $dirname
 }
 
-for i in `seq 0 18`; do
-  num_fail=$(($i * 100))
-  seed=6127 runSimulation
-  seed=4500 runSimulation
-  seed=8994 runSimulation
-done
+runMultipleTrials () {
+  seed=13355 runSimulation
+  seed=24466 runSimulation
+  seed=35577 runSimulation
+}
 
-finaldir="results-final-$expname"
+link_failure_interval=10s runMultipleTrials # 1 link / 10s
+link_failure_interval=5s runMultipleTrials # 1 link / 5s
+link_failure_interval=1s runMultipleTrials # 1 link / s
+link_failure_interval=500ms runMultipleTrials # 2 links / s
+link_failure_interval=200ms runMultipleTrials # 5 links / s
+link_failure_interval=100ms runMultipleTrials # 10 links / s
+link_failure_interval=50ms runMultipleTrials # 20 links / s
+link_failure_interval=20ms runMultipleTrials # 50 links / s
+link_failure_interval=10ms runMultipleTrials # 100 links / s
+
+finaldir="results-final-$exp_name"
 mkdir $finaldir
-cp -R results-"$expname"-*/* $finaldir
+cp -R results-"$exp_name"-*/* $finaldir
 for dir in $finaldir/*; do
   cat $dir/all.log.* >> $dir/all.log
   rm -rf $dir/*controller*log

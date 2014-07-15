@@ -39,12 +39,8 @@ uint32_t controllerMaxEpoch = 1000;
 // For failing links
 UniformVariable rv;
 uint32_t numLinksToFail;
-uint32_t meanRecoveryDelay = 10000000; // seconds
-uint32_t minRecoveryDelay = meanRecoveryDelay * 0.9;
-uint32_t maxRecoveryDelay = meanRecoveryDelay * 1.1;
-uint32_t meanFailureDelay = 1; // seconds
-uint32_t minFailureDelay = meanFailureDelay * 0.9;
-uint32_t maxFailureDelay = meanFailureDelay * 1.1;
+Time meanRecoveryDelay;
+Time meanFailureDelay;
 
 // Switch attributes
 const uint32_t switchPort = 3355;
