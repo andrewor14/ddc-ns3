@@ -202,7 +202,7 @@ SimpleSDNSwitch::UpdateWindow ()
     m_violation_count = 0;
   }
 
-  std::cerr << "### DATA ### switch (" << m_id << ") violation count +++" << m_violation_count << "\n";
+  std::cerr << "### DATA ### switch (" << m_id << ") violation count +++" << (uint32_t) m_violation_count << "\n";
 
   if (m_violation_count > 0) {
     NS_LOG_INFO (

@@ -369,6 +369,7 @@ SimpleSDNController::SelectLeader ()
   m_leader_candidates.clear ();
   if (m_epoch % 10 == 0) {
     NS_LOG_INFO ("* SELECT LEADER (id " << m_id << ", epoch " << m_epoch << ") *** leader = " << m_leader_id << " ***");
+    std::cerr << "* SELECT LEADER (id " << m_id << ", epoch " << m_epoch << ") *** leader = " << m_leader_id << " ***\n";
   }
 }
 

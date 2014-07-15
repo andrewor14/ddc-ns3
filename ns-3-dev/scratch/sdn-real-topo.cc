@@ -221,6 +221,8 @@ int main (int argc, char *argv[])
   uint32_t failureDelay = rv.GetInteger (minFailureDelay, maxFailureDelay);
   Simulator::Schedule (Seconds (failureDelay), &FailRandomLink);
 
+  std::cerr << "* Installing Ipv4 stack on each node\n";
+
   // Set up each network device
   InternetStackHelper stack;
   stack.Install (nodes);
@@ -232,6 +234,8 @@ int main (int argc, char *argv[])
   }
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
+  std::cerr << "* Setting up switches and controllers\n";
+
   // Set up switches and controllers
   NodeContainer switchNodes;
   NodeContainer controllerNodes;
@@ -242,6 +246,8 @@ int main (int argc, char *argv[])
       switchNodes.Add (nodes.Get (i));
     }
   }
+
+  std::cerr << "* Installing switch and controller applications\n";
 
   // Install switch and controller applications
   SimpleSDNSwitchHelper* switchHelper =
@@ -257,6 +263,9 @@ int main (int argc, char *argv[])
       controllerMaxEpoch);
   ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
+
+  std::cerr << "* Connecting controllers to switches\n";
+
   controllerHelper->ConnectToSwitches (controllerNodes, switchNodes);
 
   // On exit, close all open files (hack)
