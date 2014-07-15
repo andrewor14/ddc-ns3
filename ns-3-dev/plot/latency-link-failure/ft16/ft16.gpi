@@ -26,21 +26,21 @@ set title "16-pod FatTree"
 set title font ",30"
 set title offset 0,1
 
-set xtics 20
+set xtics 200
 set ytics 5
 set xtics font ",15"
 set ytics font ",15"
 
-set xlabel "Number of links failed"
-set xlabel font ",25"
+set xlabel "Number of random links failed"
+set xlabel font ",20"
 
 set ylabel "Control latency (us)"
-set ylabel font ",25"
+set ylabel font ",20"
 
 set xlabel offset 0,-1
 set ylabel offset -2,0
 
-set yrange [32:48]
+set yrange [32:50]
 
 set lmargin 12
 set bmargin 5
