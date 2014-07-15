@@ -24,25 +24,27 @@ set style line 5 lt rgb "#716342" lw 3 pt 8 ps 3
 
 set title "8-pod FatTree"
 set title font ",30"
+set title offset 0,1
 
 set xtics 20
-set ytics 1
+set ytics 5
 set xtics font ",15"
 set ytics font ",15"
 
 set xlabel "Number of links failed"
-set xlabel font ",20"
+set xlabel font ",25"
 
 set ylabel "Control latency (us)"
-set ylabel font ",20"
+set ylabel font ",25"
 
 set xlabel offset 0,-1
 set ylabel offset -2,0
 
-set yrange [*:48]
+set yrange [32:48]
 
 set lmargin 12
 set bmargin 5
+set tmargin 5
 
 # Note that we're leaving out output, title, and plot
 set output "ft8.pdf"
