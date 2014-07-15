@@ -65,11 +65,13 @@ SimpleSDNController::GetTypeId (void)
 }
 
 SimpleSDNController::SimpleSDNController ()
+  : m_application_started (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 SimpleSDNController::SimpleSDNController (uint32_t id)
+  : m_application_started (false)
 {
   SetID (id);
 }
