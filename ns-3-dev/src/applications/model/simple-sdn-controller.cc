@@ -66,7 +66,12 @@ SimpleSDNController::GetTypeId (void)
                    "Name of experiment.",
                    StringValue ("BAD DEFAULT"),
                    MakeStringAccessor (&SimpleSDNController::m_exp_name),
-                   MakeStringChecker ());
+                   MakeStringChecker ())
+    .AddAttribute ("Seed",
+                   "Seed...",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&SimpleSDNController::m_seed),
+                   MakeUintegerChecker<uint32_t> ());
   return tid;
 }
 
@@ -194,7 +199,7 @@ SimpleSDNController::StartApplication (void)
 
     // Log latency to file
     std::stringstream filename;
-    filename << m_exp_name << "-controller-" << m_id << "-latency.log";
+    filename << m_exp_name << "-controller-" << m_id << "-latency.log." << m_seed;
     m_file.open (filename.str ().c_str ());
   }
 }

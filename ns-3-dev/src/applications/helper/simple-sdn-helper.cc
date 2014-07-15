@@ -35,7 +35,8 @@ SimpleSDNControllerHelper::SimpleSDNControllerHelper (
   Time ping_switches_interval,
   Time ping_controllers_interval,
   uint32_t max_epoch,
-  std::string exp_name)
+  std::string exp_name,
+  uint32_t seed)
 {
   m_factory.SetTypeId (SimpleSDNController::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
@@ -43,6 +44,7 @@ SimpleSDNControllerHelper::SimpleSDNControllerHelper (
   SetAttribute ("PingControllersInterval", TimeValue (ping_controllers_interval));
   SetAttribute ("MaxEpoch", UintegerValue (max_epoch));
   SetAttribute ("ExperimentName", StringValue (exp_name));
+  SetAttribute ("Seed", UintegerValue (seed));
 }
 
 void 

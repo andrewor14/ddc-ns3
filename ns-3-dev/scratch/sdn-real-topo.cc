@@ -324,7 +324,8 @@ int main (int argc, char *argv[])
       controllerPingSwitchesInterval,
       controllerPingControllersInterval,
       controllerMaxEpoch,
-      expName);
+      expName,
+      seed);
   ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
 

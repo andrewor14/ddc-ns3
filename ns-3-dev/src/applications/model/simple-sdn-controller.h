@@ -140,7 +140,9 @@ private:
 
   Ptr<Socket> m_receive_socket;
 
+  // For naming files
   std::string m_exp_name;
+  uint32_t m_seed;
 
   /// Callbacks for tracing the packet Rx events
   TracedCallback<Ptr<const Packet>, Ipv4Header&> m_rxTrace;
