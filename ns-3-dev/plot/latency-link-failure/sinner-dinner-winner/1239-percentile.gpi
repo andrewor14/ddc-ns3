@@ -22,32 +22,22 @@ set style line 3 lt rgb "#00A000" lw 6 pt 3 ps 1
 set style line 4 lt rgb "#F25900" lw 3 pt 6 ps 3
 set style line 5 lt rgb "#716342" lw 3 pt 8 ps 3
 
-set title "AS 1239"
-set title font ",30"
-set title offset 0,1
-
-set key off
-
 set xtics 0.05
-set ytics 5
-set xtics font ",15"
-set ytics font ",15"
+set ytics 10
+set xtics font "Gill Sans,16"
+set ytics font "Gill Sans,16"
 
 set xlabel "Fraction of links failed"
-set xlabel font ",20"
+set xlabel font "Gill Sans,16"
 
 set ylabel "Control latency (ms)"
-set ylabel font ",20"
+set ylabel font "Gill Sans,16"
 
 set xlabel offset 0,-1
 set ylabel offset -2,0
 
-#set xrange [03:0.42]
-#set yrange [40:80]
-
-set lmargin 12
-set bmargin 5
-set tmargin 5
+set xrange [0:0.42]
+set yrange [35:110]
 
 # Note that we're leaving out output, title, and plot
 set output "1239-percentile.pdf"
