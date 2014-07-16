@@ -26,12 +26,12 @@ set title "16-pod FatTree"
 set title font ",30"
 set title offset 0,1
 
-set xtics 200
+set xtics 0.05
 set ytics 5
 set xtics font ",15"
 set ytics font ",15"
 
-set xlabel "Number of random links failed"
+set xlabel "Fraction of links failed"
 set xlabel font ",20"
 
 set ylabel "Control latency (us)"
@@ -40,7 +40,8 @@ set ylabel font ",20"
 set xlabel offset 0,-1
 set ylabel offset -2,0
 
-set yrange [32:50]
+set xrange [0.23:0.42]
+set yrange [40:80]
 
 set lmargin 12
 set bmargin 5
@@ -48,6 +49,6 @@ set tmargin 5
 
 # Note that we're leaving out output, title, and plot
 set output "ft16.pdf"
-plot 'ft16-100ms-delay.dat' title "10ms reversal delay" w lp ls 1
+plot 'ft16-10ms-delay.dat' title "10ms reversal delay" w lp ls 1
 #     'ft16-100us-delay.dat' title "100us reversal delay" w lp ls 2
 
