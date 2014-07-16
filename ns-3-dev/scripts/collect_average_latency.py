@@ -7,8 +7,8 @@ import os
 import re
 
 if __name__ == "__main__":
-  if len(sys.argv) < 2:
-    print "Usage: collect_average_latency.py [base dir]"
+  if len(sys.argv) < 3:
+    print "Usage: collect_average_latency.py [base dir] [latency percentile]"
     sys.exit(1)
 
   baseDir = os.path.abspath(sys.argv[1])
@@ -22,8 +22,9 @@ if __name__ == "__main__":
     #key = key.group().replace("link-failure-", "")
     f = os.path.join(baseDir, f)
     key = averageFailedLinks(f + "/all.log")
+    value = averageLatency(f + "/all.log", int(sys.argv[2]))
     key = key / 2048
-    value = averageLatency(f + "/all.log")
+    value = value / 1000
     results[key] = value
 
   for k in sorted(results.keys()):

@@ -1,0 +1,56 @@
+# Note you need gnuplot 4.4 for the pdfcairo terminal.
+
+set terminal pdf
+
+# Line style for axes
+set style line 80 lt rgb "#808080"
+
+# Line style for grid
+set style line 81 lt 0  # dashed
+set style line 81 lt rgb "#808080"  # grey
+
+set grid back linestyle 81
+set border 3 back linestyle 80 
+
+# Line styles: try to pick pleasing colors, rather
+# than strictly primary colors or hard-to-see colors
+# like gnuplot's default yellow.  Make the lines thick
+# so they're easy to see in small plots in papers.
+set style line 1 lt rgb "#5060D0" lw 6 pt 3 ps 1
+set style line 2 lt rgb "#A00000" lw 6 pt 3 ps 1
+set style line 3 lt rgb "#00A000" lw 6 pt 3 ps 1
+set style line 4 lt rgb "#F25900" lw 3 pt 6 ps 3
+set style line 5 lt rgb "#716342" lw 3 pt 8 ps 3
+
+set title "AS 1239"
+set title font ",30"
+set title offset 0,1
+
+set key off
+
+set xtics 0.05
+set ytics 5
+set xtics font ",15"
+set ytics font ",15"
+
+set xlabel "Fraction of links failed"
+set xlabel font ",20"
+
+set ylabel "Control latency (ms)"
+set ylabel font ",20"
+
+set xlabel offset 0,-1
+set ylabel offset -2,0
+
+#set xrange [03:0.42]
+#set yrange [40:80]
+
+set lmargin 12
+set bmargin 5
+set tmargin 5
+
+# Note that we're leaving out output, title, and plot
+set output "1239-percentile.pdf"
+plot '1239-10ms-50p.dat' title "50th percentile" w lp ls 1, \
+     '1239-10ms-90p.dat' title "90th percentile" w lp ls 2
+
