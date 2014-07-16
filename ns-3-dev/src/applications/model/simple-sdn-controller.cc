@@ -27,6 +27,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
 #include "ns3/simple-sdn-header.h"
+#include "ns3/simple-sdn-switch.h"
 
 #include <fstream>
 #include <stdlib.h>
@@ -36,6 +37,9 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SimpleSDNControllerApplication");
+
+uint32_t SimpleSDNController::failedLinks = 0;
+std::list<std::ofstream*> SimpleSDNController::filesToClose;
 
 TypeId
 SimpleSDNController::GetTypeId (void)
@@ -123,12 +127,6 @@ SimpleSDNController::SetPort (uint16_t port)
   m_port = port;
 }
 
-void
-SimpleSDNController::SetFilesToClose (std::list<std::ofstream*> files)
-{
-  m_files_to_close = files;
-}
-
 uint32_t
 SimpleSDNController::GetID (void) const
 {
@@ -145,12 +143,6 @@ uint16_t
 SimpleSDNController::GetPort (void) const
 {
   return m_port;
-}
-
-std::ofstream*
-SimpleSDNController::GetFile (void)
-{
-  return &m_file;
 }
 
 void
@@ -199,8 +191,9 @@ SimpleSDNController::StartApplication (void)
 
     // Log latency to file
     std::stringstream filename;
-    filename << m_exp_name << "-controller-" << m_id << "-latency.log." << m_seed;
+    filename << m_exp_name << "-controller-" << m_id << ".log." << m_seed;
     m_file.open (filename.str ().c_str ());
+    filesToClose.push_back (&m_file);
   }
 }
 
@@ -219,7 +212,7 @@ SimpleSDNController::StopApplication ()
     socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   }
   std::list<std::ofstream*>::iterator it_f;
-  for (it_f = m_files_to_close.begin (); it_f != m_files_to_close.end (); it_f++) {
+  for (it_f = filesToClose.begin (); it_f != filesToClose.end (); it_f++) {
     (*it_f)->close();
   }
 }
@@ -339,8 +332,9 @@ SimpleSDNController::HandleControllerRead (Ptr<Packet> p)
     uint32_t epoch = sdnHeader.GetEpoch ();
     uint64_t time_sent = sdnHeader.GetTimeSent ();
     uint64_t latency = (Simulator::Now () - Time (NanoSeconds (time_sent))).GetNanoSeconds ();
-    m_file << latency << "\n";
-    std::cerr << "### DATA ### controller latency (" << m_id << ") +++" << latency << "\n";
+    m_file << "### DATA ### controller latency (" << m_id << ") +++" << latency << "\n";
+    m_file << "### DATA ### failed links +++" << failedLinks << "\n";
+    m_file << "### DATA ### num switches with violation +++" << SimpleSDNSwitch::numSwitchesWithViolation << "\n";
     NS_LOG_LOGIC (
       "    Packet received from " <<
       "controller " << controller_id << " " <<

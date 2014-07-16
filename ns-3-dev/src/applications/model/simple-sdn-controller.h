@@ -56,15 +56,15 @@ public:
   void SetID (uint32_t);
   void SetLeaderID (uint32_t);
   void SetPort (uint16_t);
-  void SetFilesToClose (std::list<std::ofstream*> files);
   uint32_t GetID (void) const;
   uint32_t GetLeaderID (void) const;
   uint16_t GetPort (void) const;
-  std::ofstream* GetFile (void);
 
   virtual ~SimpleSDNController ();
   void AddReceivePacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > rxEvent);
   void AddTransmitPacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > txEvent);
+  static uint32_t failedLinks;
+  static std::list<std::ofstream*> filesToClose;
 
 protected:
   virtual void DoDispose (void);
@@ -131,9 +131,6 @@ private:
 
   // File for logging packet latencies
   std::ofstream m_file;
-
-  // A list of files to close on shut down
-  std::list<std::ofstream*> m_files_to_close;
 
   // Number of epochs before stopping the simulation
   uint32_t m_max_epoch;

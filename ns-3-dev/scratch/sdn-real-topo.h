@@ -16,8 +16,6 @@
 
 #include "ns3/random-variable.h"
 
-#include <fstream>
-
 using namespace ns3;
 
 // Number of nodes in this network
@@ -30,8 +28,8 @@ std::vector<std::list<uint32_t>*> connectivityGraph;
 std::map<uint32_t, uint32_t> nodeTranslateMap;
 
 // Keep track of all links to fail them
-std::vector<PointToPointChannel*> channels;
-std::ofstream logfile;
+std::vector<PointToPointChannel*> links;
+std::vector<PointToPointChannel*> failedLinks;
 
 // Controller attributes
 const uint32_t controllerPort = 2244;

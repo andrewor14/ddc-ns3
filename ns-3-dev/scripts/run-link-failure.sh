@@ -54,10 +54,9 @@ runSimulation () {
     --ReversalDelay=$reversal_delay \
     --LinkLatency=$link_latency" 2>&1 | tee $exp_name-link-failure-$link_failure_interval.log.$seed
   mkdir -p $dirname
-  mv $exp_name-controller-*-latency.log.$seed $dirname
+  mv $exp_name-controller*.log.$seed $dirname
   mv $exp_name-link-failure-$link_failure_interval.log.$seed $dirname
-  mv $exp_name-link-stats.log.$seed $dirname
-  cat $dirname/$exp_name-controller-*-latency.log.$seed > $dirname/all.log.$seed
+  cat $dirname/$exp_name-controller*log.$seed > $dirname/all.log.$seed
 }
 
 runMultipleTrials () {
@@ -67,15 +66,12 @@ runMultipleTrials () {
   runSimulation
 }
 
-link_failure_interval=120s runMultipleTrials # 1 link / s
-link_failure_interval=60s runMultipleTrials # 1 link / s
-link_failure_interval=30s runMultipleTrials # 1 link / s
-link_failure_interval=15s runMultipleTrials # 1 link / s
-link_failure_interval=1s runMultipleTrials # 1 link / s
+link_failure_interval=10s runMultipleTrials # 0.1 link / s
+#link_failure_interval=1s runMultipleTrials # 1 link / s
 #link_failure_interval=500ms runMultipleTrials # 2 links / s
 #link_failure_interval=200ms runMultipleTrials # 5 links / s
-link_failure_interval=100ms runMultipleTrials # 10 links / s
+#link_failure_interval=100ms runMultipleTrials # 10 links / s
 #link_failure_interval=50ms runMultipleTrials # 20 links / s
 #link_failure_interval=20ms runMultipleTrials # 50 links / s
-link_failure_interval=10ms runMultipleTrials # 100 links / s
+#link_failure_interval=10ms runMultipleTrials # 100 links / s
 

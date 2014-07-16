@@ -35,6 +35,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SimpleSDNSwitchApplication");
 
+uint32_t SimpleSDNSwitch::numSwitchesWithViolation = 0;
+
 TypeId
 SimpleSDNSwitch::GetTypeId (void)
 {
@@ -179,6 +181,8 @@ SimpleSDNSwitch::AddTransmitPacketEvent (Callback<void, Ptr<const Packet>, Ipv4H
 void
 SimpleSDNSwitch::UpdateWindow ()
 {
+  uint8_t previous_violation_count = m_violation_count;
+
   m_current_controllers.unique ();
   if (m_current_controllers.size() > 1) {
     // Multiple controllers are contacting this switch
@@ -202,7 +206,11 @@ SimpleSDNSwitch::UpdateWindow ()
     m_violation_count = 0;
   }
 
-  std::cerr << "### DATA ### switch (" << m_id << ") violation count +++" << (uint32_t) m_violation_count << "\n";
+  if (previous_violation_count == 0 && m_violation_count > 0) {
+    numSwitchesWithViolation++;
+  } else if (previous_violation_count > 0 && m_violation_count == 0) {
+    numSwitchesWithViolation--;
+  }
 
   if (m_violation_count > 0) {
     NS_LOG_INFO (

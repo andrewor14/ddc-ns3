@@ -38,8 +38,8 @@ NS_LOG_COMPONENT_DEFINE ("AndrewSDNTopologyTest");
  */
 void InitializeTopology (std::string filename)
 {
-  NS_LOG_INFO("* Initializing topology from \"" << filename << "\"");
   std::cerr << "* Initializing topology from \"" << filename << "\"\n";
+  NS_LOG_INFO("* Initializing topology from \"" << filename << "\"");
   std::map<uint32_t, std::list<uint32_t>*> nodeMapping;
   std::ifstream file (filename.c_str ());
   if (!file.is_open ()) {
@@ -97,16 +97,6 @@ void InitializeTopology (std::string filename)
 }
 
 /**
- * Re-initialize control plane routes.
- */
-void RecomputeDDC () {
-  GlobalRouteManager::DeleteGlobalRoutes ();
-  GlobalRouteManager::BuildGlobalRoutingDatabase ();
-  GlobalRouteManager::InitializeRoutes ();
-  Simulator::Schedule (Seconds (ddcRefreshInterval), &RecomputeDDC);
-}
-
-/**
  * Return a sampled failure delay.
  */
 Time GetFailureDelay () {
@@ -125,39 +115,45 @@ Time GetRecoveryDelay () {
 }
 
 /**
- * Recover a link.
+ * Recover a random link.
  */
-void RecoverLink (PointToPointChannel* link) {
-  uint32_t node1 = link->GetDevice (0)->GetNode ()->GetId ();
-  uint32_t node2 = link->GetDevice (1)->GetNode ()->GetId ();
-  NS_LOG_INFO ("Recovering link " << node1 << " <-> " << node2);
-  link->SetLinkUp ();
-  channels.push_back (link);
-  numLinksToFail++;
-  logfile << "### DATA ### link recovery +++" << channels.size () << "\n";
+void RecoverRandomLink () {
+  if (failedLinks.size () > 0) {
+    uint32_t linkIndex = rv.GetInteger (0, failedLinks.size () - 1);
+    PointToPointChannel* linkToRecover = failedLinks.at (linkIndex);
+    uint32_t node1 = linkToRecover->GetDevice (0)->GetNode ()->GetId ();
+    uint32_t node2 = linkToRecover->GetDevice (1)->GetNode ()->GetId ();
+    NS_LOG_INFO ("Recovering link " << node1 << " <-> " << node2);
+    linkToRecover->SetLinkUp ();
+    links.push_back (linkToRecover);
+    failedLinks.erase (failedLinks.begin () + linkIndex);
+    numLinksToFail++;
+    SimpleSDNController::failedLinks--;
+    Simulator::Schedule (GetRecoveryDelay (), &RecoverRandomLink);
+  } else {
+    std::cerr << "No more links to recover!\n";
+    NS_LOG_LOGIC ("No more links to recover!");
+  }
 }
 
 /**
  * Fail a random link.
  */
 void FailRandomLink () {
-  if (channels.size () > 0 && numLinksToFail > 0) {
-    uint32_t linkIndex = rv.GetInteger (0, channels.size () - 1);
-    PointToPointChannel* linkToFail = channels.at (linkIndex);
+  if (links.size () > 0 && numLinksToFail > 0) {
+    uint32_t linkIndex = rv.GetInteger (0, links.size () - 1);
+    PointToPointChannel* linkToFail = links.at (linkIndex);
     uint32_t node1 = linkToFail->GetDevice (0)->GetNode ()->GetId ();
     uint32_t node2 = linkToFail->GetDevice (1)->GetNode ()->GetId ();
     NS_LOG_INFO ("Failing link " << node1 << " <-> " << node2);
     linkToFail->SetLinkDown ();
-    channels.erase (channels.begin () + linkIndex);
+    failedLinks.push_back (linkToFail);
+    links.erase (links.begin () + linkIndex);
     numLinksToFail--;
-    logfile << "### DATA ### link failure +++" << channels.size () << "\n";
-
-    // Schedule next failure and recovery
+    SimpleSDNController::failedLinks++;
     Simulator::Schedule (GetFailureDelay (), &FailRandomLink);
-    Simulator::Schedule (GetRecoveryDelay (), &RecoverLink, linkToFail);
-
   } else {
-    std::cerr << "No more links to fail...\n";
+    std::cerr << "No more links to fail!\n";
     NS_LOG_LOGIC ("No more links to fail!");
   }
 }
@@ -216,11 +212,6 @@ int main (int argc, char *argv[])
   InitializeTopology (topoFile);
   SeedManager::SetSeed (seed);
 
-  // Log link stats to file
-  std::stringstream filename;
-  filename << expName << "-link-stats.log." << seed;
-  logfile.open (filename.str ().c_str ());
-
   // Compute controller IDs
   std::list<uint32_t> controllerIDs;
   std::cerr << "* Controllers IDs (new ID):";
@@ -236,9 +227,8 @@ int main (int argc, char *argv[])
   }
   std::cerr << "\n";
 
-  std::cerr << "* Setting nodes up\n";
-
   // Initialize the nodes
+  std::cerr << "* Setting nodes up\n";
   NodeContainer nodes;
   nodes.Create (numNodes);
 
@@ -257,27 +247,26 @@ int main (int argc, char *argv[])
       nodeDevices[i].Add (p2pDevices.Get (0));
       nodeDevices[*it].Add (p2pDevices.Get (1));
       linkDevices.push_back (p2pDevices);
-      Channel* channel = GetPointer (p2pDevices.Get (0)->GetChannel ());
-      channels.push_back ((PointToPointChannel*) channel);
+      Channel* link = GetPointer (p2pDevices.Get (0)->GetChannel ());
+      links.push_back ((PointToPointChannel*) link);
     }
   }
+  std::cerr << "* There are " << nodes.GetN () << " nodes and " << links.size () << " links\n";
 
-  std::cerr << "* There are " << nodes.GetN () << " nodes and " << channels.size () << " links\n";
-
-  // Schedule link failures
-  if (numLinksToFail > channels.size ()) {
+  // Schedule link failures (and recovery)
+  std::cerr << "* Failing " << numLinksToFail << " links over the course of the simulation.\n";
+  NS_LOG_INFO ("* Failing " << numLinksToFail << " links over the course of the simulation.");
+  if (numLinksToFail > links.size ()) {
     NS_LOG_ERROR ("Attempted to fail more links " <<
       "(" << numLinksToFail << ") than possible " <<
-      "(" << channels.size () << ")!");
+      "(" << links.size () << ")!");
     exit (EXIT_FAILURE);
   }
   Simulator::Schedule (GetFailureDelay (), &FailRandomLink);
-  NS_LOG_INFO ("* Failing " << numLinksToFail << " links over the course of the simulation.");
-  std::cerr << "* Failing " << numLinksToFail << " links over the course of the simulation.\n";
-
-  std::cerr << "* Installing Ipv4 stack on each node\n";
+  Simulator::Schedule (GetRecoveryDelay (), &RecoverRandomLink);
 
   // Set up each network device
+  std::cerr << "* Installing Ipv4 stack on each node\n";
   InternetStackHelper stack;
   stack.Install (nodes);
   Ipv4AddressHelper address;
@@ -296,9 +285,8 @@ int main (int argc, char *argv[])
     gr->SetAttribute("ReverseInputToOutputDelay", TimeValue (reversalDelay));
   }
 
-  std::cerr << "* Setting up switches and controllers\n";
-
   // Set up switches and controllers
+  std::cerr << "* Setting up switches and controllers\n";
   NodeContainer switchNodes;
   NodeContainer controllerNodes;
   for (uint32_t i = 0; i < numNodes; i++) {
@@ -309,11 +297,10 @@ int main (int argc, char *argv[])
       switchNodes.Add (nodes.Get (i));
     }
   }
-
   std::cerr << "* Installed " << controllerNodes.GetN () << " controllers\n";
-  std::cerr << "* Installing switch and controller applications\n";
 
   // Install switch and controller applications
+  std::cerr << "* Installing switch and controller applications\n";
   SimpleSDNSwitchHelper* switchHelper =
     new SimpleSDNSwitchHelper (
       switchPort,
@@ -329,27 +316,7 @@ int main (int argc, char *argv[])
       seed);
   ApplicationContainer switchApps = switchHelper->Install (switchNodes, 1001);
   ApplicationContainer controllerApps = controllerHelper->Install (controllerNodes, 1);
-
-  std::cerr << "* Connecting controllers to switches\n";
-
   controllerHelper->ConnectToSwitches (controllerNodes, switchNodes);
-
-  // On exit, close all open files (hack)
-  std::list<std::ofstream*> filesToClose;
-  filesToClose.push_back (&logfile);
-  ApplicationContainer::Iterator it;
-  for (it = controllerApps.Begin (); it != controllerApps.End (); it++) {
-    SimpleSDNController* app = (SimpleSDNController*) GetPointer (*it);
-    filesToClose.push_back (app->GetFile ());
-  }
-  for (it = controllerApps.Begin (); it != controllerApps.End (); it++) {
-    SimpleSDNController* app = (SimpleSDNController*) GetPointer (*it);
-    app->SetFilesToClose (filesToClose);
-  }
-
-  // In case links go back up, re-initialize DDC periodically
-  // NOTE: This currently causes a DDC assertion failure!
-  //Simulator::Schedule (Seconds (ddcRefreshInterval), &RecomputeDDC);
 
   // Actually start the simulation
   std::cerr << "-- Simulation starting --\n";

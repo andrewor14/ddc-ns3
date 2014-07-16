@@ -53,6 +53,8 @@ public:
   void AddReceivePacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > rxEvent);
   void AddTransmitPacketEvent (Callback<void, Ptr<const Packet>, Ipv4Header& > txEvent);
 
+  static uint32_t numSwitchesWithViolation;
+
 protected:
   virtual void DoDispose (void);
 
