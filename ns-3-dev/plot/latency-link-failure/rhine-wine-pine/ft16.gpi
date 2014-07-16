@@ -22,32 +22,21 @@ set style line 3 lt rgb "#00A000" lw 6 pt 3 ps 1
 set style line 4 lt rgb "#F25900" lw 3 pt 6 ps 3
 set style line 5 lt rgb "#716342" lw 3 pt 8 ps 3
 
-set title "16-pod FatTree"
-set title font ",30"
-set title offset 0,1
-
-set key off
-
 set xtics 0.1
 set ytics 5
-set xtics font ",15"
-set ytics font ",15"
+set xtics font "Gill Sans,16"
+set ytics font "Gill Sans,16"
 
 set xlabel "Fraction of links failed"
-set xlabel font ",20"
+set xlabel font "Gill Sans,16"
 
 set ylabel "Control latency (us)"
-set ylabel font ",20"
+set ylabel font "Gill Sans,16"
 
-set xlabel offset 0,-1
-set ylabel offset -2,0
+set xlabel offset 0,-0.5
+set ylabel offset -0.5,0
 
-#set xrange [0:0.8]
-#set yrange [35:80]
-
-set lmargin 12
-set bmargin 5
-set tmargin 5
+set yrange [*:80]
 
 # Note that we're leaving out output, title, and plot
 set output "ft16.pdf"
