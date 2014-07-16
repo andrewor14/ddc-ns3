@@ -4,10 +4,12 @@ import sys
 from average import *
 
 def process(line):
-  if "### DATA ###" in line and "latency" in line:
-    return line.split("+++")[1]
-  else:
-    return ""
+  try:
+    if "### DATA ###" in line and "latency" in line:
+      return long(line.split("+++")[1])
+  except:
+    pass
+  return ""
 
 def averageLatency(path):
   f = open(path)
