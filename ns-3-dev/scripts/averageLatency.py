@@ -17,7 +17,7 @@ def computeAverage(filename, verbose = False):
     total += line
   average = 0
   if numLines > 0:
-    average = long((float(total) / float(numLines)))
+    average = float(total) / float(numLines)
   if verbose:
     print "Results for %s:" % filename
     print "  # entries = %s" % numLines
