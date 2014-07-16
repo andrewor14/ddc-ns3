@@ -129,7 +129,6 @@ void RecoverRandomLink () {
     failedLinks.erase (failedLinks.begin () + linkIndex);
     numLinksToFail++;
     SimpleSDNController::failedLinks--;
-    std::cerr << Simulator::Now () << " - Recovering link " << node1 << " <-> " << node2 << ", total = " << SimpleSDNController::failedLinks << "\n";
   } else {
     std::cerr << "No more links to recover!\n";
     NS_LOG_LOGIC ("No more links to recover!");
@@ -152,7 +151,6 @@ void FailRandomLink () {
     links.erase (links.begin () + linkIndex);
     numLinksToFail--;
     SimpleSDNController::failedLinks++;
-    std::cerr << Simulator::Now () << " - Failing link " << node1 << " <-> " << node2 << ", total = " << SimpleSDNController::failedLinks << "\n";
   } else {
     std::cerr << "No more links to fail!\n";
     NS_LOG_LOGIC ("No more links to fail!");

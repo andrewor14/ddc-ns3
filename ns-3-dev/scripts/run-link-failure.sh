@@ -36,7 +36,7 @@ fi
 
 seed=$DDC_SEED # This varies
 link_failure_interval=0 # This varies
-switch_max_violation=20
+switch_max_violation=50
 
 runSimulation () {
   echo "Running simulation $exp_name with failure interval $link_failure_interval ($seed)"

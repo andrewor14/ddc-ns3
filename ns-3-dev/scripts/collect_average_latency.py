@@ -22,6 +22,7 @@ if __name__ == "__main__":
     #key = key.group().replace("link-failure-", "")
     f = os.path.join(baseDir, f)
     key = averageFailedLinks(f + "/all.log")
+    key = key / 2048
     value = averageLatency(f + "/all.log")
     results[key] = value
 
