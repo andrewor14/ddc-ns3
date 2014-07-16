@@ -134,6 +134,7 @@ void RecoverLink (PointToPointChannel* link) {
   link->SetLinkUp ();
   channels.push_back (link);
   numLinksToFail++;
+  logfile << "### DATA ### link recovery +++" << channels.size () << "\n";
 }
 
 /**
@@ -149,6 +150,7 @@ void FailRandomLink () {
     linkToFail->SetLinkDown ();
     channels.erase (channels.begin () + linkIndex);
     numLinksToFail--;
+    logfile << "### DATA ### link failure +++" << channels.size () << "\n";
 
     // Schedule next failure and recovery
     Simulator::Schedule (GetFailureDelay (), &FailRandomLink);
@@ -213,6 +215,11 @@ int main (int argc, char *argv[])
 
   InitializeTopology (topoFile);
   SeedManager::SetSeed (seed);
+
+  // Log link stats to file
+  std::stringstream filename;
+  filename << expName << "-link-stats.log." << seed;
+  logfile.open (filename.str ().c_str ());
 
   // Compute controller IDs
   std::list<uint32_t> controllerIDs;
@@ -329,10 +336,11 @@ int main (int argc, char *argv[])
 
   // On exit, close all open files (hack)
   std::list<std::ofstream*> filesToClose;
+  filesToClose.push_back (&logfile);
   ApplicationContainer::Iterator it;
   for (it = controllerApps.Begin (); it != controllerApps.End (); it++) {
     SimpleSDNController* app = (SimpleSDNController*) GetPointer (*it);
-    filesToClose.push_back(app->GetFile ());
+    filesToClose.push_back (app->GetFile ());
   }
   for (it = controllerApps.Begin (); it != controllerApps.End (); it++) {
     SimpleSDNController* app = (SimpleSDNController*) GetPointer (*it);

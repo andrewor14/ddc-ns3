@@ -55,8 +55,9 @@ runSimulation () {
     --LinkLatency=$link_latency" 2>&1 | tee $exp_name-link-failure-$link_failure_interval.log.$seed
   mkdir -p $dirname
   mv $exp_name-controller-*-latency.log.$seed $dirname
-  cat $dirname/$exp_name-controller-*-latency.log.$seed > $dirname/all.log.$seed
   mv $exp_name-link-failure-$link_failure_interval.log.$seed $dirname
+  mv $exp_name-link-stats.log.$seed $dirname
+  cat $dirname/$exp_name-controller-*-latency.log.$seed > $dirname/all.log.$seed
 }
 
 runMultipleTrials () {
