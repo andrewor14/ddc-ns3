@@ -26,6 +26,8 @@ set title "AS 1239"
 set title font ",30"
 set title offset 0,1
 
+set key off
+
 set xtics 0.05
 set ytics 5
 set xtics font ",15"
@@ -40,8 +42,8 @@ set ylabel font ",20"
 set xlabel offset 0,-1
 set ylabel offset -2,0
 
-set xrange [0.23:0.42]
-set yrange [40:80]
+#set xrange [03:0.42]
+#set yrange [40:80]
 
 set lmargin 12
 set bmargin 5
@@ -49,7 +51,5 @@ set tmargin 5
 
 # Note that we're leaving out output, title, and plot
 set output "1239.pdf"
-plot '1239.dat' title "No reversal delay" w lp ls 1 \
-     '1239-1ms-delay.dat' title "1ms reversal delay" w lp ls 2
-     '1239-10ms-delay.dat' title "10ms reversal delay" w lp ls 3
+plot '1239-10ms-delay.dat' title "10ms reversal delay" w lp ls 1
 

@@ -26,6 +26,8 @@ set title "16-pod FatTree"
 set title font ",30"
 set title offset 0,1
 
+set key off
+
 set xtics 0.1
 set ytics 5
 set xtics font ",15"
@@ -49,7 +51,5 @@ set tmargin 5
 
 # Note that we're leaving out output, title, and plot
 set output "ft16.pdf"
-plot 'ft16.dat' title "No reversal delay" w lp ls 1, \
-     'ft16-1ms-delay.dat' title "1ms reversal delay" w lp ls 2, \
-     'ft16-10ms-delay.dat' title "10ms reversal delay" w lp ls 3
+plot 'ft16-10ms-delay.dat' title "10ms reversal delay" w lp ls 1
 
