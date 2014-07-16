@@ -131,7 +131,6 @@ void RecoverLink (PointToPointChannel* link) {
   uint32_t node1 = link->GetDevice (0)->GetNode ()->GetId ();
   uint32_t node2 = link->GetDevice (1)->GetNode ()->GetId ();
   NS_LOG_INFO ("Recovering link " << node1 << " <-> " << node2);
-  std::cerr  << "Recovering link " << node1 << " <-> " << node2 << "\n";
   link->SetLinkUp ();
   channels.push_back (link);
   numLinksToFail++;
@@ -147,7 +146,6 @@ void FailRandomLink () {
     uint32_t node1 = linkToFail->GetDevice (0)->GetNode ()->GetId ();
     uint32_t node2 = linkToFail->GetDevice (1)->GetNode ()->GetId ();
     NS_LOG_INFO ("Failing link " << node1 << " <-> " << node2);
-    std::cerr << "Failing link " << node1 << " <-> " << node2 << "\n";
     linkToFail->SetLinkDown ();
     channels.erase (channels.begin () + linkIndex);
     numLinksToFail--;
@@ -163,17 +161,6 @@ void FailRandomLink () {
 }
 
 /**
- * Translate controller ID.
- */
-uint32_t TranslateControllerID (uint32_t oldID) {
-  if (nodeTranslateMap.find (oldID) == nodeTranslateMap.end ()) {
-    NS_LOG_ERROR ("Controller start ID " << oldID << " not found!");
-    exit (EXIT_FAILURE);
-  }
-  return nodeTranslateMap.at (oldID);
-}
-
-/**
  * Run the simulation.
  */
 int main (int argc, char *argv[])
@@ -185,9 +172,7 @@ int main (int argc, char *argv[])
 
   std::string topoFile;
   std::string expName;
-  uint32_t oldControllerID1;
-  uint32_t oldControllerID2;
-  uint32_t oldControllerID3;
+  uint32_t numControllers;
   // controllerMaxEpoch
   // switchMaxViolationCount
   // numLinksToFail
@@ -200,9 +185,7 @@ int main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("TopologyFile", "File of the topology representation", topoFile);
   cmd.AddValue ("ExperimentName", "Name of experiment", expName);
-  cmd.AddValue ("ControllerID1", "Controller #1", oldControllerID1);
-  cmd.AddValue ("ControllerID2", "Controller #2", oldControllerID2);
-  cmd.AddValue ("ControllerID3", "Controller #3", oldControllerID3);
+  cmd.AddValue ("NumControllers", "Number of controllers", numControllers);
   cmd.AddValue ("ControllerMaxEpoch", "Max epoch", controllerMaxEpoch);
   cmd.AddValue ("SwitchMaxViolation", "Max violation count", switchMaxViolationCount);
   cmd.AddValue ("NumLinksToFail", "Number of links to fail", numLinksToFail);
@@ -217,9 +200,7 @@ int main (int argc, char *argv[])
     "* Parsed arguments:\n" <<
     "    TopologyFile = " << topoFile << "\n" <<
     "    ExperimentName = " << expName << "\n" <<
-    "    ControllerID1 = " << oldControllerID1 << "\n" <<
-    "    ControllerID2 = " << oldControllerID2 << "\n" <<
-    "    ControllerID3 = " << oldControllerID3 << "\n" <<
+    "    NumControllers = " << numControllers << "\n" <<
     "    ControllerMaxEpoch = " << controllerMaxEpoch << "\n" <<
     "    SwitchMaxViolation = " << (uint32_t) switchMaxViolationCount << "\n" <<
     "    NumLinksToFail = " << numLinksToFail << "\n" <<
@@ -233,10 +214,20 @@ int main (int argc, char *argv[])
   InitializeTopology (topoFile);
   SeedManager::SetSeed (seed);
 
-  // Translate controller IDs
-  uint32_t controllerID1 = TranslateControllerID (oldControllerID1);
-  uint32_t controllerID2 = TranslateControllerID (oldControllerID2);
-  uint32_t controllerID3 = TranslateControllerID (oldControllerID3);
+  // Compute controller IDs
+  std::list<uint32_t> controllerIDs;
+  std::cerr << "* Controllers IDs (new ID):";
+  while (numControllers > 0) {
+    uint32_t controllerID = rv.GetInteger (0, numNodes - 1);
+    // Do not add duplicates
+    std::list<uint32_t>::iterator it = std::find (controllerIDs.begin (), controllerIDs.end (), controllerID);
+    if (it == controllerIDs.end ()) {
+      controllerIDs.push_back (controllerID);
+      numControllers--;
+      std::cerr << " " << controllerID;
+    }
+  }
+  std::cerr << "\n";
 
   std::cerr << "* Setting nodes up\n";
 
@@ -304,13 +295,15 @@ int main (int argc, char *argv[])
   NodeContainer switchNodes;
   NodeContainer controllerNodes;
   for (uint32_t i = 0; i < numNodes; i++) {
-    if (i == controllerID1 || i == controllerID2 || i == controllerID3) {
+    std::list<uint32_t>::iterator it = std::find (controllerIDs.begin (), controllerIDs.end (), i);
+    if (it != controllerIDs.end ()) {
       controllerNodes.Add (nodes.Get (i));
     } else {
       switchNodes.Add (nodes.Get (i));
     }
   }
 
+  std::cerr << "* Installed " << controllerNodes.GetN () << " controllers\n";
   std::cerr << "* Installing switch and controller applications\n";
 
   // Install switch and controller applications

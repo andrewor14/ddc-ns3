@@ -7,13 +7,11 @@ if ! [[ "$cwd" == "ns-3-dev" ]]; then
   exit 1
 fi
 
-if [[ $# -lt 10 ]]; then
+if [[ $# -lt 8 ]]; then
   echo "Usage: run-link-failure.sh
           [topology name]
           [experiment name]
-          [controller ID1]
-          [controller ID2]
-          [controller ID3]
+          [num controllers]
           [controller max epoch]
           [num links to fail]
           [recovery interval]
@@ -24,14 +22,12 @@ fi
 
 topo_name=$1
 exp_name=$2
-controller_id_1=$3
-controller_id_2=$4
-controller_id_3=$5
-controller_max_epoch=$6
-num_links_to_fail=$7 # upper bound
-link_recovery_interval=$8
-reversal_delay=$9
-link_latency=${10}
+num_controllers=$3
+controller_max_epoch=$4
+num_links_to_fail=$5 # upper bound
+link_recovery_interval=$6
+reversal_delay=$7
+link_latency=$8
 
 if [[ -z "$DDC_SEED" ]]; then
   echo "You must set DDC_SEED!"
@@ -48,9 +44,7 @@ runSimulation () {
   ./waf --run "scratch/sdn-real-topo \
     --TopologyFile=/mnt/andrew/ddc-ns3/topos/$topo_name \
     --ExperimentName=$exp_name \
-    --ControllerID1=$controller_id_1 \
-    --ControllerID2=$controller_id_2 \
-    --ControllerID3=$controller_id_3 \
+    --NumControllers=$num_controllers \
     --ControllerMaxEpoch=$controller_max_epoch \
     --SwitchMaxViolation=$switch_max_violation \
     --NumLinksToFail=$num_links_to_fail \
@@ -72,14 +66,14 @@ runMultipleTrials () {
   runSimulation
 }
 
-#link_failure_interval=120s runMultipleTrials # 1 link / s
-#link_failure_interval=60s runMultipleTrials # 1 link / s
-#link_failure_interval=30s runMultipleTrials # 1 link / s
-#link_failure_interval=15s runMultipleTrials # 1 link / s
-#link_failure_interval=1s runMultipleTrials # 1 link / s
+link_failure_interval=120s runMultipleTrials # 1 link / s
+link_failure_interval=60s runMultipleTrials # 1 link / s
+link_failure_interval=30s runMultipleTrials # 1 link / s
+link_failure_interval=15s runMultipleTrials # 1 link / s
+link_failure_interval=1s runMultipleTrials # 1 link / s
 #link_failure_interval=500ms runMultipleTrials # 2 links / s
 #link_failure_interval=200ms runMultipleTrials # 5 links / s
-#link_failure_interval=100ms runMultipleTrials # 10 links / s
+link_failure_interval=100ms runMultipleTrials # 10 links / s
 #link_failure_interval=50ms runMultipleTrials # 20 links / s
 #link_failure_interval=20ms runMultipleTrials # 50 links / s
 link_failure_interval=10ms runMultipleTrials # 100 links / s
