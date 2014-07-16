@@ -59,6 +59,9 @@ runSimulation () {
   cat $dirname/$exp_name-controller*log.$seed > $dirname/all.log.$seed
 }
 
+link_failure_interval=120s runSimulation # 0.0083 link / s
+link_failure_interval=60s runSimulation # 0.0167 link / s
+link_failure_interval=30s runSimulation # 0.0333 link / s
 link_failure_interval=10s runSimulation # 0.1 link / s
 link_failure_interval=1s runSimulation # 1 link / s
 link_failure_interval=500ms runSimulation # 2 links / s
