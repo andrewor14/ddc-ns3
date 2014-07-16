@@ -22,7 +22,7 @@ set style line 3 lt rgb "#00A000" lw 6 pt 3 ps 1
 set style line 4 lt rgb "#F25900" lw 3 pt 6 ps 3
 set style line 5 lt rgb "#716342" lw 3 pt 8 ps 3
 
-set title "16-pod FatTree"
+set title "AS 1239"
 set title font ",30"
 set title offset 0,1
 
@@ -34,7 +34,7 @@ set ytics font ",15"
 set xlabel "Fraction of links failed"
 set xlabel font ",20"
 
-set ylabel "Control latency (us)"
+set ylabel "Control latency (ms)"
 set ylabel font ",20"
 
 set xlabel offset 0,-1
@@ -48,8 +48,8 @@ set bmargin 5
 set tmargin 5
 
 # Note that we're leaving out output, title, and plot
-set output "ft16.pdf"
-plot 'ft16.dat' title "No reversal delay" w lp ls 1 \
-     'ft16-1ms-delay.dat' title "1ms reversal delay" w lp ls 2
-     'ft16-10ms-delay.dat' title "10ms reversal delay" w lp ls 3
+set output "1239.pdf"
+plot '1239.dat' title "No reversal delay" w lp ls 1 \
+     '1239-1ms-delay.dat' title "1ms reversal delay" w lp ls 2
+     '1239-10ms-delay.dat' title "10ms reversal delay" w lp ls 3
 
