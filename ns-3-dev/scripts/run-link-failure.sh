@@ -59,19 +59,10 @@ runSimulation () {
   cat $dirname/$exp_name-controller*log.$seed > $dirname/all.log.$seed
 }
 
-runMultipleTrials () {
-  #seed=13355 runSimulation
-  #seed=24466 runSimulation
-  #seed=35577 runSimulation
-  runSimulation
-}
-
-link_failure_interval=10s runMultipleTrials # 0.1 link / s
-#link_failure_interval=1s runMultipleTrials # 1 link / s
-#link_failure_interval=500ms runMultipleTrials # 2 links / s
-#link_failure_interval=200ms runMultipleTrials # 5 links / s
-#link_failure_interval=100ms runMultipleTrials # 10 links / s
-#link_failure_interval=50ms runMultipleTrials # 20 links / s
-#link_failure_interval=20ms runMultipleTrials # 50 links / s
-#link_failure_interval=10ms runMultipleTrials # 100 links / s
+link_failure_interval=10s runSimulation # 0.1 link / s
+link_failure_interval=1s runSimulation # 1 link / s
+link_failure_interval=500ms runSimulation # 2 links / s
+link_failure_interval=100ms runSimulation # 10 links / s
+link_failure_interval=50ms runSimulation # 20 links / s
+link_failure_interval=10ms runSimulation # 100 links / s
 
